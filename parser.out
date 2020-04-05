@@ -1,0 +1,433 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    AND
+    ASSIGN
+    CTE_CHAR
+    CTE_FLOAT
+    DESDE
+    DETERMINANT
+    DIVIDE
+    EQUALS
+    ESCRIBE
+    FUNCION
+    GREATER_THAN
+    GREATER_THAN_EQUAL
+    HACER
+    HASTA
+    HAZ
+    INVERSE
+    LECTURA
+    LESS_THAN
+    LESS_THAN_EQUAL
+    LETRERO
+    LPARENTHESIS
+    L_CURLY_BRACKET
+    MIENTRAS
+    MULTIPLY
+    NOT
+    NOT_EQUAL
+    OR
+    PRINCIPAL
+    REGRESA
+    RPARENTHESIS
+    R_CURLY_BRACKET
+    SI
+    SINO
+    SUBTRACT
+    SUM
+    TRANSPOSED
+    VOID
+
+Grammar
+
+Rule 0     S' -> start
+Rule 1     start -> programa
+Rule 2     programa -> PROGRAMA ID SEMICOLON var
+Rule 3     var -> VAR varp
+Rule 4     var -> empty
+Rule 5     varp -> tipo COLON ID varppp varpp SEMICOLON varpppp
+Rule 6     varpp -> COMMA ID varppp varpp
+Rule 7     varpp -> empty
+Rule 8     varppp -> dimDeclare
+Rule 9     varppp -> dimDeclare dimDeclare
+Rule 10    varppp -> empty
+Rule 11    varpppp -> varp
+Rule 12    varpppp -> empty
+Rule 13    dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+Rule 14    tipo -> INT
+Rule 15    tipo -> FLOAT
+Rule 16    tipo -> CHAR
+Rule 17    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 
+ASSIGN               : 
+CHAR                 : 16
+COLON                : 5
+COMMA                : 6
+CTE_CHAR             : 
+CTE_FLOAT            : 
+CTE_INT              : 13
+DESDE                : 
+DETERMINANT          : 
+DIVIDE               : 
+EQUALS               : 
+ESCRIBE              : 
+FLOAT                : 15
+FUNCION              : 
+GREATER_THAN         : 
+GREATER_THAN_EQUAL   : 
+HACER                : 
+HASTA                : 
+HAZ                  : 
+ID                   : 2 5 6
+INT                  : 14
+INVERSE              : 
+LECTURA              : 
+LESS_THAN            : 
+LESS_THAN_EQUAL      : 
+LETRERO              : 
+LPARENTHESIS         : 
+L_CURLY_BRACKET      : 
+L_SQUARE_BRACKET     : 13
+MIENTRAS             : 
+MULTIPLY             : 
+NOT                  : 
+NOT_EQUAL            : 
+OR                   : 
+PRINCIPAL            : 
+PROGRAMA             : 2
+REGRESA              : 
+RPARENTHESIS         : 
+R_CURLY_BRACKET      : 
+R_SQUARE_BRACKET     : 13
+SEMICOLON            : 2 5
+SI                   : 
+SINO                 : 
+SUBTRACT             : 
+SUM                  : 
+TRANSPOSED           : 
+VAR                  : 3
+VOID                 : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+dimDeclare           : 8 9 9
+empty                : 4 7 10 12
+programa             : 1
+start                : 0
+tipo                 : 5
+var                  : 2
+varp                 : 3 11
+varpp                : 5 6
+varppp               : 5 6
+varpppp              : 5
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . start
+    (1) start -> . programa
+    (2) programa -> . PROGRAMA ID SEMICOLON var
+
+    PROGRAMA        shift and go to state 3
+
+    start                          shift and go to state 1
+    programa                       shift and go to state 2
+
+state 1
+
+    (0) S' -> start .
+
+
+
+state 2
+
+    (1) start -> programa .
+
+    $end            reduce using rule 1 (start -> programa .)
+
+
+state 3
+
+    (2) programa -> PROGRAMA . ID SEMICOLON var
+
+    ID              shift and go to state 4
+
+
+state 4
+
+    (2) programa -> PROGRAMA ID . SEMICOLON var
+
+    SEMICOLON       shift and go to state 5
+
+
+state 5
+
+    (2) programa -> PROGRAMA ID SEMICOLON . var
+    (3) var -> . VAR varp
+    (4) var -> . empty
+    (17) empty -> .
+
+    VAR             shift and go to state 7
+    $end            reduce using rule 17 (empty -> .)
+
+    var                            shift and go to state 6
+    empty                          shift and go to state 8
+
+state 6
+
+    (2) programa -> PROGRAMA ID SEMICOLON var .
+
+    $end            reduce using rule 2 (programa -> PROGRAMA ID SEMICOLON var .)
+
+
+state 7
+
+    (3) var -> VAR . varp
+    (5) varp -> . tipo COLON ID varppp varpp SEMICOLON varpppp
+    (14) tipo -> . INT
+    (15) tipo -> . FLOAT
+    (16) tipo -> . CHAR
+
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 12
+    CHAR            shift and go to state 13
+
+    varp                           shift and go to state 9
+    tipo                           shift and go to state 10
+
+state 8
+
+    (4) var -> empty .
+
+    $end            reduce using rule 4 (var -> empty .)
+
+
+state 9
+
+    (3) var -> VAR varp .
+
+    $end            reduce using rule 3 (var -> VAR varp .)
+
+
+state 10
+
+    (5) varp -> tipo . COLON ID varppp varpp SEMICOLON varpppp
+
+    COLON           shift and go to state 14
+
+
+state 11
+
+    (14) tipo -> INT .
+
+    COLON           reduce using rule 14 (tipo -> INT .)
+
+
+state 12
+
+    (15) tipo -> FLOAT .
+
+    COLON           reduce using rule 15 (tipo -> FLOAT .)
+
+
+state 13
+
+    (16) tipo -> CHAR .
+
+    COLON           reduce using rule 16 (tipo -> CHAR .)
+
+
+state 14
+
+    (5) varp -> tipo COLON . ID varppp varpp SEMICOLON varpppp
+
+    ID              shift and go to state 15
+
+
+state 15
+
+    (5) varp -> tipo COLON ID . varppp varpp SEMICOLON varpppp
+    (8) varppp -> . dimDeclare
+    (9) varppp -> . dimDeclare dimDeclare
+    (10) varppp -> . empty
+    (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+    (17) empty -> .
+
+    L_SQUARE_BRACKET shift and go to state 19
+    COMMA           reduce using rule 17 (empty -> .)
+    SEMICOLON       reduce using rule 17 (empty -> .)
+
+    varppp                         shift and go to state 16
+    dimDeclare                     shift and go to state 17
+    empty                          shift and go to state 18
+
+state 16
+
+    (5) varp -> tipo COLON ID varppp . varpp SEMICOLON varpppp
+    (6) varpp -> . COMMA ID varppp varpp
+    (7) varpp -> . empty
+    (17) empty -> .
+
+    COMMA           shift and go to state 21
+    SEMICOLON       reduce using rule 17 (empty -> .)
+
+    varpp                          shift and go to state 20
+    empty                          shift and go to state 22
+
+state 17
+
+    (8) varppp -> dimDeclare .
+    (9) varppp -> dimDeclare . dimDeclare
+    (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+
+    COMMA           reduce using rule 8 (varppp -> dimDeclare .)
+    SEMICOLON       reduce using rule 8 (varppp -> dimDeclare .)
+    L_SQUARE_BRACKET shift and go to state 19
+
+    dimDeclare                     shift and go to state 23
+
+state 18
+
+    (10) varppp -> empty .
+
+    COMMA           reduce using rule 10 (varppp -> empty .)
+    SEMICOLON       reduce using rule 10 (varppp -> empty .)
+
+
+state 19
+
+    (13) dimDeclare -> L_SQUARE_BRACKET . CTE_INT R_SQUARE_BRACKET
+
+    CTE_INT         shift and go to state 24
+
+
+state 20
+
+    (5) varp -> tipo COLON ID varppp varpp . SEMICOLON varpppp
+
+    SEMICOLON       shift and go to state 25
+
+
+state 21
+
+    (6) varpp -> COMMA . ID varppp varpp
+
+    ID              shift and go to state 26
+
+
+state 22
+
+    (7) varpp -> empty .
+
+    SEMICOLON       reduce using rule 7 (varpp -> empty .)
+
+
+state 23
+
+    (9) varppp -> dimDeclare dimDeclare .
+
+    COMMA           reduce using rule 9 (varppp -> dimDeclare dimDeclare .)
+    SEMICOLON       reduce using rule 9 (varppp -> dimDeclare dimDeclare .)
+
+
+state 24
+
+    (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT . R_SQUARE_BRACKET
+
+    R_SQUARE_BRACKET shift and go to state 27
+
+
+state 25
+
+    (5) varp -> tipo COLON ID varppp varpp SEMICOLON . varpppp
+    (11) varpppp -> . varp
+    (12) varpppp -> . empty
+    (5) varp -> . tipo COLON ID varppp varpp SEMICOLON varpppp
+    (17) empty -> .
+    (14) tipo -> . INT
+    (15) tipo -> . FLOAT
+    (16) tipo -> . CHAR
+
+    $end            reduce using rule 17 (empty -> .)
+    INT             shift and go to state 11
+    FLOAT           shift and go to state 12
+    CHAR            shift and go to state 13
+
+    tipo                           shift and go to state 10
+    varpppp                        shift and go to state 28
+    varp                           shift and go to state 29
+    empty                          shift and go to state 30
+
+state 26
+
+    (6) varpp -> COMMA ID . varppp varpp
+    (8) varppp -> . dimDeclare
+    (9) varppp -> . dimDeclare dimDeclare
+    (10) varppp -> . empty
+    (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+    (17) empty -> .
+
+    L_SQUARE_BRACKET shift and go to state 19
+    COMMA           reduce using rule 17 (empty -> .)
+    SEMICOLON       reduce using rule 17 (empty -> .)
+
+    varppp                         shift and go to state 31
+    dimDeclare                     shift and go to state 17
+    empty                          shift and go to state 18
+
+state 27
+
+    (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .
+
+    L_SQUARE_BRACKET reduce using rule 13 (dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .)
+    COMMA           reduce using rule 13 (dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .)
+    SEMICOLON       reduce using rule 13 (dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .)
+
+
+state 28
+
+    (5) varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .
+
+    $end            reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
+
+
+state 29
+
+    (11) varpppp -> varp .
+
+    $end            reduce using rule 11 (varpppp -> varp .)
+
+
+state 30
+
+    (12) varpppp -> empty .
+
+    $end            reduce using rule 12 (varpppp -> empty .)
+
+
+state 31
+
+    (6) varpp -> COMMA ID varppp . varpp
+    (6) varpp -> . COMMA ID varppp varpp
+    (7) varpp -> . empty
+    (17) empty -> .
+
+    COMMA           shift and go to state 21
+    SEMICOLON       reduce using rule 17 (empty -> .)
+
+    varpp                          shift and go to state 32
+    empty                          shift and go to state 22
+
+state 32
+
+    (6) varpp -> COMMA ID varppp varpp .
+
+    SEMICOLON       reduce using rule 6 (varpp -> COMMA ID varppp varpp .)
+

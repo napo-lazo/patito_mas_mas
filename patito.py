@@ -1,4 +1,5 @@
 import ply.lex as lex
+import ply.yacc as yacc
 
 reserved = {
     'programa' : 'PROGRAMA',
@@ -56,12 +57,12 @@ tokens = [
 ] + list(reserved.values())
 
 def t_CTE_FLOAT(t):
-    r'[0-9]+\.[0-9]+'
+    r'\-?[0-9]+\.[0-9]+'
     t.value = float(t.value)
     return t
 
 def t_CTE_INT(t):
-    r'[0-9]+'
+    r'\-?[0-9]+'
     t.value = int(t.value)
     return t
 
@@ -115,12 +116,103 @@ def t_error(t):
 
 lexer = lex.lex()
 
-lexer.input(input())
+def p_start(p):
+    '''
+    start : programa
+    '''
+    print(p[1])
 
-while True:
-    tok = lexer.token()
+def p_programa(p):
+    '''
+    programa : PROGRAMA ID SEMICOLON var
+    '''
+    p[0] = (p[1], p[2], p[3], p[4])
 
-    if not tok:
-        break
+def p_variables(p):
+    '''
+    var : VAR varp
+        | empty
+    '''
+    p[0] = (p[1], p[2])
+
+def p_variablesp(p):
+    '''
+    varp : tipo COLON ID varppp varpp SEMICOLON varpppp
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+
+def p_variablespp(p):
+    '''
+    varpp : COMMA ID varppp varpp
+          | empty
+    '''
+    if(len(p) == 5):
+        p[0] = (p[1], p[2], p[3], p[4])
+    else:
+        p[0] = p[1]
+
+def p_variablesppp(p):
+    '''
+    varppp : dimDeclare
+           | dimDeclare dimDeclare
+           | empty
+    '''
+    if(len(p) == 3):
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_variablespppp(p):
+    '''
+    varpppp : varp
+            | empty
+    '''
+    p[0] = p[1]
+
+def p_dimDeclare(p):
+    '''
+    dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+    '''
+    if(p[2] <= 0):
+        print('ERROR: Array size cant be less than 1')
+        raise SyntaxError
+    else:
+        p[0] = (p[1], p[2], p[3])
+
+def p_tipo(p):
+    '''
+    tipo : INT
+         | FLOAT
+         | CHAR
+    '''
+    p[0] = p[1]
+
+def p_empty(p):
+    '''
+    empty :
+    '''
+    pass
+
+parser = yacc.yacc()
+
+# Loop to view all the tokens created by a user input
+
+# lexer.input(input())
+
+# while True:
+#     tok = lexer.token()
+
+#     if not tok:
+#         break
     
-    print(tok)
+#     print(tok)
+
+
+# use ctrl c to break out of the loop
+while True:
+    try:
+        s = input()
+    except EOFError:
+        break
+
+    parser.parse(s)
