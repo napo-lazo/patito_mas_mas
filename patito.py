@@ -11,7 +11,7 @@ reserved = {
     'void' : 'VOID',
     'principal' : 'PRINCIPAL',
     'regresa' : 'REGRESA',
-    'lectura' : 'LECTURA',
+    'lee' : 'LECTURA',
     'escribe' : 'ESCRIBE',
     'si' : 'SI',
     'haz' : 'HAZ',
@@ -236,18 +236,33 @@ def p_tipoRetorno(p):
 #agregar recursividad
 def p_bloque(p):
     '''
-    bloque : L_CURLY_BRACKET estatuto R_CURLY_BRACKET
+    bloque : L_CURLY_BRACKET bloquep R_CURLY_BRACKET
     '''
-    p[0] = (p[1], p[2])
+    p[0] = (p[1], p[2], p[3])
+
+def p_bloquep(p):
+    '''
+    bloquep : estatuto bloquep
+            | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
 
 def p_estatuto(p):
     '''
     estatuto : asignacion
-             | empty
+             | funcionVacia
+             | regresa
+             | lectura
+             | escritura
+             | decision
+             | cicloCondicional
+             | cicloNoCondicional
     '''
     p[0] = p[1]
 
-#insert expression
 def p_asignacion(p):
     '''
     asignacion : ID dimId ASSIGN expresion SEMICOLON
@@ -265,7 +280,6 @@ def p_dimId(p):
     else:
         p[0] = p[1]
 
-#replace with expression
 def p_dim(p):
     '''
     dim : L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
@@ -363,24 +377,119 @@ def p_matrizp(p):
     '''
     p[0] = p[1]
 
-# insert parenthesis and function call
 def p_cte(p): 
     '''
     cte : CTE_INT
         | CTE_FLOAT
         | CTE_CHAR
+        | llamadaFuncion
         | ID dimId
+        | L_PARENTHESIS expresion R_PARENTHESIS
+    '''
+    if len(p) == 4:
+        p[0] = (p[1], p[2], p[3])
+    elif len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_llamadaFuncion(p):
+    '''
+    llamadaFuncion : ID L_PARENTHESIS parametro R_PARENTHESIS
+    '''
+    p[0] = (p[1], p[2], p[3], p[4])
+
+def p_funcionVacia(p):
+    '''
+    funcionVacia : ID L_PARENTHESIS parametro R_PARENTHESIS SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_regresa(p):
+    '''
+    regresa : REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_lectura(p):
+    '''
+    lectura : LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_lecturap(p):
+    '''
+    lecturap : ID dimId lecturapp
+    '''
+    p[0] = (p[1], p[2], p[3])
+
+def p_lecturapp(p):
+    '''
+    lecturapp : COMMA lecturap
+              | empty
     '''
     if len(p) == 3:
         p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
 
+def p_escritura(p):
+    '''
+    escritura : ESCRIBE L_PARENTHESIS escriturap R_PARENTHESIS SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_escriturap(p):
+    '''
+    escriturap : LETRERO escriturapp
+               | expresion escriturapp
+    '''
+    p[0] = (p[1], p[2])
+
+def p_escriturapp(p):
+    '''
+    escriturapp : COMMA escriturap
+                | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_decision(p):
+    '''
+    decision : SI L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque decisionp
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+
+def p_decisionp(p):
+    '''
+    decisionp : SINO bloque
+              | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_cicloCondicional(p):
+    '''
+    cicloCondicional : MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
+
+def p_cicloNoCondicional(p):
+    '''
+    cicloNoCondicional : DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
 def p_empty(p):
     '''
     empty :
     '''
     pass
+
 
 parser = yacc.yacc()
 
