@@ -233,11 +233,148 @@ def p_tipoRetorno(p):
     '''
     p[0] = p[1]
 
+#agregar recursividad
 def p_bloque(p):
     '''
-    bloque : L_CURLY_BRACKET R_CURLY_BRACKET
+    bloque : L_CURLY_BRACKET estatuto R_CURLY_BRACKET
     '''
     p[0] = (p[1], p[2])
+
+def p_estatuto(p):
+    '''
+    estatuto : asignacion
+             | empty
+    '''
+    p[0] = p[1]
+
+#insert expression
+def p_asignacion(p):
+    '''
+    asignacion : ID dimId ASSIGN expresion SEMICOLON
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_dimId(p):
+    '''
+    dimId : dim
+                | dim dim
+                | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+#replace with expression
+def p_dim(p):
+    '''
+    dim : L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
+    '''
+    p[0] = (p[1], p[2], p[3])
+
+def p_expresion(p):
+    '''
+    expresion : relacional expresionp
+              | NOT relacional expresionp
+    '''
+    if len(p) == 4:
+        p[0] = (p[1], p[2], p[3])
+    else:
+        p[0] = (p[1], p[2])
+
+def p_expresionp(p):
+    '''
+    expresionp : AND expresion
+               | OR expresion
+               | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_relacional(p):
+    '''
+    relacional : aritmetica relacionalp
+    '''
+    p[0] = (p[1], p[2])
+
+def p_relacionalp(p):
+    '''
+    relacionalp : EQUALS relacional
+                | NOT_EQUAL relacional
+                | LESS_THAN relacional
+                | LESS_THAN_EQUAL relacional
+                | GREATER_THAN relacional
+                | GREATER_THAN_EQUAL relacional
+                | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_aritmetica(p):
+    '''
+    aritmetica : factor aritmeticap
+    '''
+    p[0] = (p[1], p[2])
+
+def p_aritmeticap(p):
+    '''
+    aritmeticap : SUM aritmetica
+                | SUBTRACT aritmetica
+                | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_factor(p):
+    '''
+    factor : matriz factorp
+    '''
+    p[0] = (p[1], p[2])
+
+def p_factorp(p):
+    '''
+    factorp : MULTIPLY factor
+            | DIVIDE factor
+            | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_matriz(p):
+    '''
+    matriz : cte matrizp
+    '''
+    p[0] = (p[1], p[2])
+
+def p_matrizp(p):
+    '''
+    matrizp : DETERMINANT
+            | TRANSPOSED
+            | INVERSE
+            | empty
+    '''
+    p[0] = p[1]
+
+# insert parenthesis and function call
+def p_cte(p): 
+    '''
+    cte : CTE_INT
+        | CTE_FLOAT
+        | CTE_CHAR
+        | ID dimId
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
 
 def p_empty(p):
     '''

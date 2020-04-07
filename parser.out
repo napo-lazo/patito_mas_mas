@@ -2,36 +2,17 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    AND
-    ASSIGN
-    CTE_CHAR
-    CTE_FLOAT
     DESDE
-    DETERMINANT
-    DIVIDE
-    EQUALS
     ESCRIBE
-    GREATER_THAN
-    GREATER_THAN_EQUAL
     HACER
     HASTA
     HAZ
-    INVERSE
     LECTURA
-    LESS_THAN
-    LESS_THAN_EQUAL
     LETRERO
     MIENTRAS
-    MULTIPLY
-    NOT
-    NOT_EQUAL
-    OR
     REGRESA
     SI
     SINO
-    SUBTRACT
-    SUM
-    TRANSPOSED
 
 Grammar
 
@@ -61,72 +42,124 @@ Rule 22    parametrop -> COMMA tipo ID parametrop
 Rule 23    parametrop -> empty
 Rule 24    tipoRetorno -> tipo
 Rule 25    tipoRetorno -> VOID
-Rule 26    bloque -> L_CURLY_BRACKET R_CURLY_BRACKET
-Rule 27    empty -> <empty>
+Rule 26    bloque -> L_CURLY_BRACKET estatuto R_CURLY_BRACKET
+Rule 27    estatuto -> asignacion
+Rule 28    estatuto -> empty
+Rule 29    asignacion -> ID dimId ASSIGN expresion SEMICOLON
+Rule 30    dimId -> dim
+Rule 31    dimId -> dim dim
+Rule 32    dimId -> empty
+Rule 33    dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
+Rule 34    expresion -> relacional expresionp
+Rule 35    expresion -> NOT relacional expresionp
+Rule 36    expresionp -> AND expresion
+Rule 37    expresionp -> OR expresion
+Rule 38    expresionp -> empty
+Rule 39    relacional -> aritmetica relacionalp
+Rule 40    relacionalp -> EQUALS relacional
+Rule 41    relacionalp -> NOT_EQUAL relacional
+Rule 42    relacionalp -> LESS_THAN relacional
+Rule 43    relacionalp -> LESS_THAN_EQUAL relacional
+Rule 44    relacionalp -> GREATER_THAN relacional
+Rule 45    relacionalp -> GREATER_THAN_EQUAL relacional
+Rule 46    relacionalp -> empty
+Rule 47    aritmetica -> factor aritmeticap
+Rule 48    aritmeticap -> SUM aritmetica
+Rule 49    aritmeticap -> SUBTRACT aritmetica
+Rule 50    aritmeticap -> empty
+Rule 51    factor -> matriz factorp
+Rule 52    factorp -> MULTIPLY factor
+Rule 53    factorp -> DIVIDE factor
+Rule 54    factorp -> empty
+Rule 55    matriz -> cte matrizp
+Rule 56    matrizp -> DETERMINANT
+Rule 57    matrizp -> TRANSPOSED
+Rule 58    matrizp -> INVERSE
+Rule 59    matrizp -> empty
+Rule 60    cte -> CTE_INT
+Rule 61    cte -> CTE_FLOAT
+Rule 62    cte -> CTE_CHAR
+Rule 63    cte -> ID dimId
+Rule 64    empty -> <empty>
 
 Terminals, with rules where they appear
 
-AND                  : 
-ASSIGN               : 
+AND                  : 36
+ASSIGN               : 29
 CHAR                 : 16
 COLON                : 5
 COMMA                : 6 22
-CTE_CHAR             : 
-CTE_FLOAT            : 
-CTE_INT              : 13
+CTE_CHAR             : 62
+CTE_FLOAT            : 61
+CTE_INT              : 13 60
 DESDE                : 
-DETERMINANT          : 
-DIVIDE               : 
-EQUALS               : 
+DETERMINANT          : 56
+DIVIDE               : 53
+EQUALS               : 40
 ESCRIBE              : 
 FLOAT                : 15
 FUNCION              : 17
-GREATER_THAN         : 
-GREATER_THAN_EQUAL   : 
+GREATER_THAN         : 44
+GREATER_THAN_EQUAL   : 45
 HACER                : 
 HASTA                : 
 HAZ                  : 
-ID                   : 2 5 6 19 20 22
+ID                   : 2 5 6 19 20 22 29 63
 INT                  : 14
-INVERSE              : 
+INVERSE              : 58
 LECTURA              : 
-LESS_THAN            : 
-LESS_THAN_EQUAL      : 
+LESS_THAN            : 42
+LESS_THAN_EQUAL      : 43
 LETRERO              : 
 L_CURLY_BRACKET      : 26
 L_PARENTHESIS        : 2 19
-L_SQUARE_BRACKET     : 13
+L_SQUARE_BRACKET     : 13 33
 MIENTRAS             : 
-MULTIPLY             : 
-NOT                  : 
-NOT_EQUAL            : 
-OR                   : 
+MULTIPLY             : 52
+NOT                  : 35
+NOT_EQUAL            : 41
+OR                   : 37
 PRINCIPAL            : 2
 PROGRAMA             : 2
 REGRESA              : 
 R_CURLY_BRACKET      : 26
 R_PARENTHESIS        : 2 19
-R_SQUARE_BRACKET     : 13
-SEMICOLON            : 2 5
+R_SQUARE_BRACKET     : 13 33
+SEMICOLON            : 2 5 29
 SI                   : 
 SINO                 : 
-SUBTRACT             : 
-SUM                  : 
-TRANSPOSED           : 
+SUBTRACT             : 49
+SUM                  : 48
+TRANSPOSED           : 57
 VAR                  : 3
 VOID                 : 25
 error                : 
 
 Nonterminals, with rules where they appear
 
+aritmetica           : 39 48 49
+aritmeticap          : 47
+asignacion           : 27
 bloque               : 2 19
+cte                  : 55
+dim                  : 30 31 31
 dimDeclare           : 8 9 9
-empty                : 4 7 10 12 18 21 23
+dimId                : 29 63
+empty                : 4 7 10 12 18 21 23 28 32 38 46 50 54 59
+estatuto             : 26
+expresion            : 29 33 36 37
+expresionp           : 34 35
+factor               : 47 52 53
+factorp              : 51
 funcion              : 2 19
 funcionp             : 17
+matriz               : 51
+matrizp              : 55
 parametro            : 19
 parametrop           : 20 22
 programa             : 1
+relacional           : 34 35 40 41 42 43 44 45
+relacionalp          : 39
 start                : 0
 tipo                 : 5 20 22 24
 tipoRetorno          : 19
@@ -181,11 +214,11 @@ state 5
     (2) programa -> PROGRAMA ID SEMICOLON . var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
     (3) var -> . VAR varp
     (4) var -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     VAR             shift and go to state 7
-    FUNCION         reduce using rule 27 (empty -> .)
-    PRINCIPAL       reduce using rule 27 (empty -> .)
+    FUNCION         reduce using rule 64 (empty -> .)
+    PRINCIPAL       reduce using rule 64 (empty -> .)
 
     var                            shift and go to state 6
     empty                          shift and go to state 8
@@ -195,10 +228,10 @@ state 6
     (2) programa -> PROGRAMA ID SEMICOLON var . funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
     (17) funcion -> . FUNCION funcionp
     (18) funcion -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     FUNCION         shift and go to state 10
-    PRINCIPAL       reduce using rule 27 (empty -> .)
+    PRINCIPAL       reduce using rule 64 (empty -> .)
 
     funcion                        shift and go to state 9
     empty                          shift and go to state 11
@@ -363,11 +396,11 @@ state 25
     (9) varppp -> . dimDeclare dimDeclare
     (10) varppp -> . empty
     (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-    (27) empty -> .
+    (64) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 31
-    COMMA           reduce using rule 27 (empty -> .)
-    SEMICOLON       reduce using rule 27 (empty -> .)
+    COMMA           reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
 
     varppp                         shift and go to state 28
     dimDeclare                     shift and go to state 29
@@ -376,7 +409,7 @@ state 25
 state 26
 
     (2) programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS . bloque
-    (26) bloque -> . L_CURLY_BRACKET R_CURLY_BRACKET
+    (26) bloque -> . L_CURLY_BRACKET estatuto R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 33
 
@@ -390,12 +423,12 @@ state 27
     (14) tipo -> . INT
     (15) tipo -> . FLOAT
     (16) tipo -> . CHAR
-    (27) empty -> .
+    (64) empty -> .
 
     INT             shift and go to state 14
     FLOAT           shift and go to state 15
     CHAR            shift and go to state 16
-    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+    R_PARENTHESIS   reduce using rule 64 (empty -> .)
 
     parametro                      shift and go to state 34
     tipo                           shift and go to state 35
@@ -406,10 +439,10 @@ state 28
     (5) varp -> tipo COLON ID varppp . varpp SEMICOLON varpppp
     (6) varpp -> . COMMA ID varppp varpp
     (7) varpp -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     COMMA           shift and go to state 38
-    SEMICOLON       reduce using rule 27 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
 
     varpp                          shift and go to state 37
     empty                          shift and go to state 39
@@ -450,23 +483,31 @@ state 32
 
 state 33
 
-    (26) bloque -> L_CURLY_BRACKET . R_CURLY_BRACKET
+    (26) bloque -> L_CURLY_BRACKET . estatuto R_CURLY_BRACKET
+    (27) estatuto -> . asignacion
+    (28) estatuto -> . empty
+    (29) asignacion -> . ID dimId ASSIGN expresion SEMICOLON
+    (64) empty -> .
 
-    R_CURLY_BRACKET shift and go to state 42
+    ID              shift and go to state 45
+    R_CURLY_BRACKET reduce using rule 64 (empty -> .)
 
+    estatuto                       shift and go to state 42
+    asignacion                     shift and go to state 43
+    empty                          shift and go to state 44
 
 state 34
 
     (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro . R_PARENTHESIS var bloque funcion
 
-    R_PARENTHESIS   shift and go to state 43
+    R_PARENTHESIS   shift and go to state 46
 
 
 state 35
 
     (20) parametro -> tipo . ID parametrop
 
-    ID              shift and go to state 44
+    ID              shift and go to state 47
 
 
 state 36
@@ -480,14 +521,14 @@ state 37
 
     (5) varp -> tipo COLON ID varppp varpp . SEMICOLON varpppp
 
-    SEMICOLON       shift and go to state 45
+    SEMICOLON       shift and go to state 48
 
 
 state 38
 
     (6) varpp -> COMMA . ID varppp varpp
 
-    ID              shift and go to state 46
+    ID              shift and go to state 49
 
 
 state 39
@@ -509,85 +550,113 @@ state 41
 
     (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT . R_SQUARE_BRACKET
 
-    R_SQUARE_BRACKET shift and go to state 47
+    R_SQUARE_BRACKET shift and go to state 50
 
 
 state 42
 
-    (26) bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .
+    (26) bloque -> L_CURLY_BRACKET estatuto . R_CURLY_BRACKET
 
-    $end            reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
-    FUNCION         reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
-    PRINCIPAL       reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
+    R_CURLY_BRACKET shift and go to state 51
 
 
 state 43
 
+    (27) estatuto -> asignacion .
+
+    R_CURLY_BRACKET reduce using rule 27 (estatuto -> asignacion .)
+
+
+state 44
+
+    (28) estatuto -> empty .
+
+    R_CURLY_BRACKET reduce using rule 28 (estatuto -> empty .)
+
+
+state 45
+
+    (29) asignacion -> ID . dimId ASSIGN expresion SEMICOLON
+    (30) dimId -> . dim
+    (31) dimId -> . dim dim
+    (32) dimId -> . empty
+    (33) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
+    (64) empty -> .
+
+    L_SQUARE_BRACKET shift and go to state 55
+    ASSIGN          reduce using rule 64 (empty -> .)
+
+    dimId                          shift and go to state 52
+    dim                            shift and go to state 53
+    empty                          shift and go to state 54
+
+state 46
+
     (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS . var bloque funcion
     (3) var -> . VAR varp
     (4) var -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     VAR             shift and go to state 7
-    L_CURLY_BRACKET reduce using rule 27 (empty -> .)
+    L_CURLY_BRACKET reduce using rule 64 (empty -> .)
 
-    var                            shift and go to state 48
+    var                            shift and go to state 56
     empty                          shift and go to state 8
 
-state 44
+state 47
 
     (20) parametro -> tipo ID . parametrop
     (22) parametrop -> . COMMA tipo ID parametrop
     (23) parametrop -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
-    COMMA           shift and go to state 50
-    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+    COMMA           shift and go to state 58
+    R_PARENTHESIS   reduce using rule 64 (empty -> .)
 
-    parametrop                     shift and go to state 49
-    empty                          shift and go to state 51
+    parametrop                     shift and go to state 57
+    empty                          shift and go to state 59
 
-state 45
+state 48
 
     (5) varp -> tipo COLON ID varppp varpp SEMICOLON . varpppp
     (11) varpppp -> . varp
     (12) varpppp -> . empty
     (5) varp -> . tipo COLON ID varppp varpp SEMICOLON varpppp
-    (27) empty -> .
+    (64) empty -> .
     (14) tipo -> . INT
     (15) tipo -> . FLOAT
     (16) tipo -> . CHAR
 
-    FUNCION         reduce using rule 27 (empty -> .)
-    PRINCIPAL       reduce using rule 27 (empty -> .)
-    L_CURLY_BRACKET reduce using rule 27 (empty -> .)
+    FUNCION         reduce using rule 64 (empty -> .)
+    PRINCIPAL       reduce using rule 64 (empty -> .)
+    L_CURLY_BRACKET reduce using rule 64 (empty -> .)
     INT             shift and go to state 14
     FLOAT           shift and go to state 15
     CHAR            shift and go to state 16
 
     tipo                           shift and go to state 13
-    varpppp                        shift and go to state 52
-    varp                           shift and go to state 53
-    empty                          shift and go to state 54
+    varpppp                        shift and go to state 60
+    varp                           shift and go to state 61
+    empty                          shift and go to state 62
 
-state 46
+state 49
 
     (6) varpp -> COMMA ID . varppp varpp
     (8) varppp -> . dimDeclare
     (9) varppp -> . dimDeclare dimDeclare
     (10) varppp -> . empty
     (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-    (27) empty -> .
+    (64) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 31
-    COMMA           reduce using rule 27 (empty -> .)
-    SEMICOLON       reduce using rule 27 (empty -> .)
+    COMMA           reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
 
-    varppp                         shift and go to state 55
+    varppp                         shift and go to state 63
     dimDeclare                     shift and go to state 29
     empty                          shift and go to state 30
 
-state 47
+state 50
 
     (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .
 
@@ -596,23 +665,118 @@ state 47
     SEMICOLON       reduce using rule 13 (dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .)
 
 
-state 48
+state 51
+
+    (26) bloque -> L_CURLY_BRACKET estatuto R_CURLY_BRACKET .
+
+    $end            reduce using rule 26 (bloque -> L_CURLY_BRACKET estatuto R_CURLY_BRACKET .)
+    FUNCION         reduce using rule 26 (bloque -> L_CURLY_BRACKET estatuto R_CURLY_BRACKET .)
+    PRINCIPAL       reduce using rule 26 (bloque -> L_CURLY_BRACKET estatuto R_CURLY_BRACKET .)
+
+
+state 52
+
+    (29) asignacion -> ID dimId . ASSIGN expresion SEMICOLON
+
+    ASSIGN          shift and go to state 64
+
+
+state 53
+
+    (30) dimId -> dim .
+    (31) dimId -> dim . dim
+    (33) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
+
+    ASSIGN          reduce using rule 30 (dimId -> dim .)
+    DETERMINANT     reduce using rule 30 (dimId -> dim .)
+    TRANSPOSED      reduce using rule 30 (dimId -> dim .)
+    INVERSE         reduce using rule 30 (dimId -> dim .)
+    MULTIPLY        reduce using rule 30 (dimId -> dim .)
+    DIVIDE          reduce using rule 30 (dimId -> dim .)
+    SUM             reduce using rule 30 (dimId -> dim .)
+    SUBTRACT        reduce using rule 30 (dimId -> dim .)
+    EQUALS          reduce using rule 30 (dimId -> dim .)
+    NOT_EQUAL       reduce using rule 30 (dimId -> dim .)
+    LESS_THAN       reduce using rule 30 (dimId -> dim .)
+    LESS_THAN_EQUAL reduce using rule 30 (dimId -> dim .)
+    GREATER_THAN    reduce using rule 30 (dimId -> dim .)
+    GREATER_THAN_EQUAL reduce using rule 30 (dimId -> dim .)
+    AND             reduce using rule 30 (dimId -> dim .)
+    OR              reduce using rule 30 (dimId -> dim .)
+    R_SQUARE_BRACKET reduce using rule 30 (dimId -> dim .)
+    SEMICOLON       reduce using rule 30 (dimId -> dim .)
+    L_SQUARE_BRACKET shift and go to state 55
+
+    dim                            shift and go to state 65
+
+state 54
+
+    (32) dimId -> empty .
+
+    ASSIGN          reduce using rule 32 (dimId -> empty .)
+    DETERMINANT     reduce using rule 32 (dimId -> empty .)
+    TRANSPOSED      reduce using rule 32 (dimId -> empty .)
+    INVERSE         reduce using rule 32 (dimId -> empty .)
+    MULTIPLY        reduce using rule 32 (dimId -> empty .)
+    DIVIDE          reduce using rule 32 (dimId -> empty .)
+    SUM             reduce using rule 32 (dimId -> empty .)
+    SUBTRACT        reduce using rule 32 (dimId -> empty .)
+    EQUALS          reduce using rule 32 (dimId -> empty .)
+    NOT_EQUAL       reduce using rule 32 (dimId -> empty .)
+    LESS_THAN       reduce using rule 32 (dimId -> empty .)
+    LESS_THAN_EQUAL reduce using rule 32 (dimId -> empty .)
+    GREATER_THAN    reduce using rule 32 (dimId -> empty .)
+    GREATER_THAN_EQUAL reduce using rule 32 (dimId -> empty .)
+    AND             reduce using rule 32 (dimId -> empty .)
+    OR              reduce using rule 32 (dimId -> empty .)
+    R_SQUARE_BRACKET reduce using rule 32 (dimId -> empty .)
+    SEMICOLON       reduce using rule 32 (dimId -> empty .)
+
+
+state 55
+
+    (33) dim -> L_SQUARE_BRACKET . expresion R_SQUARE_BRACKET
+    (34) expresion -> . relacional expresionp
+    (35) expresion -> . NOT relacional expresionp
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    NOT             shift and go to state 68
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    expresion                      shift and go to state 66
+    relacional                     shift and go to state 67
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 56
 
     (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var . bloque funcion
-    (26) bloque -> . L_CURLY_BRACKET R_CURLY_BRACKET
+    (26) bloque -> . L_CURLY_BRACKET estatuto R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 33
 
-    bloque                         shift and go to state 56
+    bloque                         shift and go to state 77
 
-state 49
+state 57
 
     (20) parametro -> tipo ID parametrop .
 
     R_PARENTHESIS   reduce using rule 20 (parametro -> tipo ID parametrop .)
 
 
-state 50
+state 58
 
     (22) parametrop -> COMMA . tipo ID parametrop
     (14) tipo -> . INT
@@ -623,16 +787,16 @@ state 50
     FLOAT           shift and go to state 15
     CHAR            shift and go to state 16
 
-    tipo                           shift and go to state 57
+    tipo                           shift and go to state 78
 
-state 51
+state 59
 
     (23) parametrop -> empty .
 
     R_PARENTHESIS   reduce using rule 23 (parametrop -> empty .)
 
 
-state 52
+state 60
 
     (5) varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .
 
@@ -641,7 +805,7 @@ state 52
     L_CURLY_BRACKET reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
 
 
-state 53
+state 61
 
     (11) varpppp -> varp .
 
@@ -650,7 +814,7 @@ state 53
     L_CURLY_BRACKET reduce using rule 11 (varpppp -> varp .)
 
 
-state 54
+state 62
 
     (12) varpppp -> empty .
 
@@ -659,67 +823,1077 @@ state 54
     L_CURLY_BRACKET reduce using rule 12 (varpppp -> empty .)
 
 
-state 55
+state 63
 
     (6) varpp -> COMMA ID varppp . varpp
     (6) varpp -> . COMMA ID varppp varpp
     (7) varpp -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     COMMA           shift and go to state 38
-    SEMICOLON       reduce using rule 27 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
 
-    varpp                          shift and go to state 58
+    varpp                          shift and go to state 79
     empty                          shift and go to state 39
 
-state 56
+state 64
+
+    (29) asignacion -> ID dimId ASSIGN . expresion SEMICOLON
+    (34) expresion -> . relacional expresionp
+    (35) expresion -> . NOT relacional expresionp
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    NOT             shift and go to state 68
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    expresion                      shift and go to state 80
+    relacional                     shift and go to state 67
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 65
+
+    (31) dimId -> dim dim .
+
+    ASSIGN          reduce using rule 31 (dimId -> dim dim .)
+    DETERMINANT     reduce using rule 31 (dimId -> dim dim .)
+    TRANSPOSED      reduce using rule 31 (dimId -> dim dim .)
+    INVERSE         reduce using rule 31 (dimId -> dim dim .)
+    MULTIPLY        reduce using rule 31 (dimId -> dim dim .)
+    DIVIDE          reduce using rule 31 (dimId -> dim dim .)
+    SUM             reduce using rule 31 (dimId -> dim dim .)
+    SUBTRACT        reduce using rule 31 (dimId -> dim dim .)
+    EQUALS          reduce using rule 31 (dimId -> dim dim .)
+    NOT_EQUAL       reduce using rule 31 (dimId -> dim dim .)
+    LESS_THAN       reduce using rule 31 (dimId -> dim dim .)
+    LESS_THAN_EQUAL reduce using rule 31 (dimId -> dim dim .)
+    GREATER_THAN    reduce using rule 31 (dimId -> dim dim .)
+    GREATER_THAN_EQUAL reduce using rule 31 (dimId -> dim dim .)
+    AND             reduce using rule 31 (dimId -> dim dim .)
+    OR              reduce using rule 31 (dimId -> dim dim .)
+    R_SQUARE_BRACKET reduce using rule 31 (dimId -> dim dim .)
+    SEMICOLON       reduce using rule 31 (dimId -> dim dim .)
+
+
+state 66
+
+    (33) dim -> L_SQUARE_BRACKET expresion . R_SQUARE_BRACKET
+
+    R_SQUARE_BRACKET shift and go to state 81
+
+
+state 67
+
+    (34) expresion -> relacional . expresionp
+    (36) expresionp -> . AND expresion
+    (37) expresionp -> . OR expresion
+    (38) expresionp -> . empty
+    (64) empty -> .
+
+    AND             shift and go to state 83
+    OR              shift and go to state 84
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    expresionp                     shift and go to state 82
+    empty                          shift and go to state 85
+
+state 68
+
+    (35) expresion -> NOT . relacional expresionp
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 86
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 69
+
+    (39) relacional -> aritmetica . relacionalp
+    (40) relacionalp -> . EQUALS relacional
+    (41) relacionalp -> . NOT_EQUAL relacional
+    (42) relacionalp -> . LESS_THAN relacional
+    (43) relacionalp -> . LESS_THAN_EQUAL relacional
+    (44) relacionalp -> . GREATER_THAN relacional
+    (45) relacionalp -> . GREATER_THAN_EQUAL relacional
+    (46) relacionalp -> . empty
+    (64) empty -> .
+
+    EQUALS          shift and go to state 88
+    NOT_EQUAL       shift and go to state 89
+    LESS_THAN       shift and go to state 90
+    LESS_THAN_EQUAL shift and go to state 91
+    GREATER_THAN    shift and go to state 92
+    GREATER_THAN_EQUAL shift and go to state 93
+    AND             reduce using rule 64 (empty -> .)
+    OR              reduce using rule 64 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    relacionalp                    shift and go to state 87
+    empty                          shift and go to state 94
+
+state 70
+
+    (47) aritmetica -> factor . aritmeticap
+    (48) aritmeticap -> . SUM aritmetica
+    (49) aritmeticap -> . SUBTRACT aritmetica
+    (50) aritmeticap -> . empty
+    (64) empty -> .
+
+    SUM             shift and go to state 96
+    SUBTRACT        shift and go to state 97
+    EQUALS          reduce using rule 64 (empty -> .)
+    NOT_EQUAL       reduce using rule 64 (empty -> .)
+    LESS_THAN       reduce using rule 64 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 64 (empty -> .)
+    GREATER_THAN    reduce using rule 64 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 64 (empty -> .)
+    AND             reduce using rule 64 (empty -> .)
+    OR              reduce using rule 64 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    aritmeticap                    shift and go to state 95
+    empty                          shift and go to state 98
+
+state 71
+
+    (51) factor -> matriz . factorp
+    (52) factorp -> . MULTIPLY factor
+    (53) factorp -> . DIVIDE factor
+    (54) factorp -> . empty
+    (64) empty -> .
+
+    MULTIPLY        shift and go to state 100
+    DIVIDE          shift and go to state 101
+    SUM             reduce using rule 64 (empty -> .)
+    SUBTRACT        reduce using rule 64 (empty -> .)
+    EQUALS          reduce using rule 64 (empty -> .)
+    NOT_EQUAL       reduce using rule 64 (empty -> .)
+    LESS_THAN       reduce using rule 64 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 64 (empty -> .)
+    GREATER_THAN    reduce using rule 64 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 64 (empty -> .)
+    AND             reduce using rule 64 (empty -> .)
+    OR              reduce using rule 64 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    factorp                        shift and go to state 99
+    empty                          shift and go to state 102
+
+state 72
+
+    (55) matriz -> cte . matrizp
+    (56) matrizp -> . DETERMINANT
+    (57) matrizp -> . TRANSPOSED
+    (58) matrizp -> . INVERSE
+    (59) matrizp -> . empty
+    (64) empty -> .
+
+    DETERMINANT     shift and go to state 104
+    TRANSPOSED      shift and go to state 105
+    INVERSE         shift and go to state 106
+    MULTIPLY        reduce using rule 64 (empty -> .)
+    DIVIDE          reduce using rule 64 (empty -> .)
+    SUM             reduce using rule 64 (empty -> .)
+    SUBTRACT        reduce using rule 64 (empty -> .)
+    EQUALS          reduce using rule 64 (empty -> .)
+    NOT_EQUAL       reduce using rule 64 (empty -> .)
+    LESS_THAN       reduce using rule 64 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 64 (empty -> .)
+    GREATER_THAN    reduce using rule 64 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 64 (empty -> .)
+    AND             reduce using rule 64 (empty -> .)
+    OR              reduce using rule 64 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    matrizp                        shift and go to state 103
+    empty                          shift and go to state 107
+
+state 73
+
+    (60) cte -> CTE_INT .
+
+    DETERMINANT     reduce using rule 60 (cte -> CTE_INT .)
+    TRANSPOSED      reduce using rule 60 (cte -> CTE_INT .)
+    INVERSE         reduce using rule 60 (cte -> CTE_INT .)
+    MULTIPLY        reduce using rule 60 (cte -> CTE_INT .)
+    DIVIDE          reduce using rule 60 (cte -> CTE_INT .)
+    SUM             reduce using rule 60 (cte -> CTE_INT .)
+    SUBTRACT        reduce using rule 60 (cte -> CTE_INT .)
+    EQUALS          reduce using rule 60 (cte -> CTE_INT .)
+    NOT_EQUAL       reduce using rule 60 (cte -> CTE_INT .)
+    LESS_THAN       reduce using rule 60 (cte -> CTE_INT .)
+    LESS_THAN_EQUAL reduce using rule 60 (cte -> CTE_INT .)
+    GREATER_THAN    reduce using rule 60 (cte -> CTE_INT .)
+    GREATER_THAN_EQUAL reduce using rule 60 (cte -> CTE_INT .)
+    AND             reduce using rule 60 (cte -> CTE_INT .)
+    OR              reduce using rule 60 (cte -> CTE_INT .)
+    R_SQUARE_BRACKET reduce using rule 60 (cte -> CTE_INT .)
+    SEMICOLON       reduce using rule 60 (cte -> CTE_INT .)
+
+
+state 74
+
+    (61) cte -> CTE_FLOAT .
+
+    DETERMINANT     reduce using rule 61 (cte -> CTE_FLOAT .)
+    TRANSPOSED      reduce using rule 61 (cte -> CTE_FLOAT .)
+    INVERSE         reduce using rule 61 (cte -> CTE_FLOAT .)
+    MULTIPLY        reduce using rule 61 (cte -> CTE_FLOAT .)
+    DIVIDE          reduce using rule 61 (cte -> CTE_FLOAT .)
+    SUM             reduce using rule 61 (cte -> CTE_FLOAT .)
+    SUBTRACT        reduce using rule 61 (cte -> CTE_FLOAT .)
+    EQUALS          reduce using rule 61 (cte -> CTE_FLOAT .)
+    NOT_EQUAL       reduce using rule 61 (cte -> CTE_FLOAT .)
+    LESS_THAN       reduce using rule 61 (cte -> CTE_FLOAT .)
+    LESS_THAN_EQUAL reduce using rule 61 (cte -> CTE_FLOAT .)
+    GREATER_THAN    reduce using rule 61 (cte -> CTE_FLOAT .)
+    GREATER_THAN_EQUAL reduce using rule 61 (cte -> CTE_FLOAT .)
+    AND             reduce using rule 61 (cte -> CTE_FLOAT .)
+    OR              reduce using rule 61 (cte -> CTE_FLOAT .)
+    R_SQUARE_BRACKET reduce using rule 61 (cte -> CTE_FLOAT .)
+    SEMICOLON       reduce using rule 61 (cte -> CTE_FLOAT .)
+
+
+state 75
+
+    (62) cte -> CTE_CHAR .
+
+    DETERMINANT     reduce using rule 62 (cte -> CTE_CHAR .)
+    TRANSPOSED      reduce using rule 62 (cte -> CTE_CHAR .)
+    INVERSE         reduce using rule 62 (cte -> CTE_CHAR .)
+    MULTIPLY        reduce using rule 62 (cte -> CTE_CHAR .)
+    DIVIDE          reduce using rule 62 (cte -> CTE_CHAR .)
+    SUM             reduce using rule 62 (cte -> CTE_CHAR .)
+    SUBTRACT        reduce using rule 62 (cte -> CTE_CHAR .)
+    EQUALS          reduce using rule 62 (cte -> CTE_CHAR .)
+    NOT_EQUAL       reduce using rule 62 (cte -> CTE_CHAR .)
+    LESS_THAN       reduce using rule 62 (cte -> CTE_CHAR .)
+    LESS_THAN_EQUAL reduce using rule 62 (cte -> CTE_CHAR .)
+    GREATER_THAN    reduce using rule 62 (cte -> CTE_CHAR .)
+    GREATER_THAN_EQUAL reduce using rule 62 (cte -> CTE_CHAR .)
+    AND             reduce using rule 62 (cte -> CTE_CHAR .)
+    OR              reduce using rule 62 (cte -> CTE_CHAR .)
+    R_SQUARE_BRACKET reduce using rule 62 (cte -> CTE_CHAR .)
+    SEMICOLON       reduce using rule 62 (cte -> CTE_CHAR .)
+
+
+state 76
+
+    (63) cte -> ID . dimId
+    (30) dimId -> . dim
+    (31) dimId -> . dim dim
+    (32) dimId -> . empty
+    (33) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
+    (64) empty -> .
+
+    L_SQUARE_BRACKET shift and go to state 55
+    DETERMINANT     reduce using rule 64 (empty -> .)
+    TRANSPOSED      reduce using rule 64 (empty -> .)
+    INVERSE         reduce using rule 64 (empty -> .)
+    MULTIPLY        reduce using rule 64 (empty -> .)
+    DIVIDE          reduce using rule 64 (empty -> .)
+    SUM             reduce using rule 64 (empty -> .)
+    SUBTRACT        reduce using rule 64 (empty -> .)
+    EQUALS          reduce using rule 64 (empty -> .)
+    NOT_EQUAL       reduce using rule 64 (empty -> .)
+    LESS_THAN       reduce using rule 64 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 64 (empty -> .)
+    GREATER_THAN    reduce using rule 64 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 64 (empty -> .)
+    AND             reduce using rule 64 (empty -> .)
+    OR              reduce using rule 64 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    dimId                          shift and go to state 108
+    dim                            shift and go to state 53
+    empty                          shift and go to state 54
+
+state 77
 
     (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque . funcion
     (17) funcion -> . FUNCION funcionp
     (18) funcion -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
     FUNCION         shift and go to state 10
-    PRINCIPAL       reduce using rule 27 (empty -> .)
+    PRINCIPAL       reduce using rule 64 (empty -> .)
 
-    funcion                        shift and go to state 59
+    funcion                        shift and go to state 109
     empty                          shift and go to state 11
 
-state 57
+state 78
 
     (22) parametrop -> COMMA tipo . ID parametrop
 
-    ID              shift and go to state 60
+    ID              shift and go to state 110
 
 
-state 58
+state 79
 
     (6) varpp -> COMMA ID varppp varpp .
 
     SEMICOLON       reduce using rule 6 (varpp -> COMMA ID varppp varpp .)
 
 
-state 59
+state 80
+
+    (29) asignacion -> ID dimId ASSIGN expresion . SEMICOLON
+
+    SEMICOLON       shift and go to state 111
+
+
+state 81
+
+    (33) dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .
+
+    L_SQUARE_BRACKET reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    ASSIGN          reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    DETERMINANT     reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    TRANSPOSED      reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    INVERSE         reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    MULTIPLY        reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    DIVIDE          reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    SUM             reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    SUBTRACT        reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    EQUALS          reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    NOT_EQUAL       reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    LESS_THAN       reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    LESS_THAN_EQUAL reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    GREATER_THAN    reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    GREATER_THAN_EQUAL reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    AND             reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    OR              reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    R_SQUARE_BRACKET reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+    SEMICOLON       reduce using rule 33 (dim -> L_SQUARE_BRACKET expresion R_SQUARE_BRACKET .)
+
+
+state 82
+
+    (34) expresion -> relacional expresionp .
+
+    R_SQUARE_BRACKET reduce using rule 34 (expresion -> relacional expresionp .)
+    SEMICOLON       reduce using rule 34 (expresion -> relacional expresionp .)
+
+
+state 83
+
+    (36) expresionp -> AND . expresion
+    (34) expresion -> . relacional expresionp
+    (35) expresion -> . NOT relacional expresionp
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    NOT             shift and go to state 68
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    expresion                      shift and go to state 112
+    relacional                     shift and go to state 67
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 84
+
+    (37) expresionp -> OR . expresion
+    (34) expresion -> . relacional expresionp
+    (35) expresion -> . NOT relacional expresionp
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    NOT             shift and go to state 68
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    expresion                      shift and go to state 113
+    relacional                     shift and go to state 67
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 85
+
+    (38) expresionp -> empty .
+
+    R_SQUARE_BRACKET reduce using rule 38 (expresionp -> empty .)
+    SEMICOLON       reduce using rule 38 (expresionp -> empty .)
+
+
+state 86
+
+    (35) expresion -> NOT relacional . expresionp
+    (36) expresionp -> . AND expresion
+    (37) expresionp -> . OR expresion
+    (38) expresionp -> . empty
+    (64) empty -> .
+
+    AND             shift and go to state 83
+    OR              shift and go to state 84
+    R_SQUARE_BRACKET reduce using rule 64 (empty -> .)
+    SEMICOLON       reduce using rule 64 (empty -> .)
+
+    expresionp                     shift and go to state 114
+    empty                          shift and go to state 85
+
+state 87
+
+    (39) relacional -> aritmetica relacionalp .
+
+    AND             reduce using rule 39 (relacional -> aritmetica relacionalp .)
+    OR              reduce using rule 39 (relacional -> aritmetica relacionalp .)
+    R_SQUARE_BRACKET reduce using rule 39 (relacional -> aritmetica relacionalp .)
+    SEMICOLON       reduce using rule 39 (relacional -> aritmetica relacionalp .)
+
+
+state 88
+
+    (40) relacionalp -> EQUALS . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 115
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 89
+
+    (41) relacionalp -> NOT_EQUAL . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 116
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 90
+
+    (42) relacionalp -> LESS_THAN . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 117
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 91
+
+    (43) relacionalp -> LESS_THAN_EQUAL . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 118
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 92
+
+    (44) relacionalp -> GREATER_THAN . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 119
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 93
+
+    (45) relacionalp -> GREATER_THAN_EQUAL . relacional
+    (39) relacional -> . aritmetica relacionalp
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    relacional                     shift and go to state 120
+    aritmetica                     shift and go to state 69
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 94
+
+    (46) relacionalp -> empty .
+
+    AND             reduce using rule 46 (relacionalp -> empty .)
+    OR              reduce using rule 46 (relacionalp -> empty .)
+    R_SQUARE_BRACKET reduce using rule 46 (relacionalp -> empty .)
+    SEMICOLON       reduce using rule 46 (relacionalp -> empty .)
+
+
+state 95
+
+    (47) aritmetica -> factor aritmeticap .
+
+    EQUALS          reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    NOT_EQUAL       reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    LESS_THAN       reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    LESS_THAN_EQUAL reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    GREATER_THAN    reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    GREATER_THAN_EQUAL reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    AND             reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    OR              reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    R_SQUARE_BRACKET reduce using rule 47 (aritmetica -> factor aritmeticap .)
+    SEMICOLON       reduce using rule 47 (aritmetica -> factor aritmeticap .)
+
+
+state 96
+
+    (48) aritmeticap -> SUM . aritmetica
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    aritmetica                     shift and go to state 121
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 97
+
+    (49) aritmeticap -> SUBTRACT . aritmetica
+    (47) aritmetica -> . factor aritmeticap
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    aritmetica                     shift and go to state 122
+    factor                         shift and go to state 70
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 98
+
+    (50) aritmeticap -> empty .
+
+    EQUALS          reduce using rule 50 (aritmeticap -> empty .)
+    NOT_EQUAL       reduce using rule 50 (aritmeticap -> empty .)
+    LESS_THAN       reduce using rule 50 (aritmeticap -> empty .)
+    LESS_THAN_EQUAL reduce using rule 50 (aritmeticap -> empty .)
+    GREATER_THAN    reduce using rule 50 (aritmeticap -> empty .)
+    GREATER_THAN_EQUAL reduce using rule 50 (aritmeticap -> empty .)
+    AND             reduce using rule 50 (aritmeticap -> empty .)
+    OR              reduce using rule 50 (aritmeticap -> empty .)
+    R_SQUARE_BRACKET reduce using rule 50 (aritmeticap -> empty .)
+    SEMICOLON       reduce using rule 50 (aritmeticap -> empty .)
+
+
+state 99
+
+    (51) factor -> matriz factorp .
+
+    SUM             reduce using rule 51 (factor -> matriz factorp .)
+    SUBTRACT        reduce using rule 51 (factor -> matriz factorp .)
+    EQUALS          reduce using rule 51 (factor -> matriz factorp .)
+    NOT_EQUAL       reduce using rule 51 (factor -> matriz factorp .)
+    LESS_THAN       reduce using rule 51 (factor -> matriz factorp .)
+    LESS_THAN_EQUAL reduce using rule 51 (factor -> matriz factorp .)
+    GREATER_THAN    reduce using rule 51 (factor -> matriz factorp .)
+    GREATER_THAN_EQUAL reduce using rule 51 (factor -> matriz factorp .)
+    AND             reduce using rule 51 (factor -> matriz factorp .)
+    OR              reduce using rule 51 (factor -> matriz factorp .)
+    R_SQUARE_BRACKET reduce using rule 51 (factor -> matriz factorp .)
+    SEMICOLON       reduce using rule 51 (factor -> matriz factorp .)
+
+
+state 100
+
+    (52) factorp -> MULTIPLY . factor
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    factor                         shift and go to state 123
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 101
+
+    (53) factorp -> DIVIDE . factor
+    (51) factor -> . matriz factorp
+    (55) matriz -> . cte matrizp
+    (60) cte -> . CTE_INT
+    (61) cte -> . CTE_FLOAT
+    (62) cte -> . CTE_CHAR
+    (63) cte -> . ID dimId
+
+    CTE_INT         shift and go to state 73
+    CTE_FLOAT       shift and go to state 74
+    CTE_CHAR        shift and go to state 75
+    ID              shift and go to state 76
+
+    factor                         shift and go to state 124
+    matriz                         shift and go to state 71
+    cte                            shift and go to state 72
+
+state 102
+
+    (54) factorp -> empty .
+
+    SUM             reduce using rule 54 (factorp -> empty .)
+    SUBTRACT        reduce using rule 54 (factorp -> empty .)
+    EQUALS          reduce using rule 54 (factorp -> empty .)
+    NOT_EQUAL       reduce using rule 54 (factorp -> empty .)
+    LESS_THAN       reduce using rule 54 (factorp -> empty .)
+    LESS_THAN_EQUAL reduce using rule 54 (factorp -> empty .)
+    GREATER_THAN    reduce using rule 54 (factorp -> empty .)
+    GREATER_THAN_EQUAL reduce using rule 54 (factorp -> empty .)
+    AND             reduce using rule 54 (factorp -> empty .)
+    OR              reduce using rule 54 (factorp -> empty .)
+    R_SQUARE_BRACKET reduce using rule 54 (factorp -> empty .)
+    SEMICOLON       reduce using rule 54 (factorp -> empty .)
+
+
+state 103
+
+    (55) matriz -> cte matrizp .
+
+    MULTIPLY        reduce using rule 55 (matriz -> cte matrizp .)
+    DIVIDE          reduce using rule 55 (matriz -> cte matrizp .)
+    SUM             reduce using rule 55 (matriz -> cte matrizp .)
+    SUBTRACT        reduce using rule 55 (matriz -> cte matrizp .)
+    EQUALS          reduce using rule 55 (matriz -> cte matrizp .)
+    NOT_EQUAL       reduce using rule 55 (matriz -> cte matrizp .)
+    LESS_THAN       reduce using rule 55 (matriz -> cte matrizp .)
+    LESS_THAN_EQUAL reduce using rule 55 (matriz -> cte matrizp .)
+    GREATER_THAN    reduce using rule 55 (matriz -> cte matrizp .)
+    GREATER_THAN_EQUAL reduce using rule 55 (matriz -> cte matrizp .)
+    AND             reduce using rule 55 (matriz -> cte matrizp .)
+    OR              reduce using rule 55 (matriz -> cte matrizp .)
+    R_SQUARE_BRACKET reduce using rule 55 (matriz -> cte matrizp .)
+    SEMICOLON       reduce using rule 55 (matriz -> cte matrizp .)
+
+
+state 104
+
+    (56) matrizp -> DETERMINANT .
+
+    MULTIPLY        reduce using rule 56 (matrizp -> DETERMINANT .)
+    DIVIDE          reduce using rule 56 (matrizp -> DETERMINANT .)
+    SUM             reduce using rule 56 (matrizp -> DETERMINANT .)
+    SUBTRACT        reduce using rule 56 (matrizp -> DETERMINANT .)
+    EQUALS          reduce using rule 56 (matrizp -> DETERMINANT .)
+    NOT_EQUAL       reduce using rule 56 (matrizp -> DETERMINANT .)
+    LESS_THAN       reduce using rule 56 (matrizp -> DETERMINANT .)
+    LESS_THAN_EQUAL reduce using rule 56 (matrizp -> DETERMINANT .)
+    GREATER_THAN    reduce using rule 56 (matrizp -> DETERMINANT .)
+    GREATER_THAN_EQUAL reduce using rule 56 (matrizp -> DETERMINANT .)
+    AND             reduce using rule 56 (matrizp -> DETERMINANT .)
+    OR              reduce using rule 56 (matrizp -> DETERMINANT .)
+    R_SQUARE_BRACKET reduce using rule 56 (matrizp -> DETERMINANT .)
+    SEMICOLON       reduce using rule 56 (matrizp -> DETERMINANT .)
+
+
+state 105
+
+    (57) matrizp -> TRANSPOSED .
+
+    MULTIPLY        reduce using rule 57 (matrizp -> TRANSPOSED .)
+    DIVIDE          reduce using rule 57 (matrizp -> TRANSPOSED .)
+    SUM             reduce using rule 57 (matrizp -> TRANSPOSED .)
+    SUBTRACT        reduce using rule 57 (matrizp -> TRANSPOSED .)
+    EQUALS          reduce using rule 57 (matrizp -> TRANSPOSED .)
+    NOT_EQUAL       reduce using rule 57 (matrizp -> TRANSPOSED .)
+    LESS_THAN       reduce using rule 57 (matrizp -> TRANSPOSED .)
+    LESS_THAN_EQUAL reduce using rule 57 (matrizp -> TRANSPOSED .)
+    GREATER_THAN    reduce using rule 57 (matrizp -> TRANSPOSED .)
+    GREATER_THAN_EQUAL reduce using rule 57 (matrizp -> TRANSPOSED .)
+    AND             reduce using rule 57 (matrizp -> TRANSPOSED .)
+    OR              reduce using rule 57 (matrizp -> TRANSPOSED .)
+    R_SQUARE_BRACKET reduce using rule 57 (matrizp -> TRANSPOSED .)
+    SEMICOLON       reduce using rule 57 (matrizp -> TRANSPOSED .)
+
+
+state 106
+
+    (58) matrizp -> INVERSE .
+
+    MULTIPLY        reduce using rule 58 (matrizp -> INVERSE .)
+    DIVIDE          reduce using rule 58 (matrizp -> INVERSE .)
+    SUM             reduce using rule 58 (matrizp -> INVERSE .)
+    SUBTRACT        reduce using rule 58 (matrizp -> INVERSE .)
+    EQUALS          reduce using rule 58 (matrizp -> INVERSE .)
+    NOT_EQUAL       reduce using rule 58 (matrizp -> INVERSE .)
+    LESS_THAN       reduce using rule 58 (matrizp -> INVERSE .)
+    LESS_THAN_EQUAL reduce using rule 58 (matrizp -> INVERSE .)
+    GREATER_THAN    reduce using rule 58 (matrizp -> INVERSE .)
+    GREATER_THAN_EQUAL reduce using rule 58 (matrizp -> INVERSE .)
+    AND             reduce using rule 58 (matrizp -> INVERSE .)
+    OR              reduce using rule 58 (matrizp -> INVERSE .)
+    R_SQUARE_BRACKET reduce using rule 58 (matrizp -> INVERSE .)
+    SEMICOLON       reduce using rule 58 (matrizp -> INVERSE .)
+
+
+state 107
+
+    (59) matrizp -> empty .
+
+    MULTIPLY        reduce using rule 59 (matrizp -> empty .)
+    DIVIDE          reduce using rule 59 (matrizp -> empty .)
+    SUM             reduce using rule 59 (matrizp -> empty .)
+    SUBTRACT        reduce using rule 59 (matrizp -> empty .)
+    EQUALS          reduce using rule 59 (matrizp -> empty .)
+    NOT_EQUAL       reduce using rule 59 (matrizp -> empty .)
+    LESS_THAN       reduce using rule 59 (matrizp -> empty .)
+    LESS_THAN_EQUAL reduce using rule 59 (matrizp -> empty .)
+    GREATER_THAN    reduce using rule 59 (matrizp -> empty .)
+    GREATER_THAN_EQUAL reduce using rule 59 (matrizp -> empty .)
+    AND             reduce using rule 59 (matrizp -> empty .)
+    OR              reduce using rule 59 (matrizp -> empty .)
+    R_SQUARE_BRACKET reduce using rule 59 (matrizp -> empty .)
+    SEMICOLON       reduce using rule 59 (matrizp -> empty .)
+
+
+state 108
+
+    (63) cte -> ID dimId .
+
+    DETERMINANT     reduce using rule 63 (cte -> ID dimId .)
+    TRANSPOSED      reduce using rule 63 (cte -> ID dimId .)
+    INVERSE         reduce using rule 63 (cte -> ID dimId .)
+    MULTIPLY        reduce using rule 63 (cte -> ID dimId .)
+    DIVIDE          reduce using rule 63 (cte -> ID dimId .)
+    SUM             reduce using rule 63 (cte -> ID dimId .)
+    SUBTRACT        reduce using rule 63 (cte -> ID dimId .)
+    EQUALS          reduce using rule 63 (cte -> ID dimId .)
+    NOT_EQUAL       reduce using rule 63 (cte -> ID dimId .)
+    LESS_THAN       reduce using rule 63 (cte -> ID dimId .)
+    LESS_THAN_EQUAL reduce using rule 63 (cte -> ID dimId .)
+    GREATER_THAN    reduce using rule 63 (cte -> ID dimId .)
+    GREATER_THAN_EQUAL reduce using rule 63 (cte -> ID dimId .)
+    AND             reduce using rule 63 (cte -> ID dimId .)
+    OR              reduce using rule 63 (cte -> ID dimId .)
+    R_SQUARE_BRACKET reduce using rule 63 (cte -> ID dimId .)
+    SEMICOLON       reduce using rule 63 (cte -> ID dimId .)
+
+
+state 109
 
     (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion .
 
     PRINCIPAL       reduce using rule 19 (funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion .)
 
 
-state 60
+state 110
 
     (22) parametrop -> COMMA tipo ID . parametrop
     (22) parametrop -> . COMMA tipo ID parametrop
     (23) parametrop -> . empty
-    (27) empty -> .
+    (64) empty -> .
 
-    COMMA           shift and go to state 50
-    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+    COMMA           shift and go to state 58
+    R_PARENTHESIS   reduce using rule 64 (empty -> .)
 
-    parametrop                     shift and go to state 61
-    empty                          shift and go to state 51
+    parametrop                     shift and go to state 125
+    empty                          shift and go to state 59
 
-state 61
+state 111
+
+    (29) asignacion -> ID dimId ASSIGN expresion SEMICOLON .
+
+    R_CURLY_BRACKET reduce using rule 29 (asignacion -> ID dimId ASSIGN expresion SEMICOLON .)
+
+
+state 112
+
+    (36) expresionp -> AND expresion .
+
+    R_SQUARE_BRACKET reduce using rule 36 (expresionp -> AND expresion .)
+    SEMICOLON       reduce using rule 36 (expresionp -> AND expresion .)
+
+
+state 113
+
+    (37) expresionp -> OR expresion .
+
+    R_SQUARE_BRACKET reduce using rule 37 (expresionp -> OR expresion .)
+    SEMICOLON       reduce using rule 37 (expresionp -> OR expresion .)
+
+
+state 114
+
+    (35) expresion -> NOT relacional expresionp .
+
+    R_SQUARE_BRACKET reduce using rule 35 (expresion -> NOT relacional expresionp .)
+    SEMICOLON       reduce using rule 35 (expresion -> NOT relacional expresionp .)
+
+
+state 115
+
+    (40) relacionalp -> EQUALS relacional .
+
+    AND             reduce using rule 40 (relacionalp -> EQUALS relacional .)
+    OR              reduce using rule 40 (relacionalp -> EQUALS relacional .)
+    R_SQUARE_BRACKET reduce using rule 40 (relacionalp -> EQUALS relacional .)
+    SEMICOLON       reduce using rule 40 (relacionalp -> EQUALS relacional .)
+
+
+state 116
+
+    (41) relacionalp -> NOT_EQUAL relacional .
+
+    AND             reduce using rule 41 (relacionalp -> NOT_EQUAL relacional .)
+    OR              reduce using rule 41 (relacionalp -> NOT_EQUAL relacional .)
+    R_SQUARE_BRACKET reduce using rule 41 (relacionalp -> NOT_EQUAL relacional .)
+    SEMICOLON       reduce using rule 41 (relacionalp -> NOT_EQUAL relacional .)
+
+
+state 117
+
+    (42) relacionalp -> LESS_THAN relacional .
+
+    AND             reduce using rule 42 (relacionalp -> LESS_THAN relacional .)
+    OR              reduce using rule 42 (relacionalp -> LESS_THAN relacional .)
+    R_SQUARE_BRACKET reduce using rule 42 (relacionalp -> LESS_THAN relacional .)
+    SEMICOLON       reduce using rule 42 (relacionalp -> LESS_THAN relacional .)
+
+
+state 118
+
+    (43) relacionalp -> LESS_THAN_EQUAL relacional .
+
+    AND             reduce using rule 43 (relacionalp -> LESS_THAN_EQUAL relacional .)
+    OR              reduce using rule 43 (relacionalp -> LESS_THAN_EQUAL relacional .)
+    R_SQUARE_BRACKET reduce using rule 43 (relacionalp -> LESS_THAN_EQUAL relacional .)
+    SEMICOLON       reduce using rule 43 (relacionalp -> LESS_THAN_EQUAL relacional .)
+
+
+state 119
+
+    (44) relacionalp -> GREATER_THAN relacional .
+
+    AND             reduce using rule 44 (relacionalp -> GREATER_THAN relacional .)
+    OR              reduce using rule 44 (relacionalp -> GREATER_THAN relacional .)
+    R_SQUARE_BRACKET reduce using rule 44 (relacionalp -> GREATER_THAN relacional .)
+    SEMICOLON       reduce using rule 44 (relacionalp -> GREATER_THAN relacional .)
+
+
+state 120
+
+    (45) relacionalp -> GREATER_THAN_EQUAL relacional .
+
+    AND             reduce using rule 45 (relacionalp -> GREATER_THAN_EQUAL relacional .)
+    OR              reduce using rule 45 (relacionalp -> GREATER_THAN_EQUAL relacional .)
+    R_SQUARE_BRACKET reduce using rule 45 (relacionalp -> GREATER_THAN_EQUAL relacional .)
+    SEMICOLON       reduce using rule 45 (relacionalp -> GREATER_THAN_EQUAL relacional .)
+
+
+state 121
+
+    (48) aritmeticap -> SUM aritmetica .
+
+    EQUALS          reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    NOT_EQUAL       reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    LESS_THAN       reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    LESS_THAN_EQUAL reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    GREATER_THAN    reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    GREATER_THAN_EQUAL reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    AND             reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    OR              reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    R_SQUARE_BRACKET reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+    SEMICOLON       reduce using rule 48 (aritmeticap -> SUM aritmetica .)
+
+
+state 122
+
+    (49) aritmeticap -> SUBTRACT aritmetica .
+
+    EQUALS          reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    NOT_EQUAL       reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    LESS_THAN       reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    LESS_THAN_EQUAL reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    GREATER_THAN    reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    GREATER_THAN_EQUAL reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    AND             reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    OR              reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    R_SQUARE_BRACKET reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+    SEMICOLON       reduce using rule 49 (aritmeticap -> SUBTRACT aritmetica .)
+
+
+state 123
+
+    (52) factorp -> MULTIPLY factor .
+
+    SUM             reduce using rule 52 (factorp -> MULTIPLY factor .)
+    SUBTRACT        reduce using rule 52 (factorp -> MULTIPLY factor .)
+    EQUALS          reduce using rule 52 (factorp -> MULTIPLY factor .)
+    NOT_EQUAL       reduce using rule 52 (factorp -> MULTIPLY factor .)
+    LESS_THAN       reduce using rule 52 (factorp -> MULTIPLY factor .)
+    LESS_THAN_EQUAL reduce using rule 52 (factorp -> MULTIPLY factor .)
+    GREATER_THAN    reduce using rule 52 (factorp -> MULTIPLY factor .)
+    GREATER_THAN_EQUAL reduce using rule 52 (factorp -> MULTIPLY factor .)
+    AND             reduce using rule 52 (factorp -> MULTIPLY factor .)
+    OR              reduce using rule 52 (factorp -> MULTIPLY factor .)
+    R_SQUARE_BRACKET reduce using rule 52 (factorp -> MULTIPLY factor .)
+    SEMICOLON       reduce using rule 52 (factorp -> MULTIPLY factor .)
+
+
+state 124
+
+    (53) factorp -> DIVIDE factor .
+
+    SUM             reduce using rule 53 (factorp -> DIVIDE factor .)
+    SUBTRACT        reduce using rule 53 (factorp -> DIVIDE factor .)
+    EQUALS          reduce using rule 53 (factorp -> DIVIDE factor .)
+    NOT_EQUAL       reduce using rule 53 (factorp -> DIVIDE factor .)
+    LESS_THAN       reduce using rule 53 (factorp -> DIVIDE factor .)
+    LESS_THAN_EQUAL reduce using rule 53 (factorp -> DIVIDE factor .)
+    GREATER_THAN    reduce using rule 53 (factorp -> DIVIDE factor .)
+    GREATER_THAN_EQUAL reduce using rule 53 (factorp -> DIVIDE factor .)
+    AND             reduce using rule 53 (factorp -> DIVIDE factor .)
+    OR              reduce using rule 53 (factorp -> DIVIDE factor .)
+    R_SQUARE_BRACKET reduce using rule 53 (factorp -> DIVIDE factor .)
+    SEMICOLON       reduce using rule 53 (factorp -> DIVIDE factor .)
+
+
+state 125
 
     (22) parametrop -> COMMA tipo ID parametrop .
 
