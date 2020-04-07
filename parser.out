@@ -11,7 +11,6 @@ Unused terminals:
     DIVIDE
     EQUALS
     ESCRIBE
-    FUNCION
     GREATER_THAN
     GREATER_THAN_EQUAL
     HACER
@@ -22,29 +21,23 @@ Unused terminals:
     LESS_THAN
     LESS_THAN_EQUAL
     LETRERO
-    LPARENTHESIS
-    L_CURLY_BRACKET
     MIENTRAS
     MULTIPLY
     NOT
     NOT_EQUAL
     OR
-    PRINCIPAL
     REGRESA
-    RPARENTHESIS
-    R_CURLY_BRACKET
     SI
     SINO
     SUBTRACT
     SUM
     TRANSPOSED
-    VOID
 
 Grammar
 
 Rule 0     S' -> start
 Rule 1     start -> programa
-Rule 2     programa -> PROGRAMA ID SEMICOLON var
+Rule 2     programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
 Rule 3     var -> VAR varp
 Rule 4     var -> empty
 Rule 5     varp -> tipo COLON ID varppp varpp SEMICOLON varpppp
@@ -59,7 +52,17 @@ Rule 13    dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
 Rule 14    tipo -> INT
 Rule 15    tipo -> FLOAT
 Rule 16    tipo -> CHAR
-Rule 17    empty -> <empty>
+Rule 17    funcion -> FUNCION funcionp
+Rule 18    funcion -> empty
+Rule 19    funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+Rule 20    parametro -> tipo ID parametrop
+Rule 21    parametro -> empty
+Rule 22    parametrop -> COMMA tipo ID parametrop
+Rule 23    parametrop -> empty
+Rule 24    tipoRetorno -> tipo
+Rule 25    tipoRetorno -> VOID
+Rule 26    bloque -> L_CURLY_BRACKET R_CURLY_BRACKET
+Rule 27    empty -> <empty>
 
 Terminals, with rules where they appear
 
@@ -67,7 +70,7 @@ AND                  :
 ASSIGN               : 
 CHAR                 : 16
 COLON                : 5
-COMMA                : 6
+COMMA                : 6 22
 CTE_CHAR             : 
 CTE_FLOAT            : 
 CTE_INT              : 13
@@ -77,32 +80,32 @@ DIVIDE               :
 EQUALS               : 
 ESCRIBE              : 
 FLOAT                : 15
-FUNCION              : 
+FUNCION              : 17
 GREATER_THAN         : 
 GREATER_THAN_EQUAL   : 
 HACER                : 
 HASTA                : 
 HAZ                  : 
-ID                   : 2 5 6
+ID                   : 2 5 6 19 20 22
 INT                  : 14
 INVERSE              : 
 LECTURA              : 
 LESS_THAN            : 
 LESS_THAN_EQUAL      : 
 LETRERO              : 
-LPARENTHESIS         : 
-L_CURLY_BRACKET      : 
+L_CURLY_BRACKET      : 26
+L_PARENTHESIS        : 2 19
 L_SQUARE_BRACKET     : 13
 MIENTRAS             : 
 MULTIPLY             : 
 NOT                  : 
 NOT_EQUAL            : 
 OR                   : 
-PRINCIPAL            : 
+PRINCIPAL            : 2
 PROGRAMA             : 2
 REGRESA              : 
-RPARENTHESIS         : 
-R_CURLY_BRACKET      : 
+R_CURLY_BRACKET      : 26
+R_PARENTHESIS        : 2 19
 R_SQUARE_BRACKET     : 13
 SEMICOLON            : 2 5
 SI                   : 
@@ -111,17 +114,23 @@ SUBTRACT             :
 SUM                  : 
 TRANSPOSED           : 
 VAR                  : 3
-VOID                 : 
+VOID                 : 25
 error                : 
 
 Nonterminals, with rules where they appear
 
+bloque               : 2 19
 dimDeclare           : 8 9 9
-empty                : 4 7 10 12
+empty                : 4 7 10 12 18 21 23
+funcion              : 2 19
+funcionp             : 17
+parametro            : 19
+parametrop           : 20 22
 programa             : 1
 start                : 0
-tipo                 : 5
-var                  : 2
+tipo                 : 5 20 22 24
+tipoRetorno          : 19
+var                  : 2 19
 varp                 : 3 11
 varpp                : 5 6
 varppp               : 5 6
@@ -133,7 +142,7 @@ state 0
 
     (0) S' -> . start
     (1) start -> . programa
-    (2) programa -> . PROGRAMA ID SEMICOLON var
+    (2) programa -> . PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
 
     PROGRAMA        shift and go to state 3
 
@@ -155,37 +164,44 @@ state 2
 
 state 3
 
-    (2) programa -> PROGRAMA . ID SEMICOLON var
+    (2) programa -> PROGRAMA . ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
 
     ID              shift and go to state 4
 
 
 state 4
 
-    (2) programa -> PROGRAMA ID . SEMICOLON var
+    (2) programa -> PROGRAMA ID . SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
 
     SEMICOLON       shift and go to state 5
 
 
 state 5
 
-    (2) programa -> PROGRAMA ID SEMICOLON . var
+    (2) programa -> PROGRAMA ID SEMICOLON . var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
     (3) var -> . VAR varp
     (4) var -> . empty
-    (17) empty -> .
+    (27) empty -> .
 
     VAR             shift and go to state 7
-    $end            reduce using rule 17 (empty -> .)
+    FUNCION         reduce using rule 27 (empty -> .)
+    PRINCIPAL       reduce using rule 27 (empty -> .)
 
     var                            shift and go to state 6
     empty                          shift and go to state 8
 
 state 6
 
-    (2) programa -> PROGRAMA ID SEMICOLON var .
+    (2) programa -> PROGRAMA ID SEMICOLON var . funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
+    (17) funcion -> . FUNCION funcionp
+    (18) funcion -> . empty
+    (27) empty -> .
 
-    $end            reduce using rule 2 (programa -> PROGRAMA ID SEMICOLON var .)
+    FUNCION         shift and go to state 10
+    PRINCIPAL       reduce using rule 27 (empty -> .)
 
+    funcion                        shift and go to state 9
+    empty                          shift and go to state 11
 
 state 7
 
@@ -195,93 +211,210 @@ state 7
     (15) tipo -> . FLOAT
     (16) tipo -> . CHAR
 
-    INT             shift and go to state 11
-    FLOAT           shift and go to state 12
-    CHAR            shift and go to state 13
+    INT             shift and go to state 14
+    FLOAT           shift and go to state 15
+    CHAR            shift and go to state 16
 
-    varp                           shift and go to state 9
-    tipo                           shift and go to state 10
+    varp                           shift and go to state 12
+    tipo                           shift and go to state 13
 
 state 8
 
     (4) var -> empty .
 
-    $end            reduce using rule 4 (var -> empty .)
+    FUNCION         reduce using rule 4 (var -> empty .)
+    PRINCIPAL       reduce using rule 4 (var -> empty .)
+    L_CURLY_BRACKET reduce using rule 4 (var -> empty .)
 
 
 state 9
 
-    (3) var -> VAR varp .
+    (2) programa -> PROGRAMA ID SEMICOLON var funcion . PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
 
-    $end            reduce using rule 3 (var -> VAR varp .)
+    PRINCIPAL       shift and go to state 17
 
 
 state 10
 
-    (5) varp -> tipo . COLON ID varppp varpp SEMICOLON varpppp
+    (17) funcion -> FUNCION . funcionp
+    (19) funcionp -> . tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+    (24) tipoRetorno -> . tipo
+    (25) tipoRetorno -> . VOID
+    (14) tipo -> . INT
+    (15) tipo -> . FLOAT
+    (16) tipo -> . CHAR
 
-    COLON           shift and go to state 14
+    VOID            shift and go to state 21
+    INT             shift and go to state 14
+    FLOAT           shift and go to state 15
+    CHAR            shift and go to state 16
 
+    funcionp                       shift and go to state 18
+    tipoRetorno                    shift and go to state 19
+    tipo                           shift and go to state 20
 
 state 11
 
-    (14) tipo -> INT .
+    (18) funcion -> empty .
 
-    COLON           reduce using rule 14 (tipo -> INT .)
+    PRINCIPAL       reduce using rule 18 (funcion -> empty .)
 
 
 state 12
 
-    (15) tipo -> FLOAT .
+    (3) var -> VAR varp .
 
-    COLON           reduce using rule 15 (tipo -> FLOAT .)
+    FUNCION         reduce using rule 3 (var -> VAR varp .)
+    PRINCIPAL       reduce using rule 3 (var -> VAR varp .)
+    L_CURLY_BRACKET reduce using rule 3 (var -> VAR varp .)
 
 
 state 13
 
-    (16) tipo -> CHAR .
+    (5) varp -> tipo . COLON ID varppp varpp SEMICOLON varpppp
 
-    COLON           reduce using rule 16 (tipo -> CHAR .)
+    COLON           shift and go to state 22
 
 
 state 14
 
-    (5) varp -> tipo COLON . ID varppp varpp SEMICOLON varpppp
+    (14) tipo -> INT .
 
-    ID              shift and go to state 15
+    COLON           reduce using rule 14 (tipo -> INT .)
+    ID              reduce using rule 14 (tipo -> INT .)
 
 
 state 15
+
+    (15) tipo -> FLOAT .
+
+    COLON           reduce using rule 15 (tipo -> FLOAT .)
+    ID              reduce using rule 15 (tipo -> FLOAT .)
+
+
+state 16
+
+    (16) tipo -> CHAR .
+
+    COLON           reduce using rule 16 (tipo -> CHAR .)
+    ID              reduce using rule 16 (tipo -> CHAR .)
+
+
+state 17
+
+    (2) programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL . L_PARENTHESIS R_PARENTHESIS bloque
+
+    L_PARENTHESIS   shift and go to state 23
+
+
+state 18
+
+    (17) funcion -> FUNCION funcionp .
+
+    PRINCIPAL       reduce using rule 17 (funcion -> FUNCION funcionp .)
+
+
+state 19
+
+    (19) funcionp -> tipoRetorno . ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+
+    ID              shift and go to state 24
+
+
+state 20
+
+    (24) tipoRetorno -> tipo .
+
+    ID              reduce using rule 24 (tipoRetorno -> tipo .)
+
+
+state 21
+
+    (25) tipoRetorno -> VOID .
+
+    ID              reduce using rule 25 (tipoRetorno -> VOID .)
+
+
+state 22
+
+    (5) varp -> tipo COLON . ID varppp varpp SEMICOLON varpppp
+
+    ID              shift and go to state 25
+
+
+state 23
+
+    (2) programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS . R_PARENTHESIS bloque
+
+    R_PARENTHESIS   shift and go to state 26
+
+
+state 24
+
+    (19) funcionp -> tipoRetorno ID . L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+
+    L_PARENTHESIS   shift and go to state 27
+
+
+state 25
 
     (5) varp -> tipo COLON ID . varppp varpp SEMICOLON varpppp
     (8) varppp -> . dimDeclare
     (9) varppp -> . dimDeclare dimDeclare
     (10) varppp -> . empty
     (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-    (17) empty -> .
+    (27) empty -> .
 
-    L_SQUARE_BRACKET shift and go to state 19
-    COMMA           reduce using rule 17 (empty -> .)
-    SEMICOLON       reduce using rule 17 (empty -> .)
+    L_SQUARE_BRACKET shift and go to state 31
+    COMMA           reduce using rule 27 (empty -> .)
+    SEMICOLON       reduce using rule 27 (empty -> .)
 
-    varppp                         shift and go to state 16
-    dimDeclare                     shift and go to state 17
-    empty                          shift and go to state 18
+    varppp                         shift and go to state 28
+    dimDeclare                     shift and go to state 29
+    empty                          shift and go to state 30
 
-state 16
+state 26
+
+    (2) programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS . bloque
+    (26) bloque -> . L_CURLY_BRACKET R_CURLY_BRACKET
+
+    L_CURLY_BRACKET shift and go to state 33
+
+    bloque                         shift and go to state 32
+
+state 27
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS . parametro R_PARENTHESIS var bloque funcion
+    (20) parametro -> . tipo ID parametrop
+    (21) parametro -> . empty
+    (14) tipo -> . INT
+    (15) tipo -> . FLOAT
+    (16) tipo -> . CHAR
+    (27) empty -> .
+
+    INT             shift and go to state 14
+    FLOAT           shift and go to state 15
+    CHAR            shift and go to state 16
+    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+
+    parametro                      shift and go to state 34
+    tipo                           shift and go to state 35
+    empty                          shift and go to state 36
+
+state 28
 
     (5) varp -> tipo COLON ID varppp . varpp SEMICOLON varpppp
     (6) varpp -> . COMMA ID varppp varpp
     (7) varpp -> . empty
-    (17) empty -> .
+    (27) empty -> .
 
-    COMMA           shift and go to state 21
-    SEMICOLON       reduce using rule 17 (empty -> .)
+    COMMA           shift and go to state 38
+    SEMICOLON       reduce using rule 27 (empty -> .)
 
-    varpp                          shift and go to state 20
-    empty                          shift and go to state 22
+    varpp                          shift and go to state 37
+    empty                          shift and go to state 39
 
-state 17
+state 29
 
     (8) varppp -> dimDeclare .
     (9) varppp -> dimDeclare . dimDeclare
@@ -289,11 +422,11 @@ state 17
 
     COMMA           reduce using rule 8 (varppp -> dimDeclare .)
     SEMICOLON       reduce using rule 8 (varppp -> dimDeclare .)
-    L_SQUARE_BRACKET shift and go to state 19
+    L_SQUARE_BRACKET shift and go to state 31
 
-    dimDeclare                     shift and go to state 23
+    dimDeclare                     shift and go to state 40
 
-state 18
+state 30
 
     (10) varppp -> empty .
 
@@ -301,35 +434,70 @@ state 18
     SEMICOLON       reduce using rule 10 (varppp -> empty .)
 
 
-state 19
+state 31
 
     (13) dimDeclare -> L_SQUARE_BRACKET . CTE_INT R_SQUARE_BRACKET
 
-    CTE_INT         shift and go to state 24
+    CTE_INT         shift and go to state 41
 
 
-state 20
+state 32
+
+    (2) programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque .
+
+    $end            reduce using rule 2 (programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque .)
+
+
+state 33
+
+    (26) bloque -> L_CURLY_BRACKET . R_CURLY_BRACKET
+
+    R_CURLY_BRACKET shift and go to state 42
+
+
+state 34
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro . R_PARENTHESIS var bloque funcion
+
+    R_PARENTHESIS   shift and go to state 43
+
+
+state 35
+
+    (20) parametro -> tipo . ID parametrop
+
+    ID              shift and go to state 44
+
+
+state 36
+
+    (21) parametro -> empty .
+
+    R_PARENTHESIS   reduce using rule 21 (parametro -> empty .)
+
+
+state 37
 
     (5) varp -> tipo COLON ID varppp varpp . SEMICOLON varpppp
 
-    SEMICOLON       shift and go to state 25
+    SEMICOLON       shift and go to state 45
 
 
-state 21
+state 38
 
     (6) varpp -> COMMA . ID varppp varpp
 
-    ID              shift and go to state 26
+    ID              shift and go to state 46
 
 
-state 22
+state 39
 
     (7) varpp -> empty .
 
     SEMICOLON       reduce using rule 7 (varpp -> empty .)
 
 
-state 23
+state 40
 
     (9) varppp -> dimDeclare dimDeclare .
 
@@ -337,52 +505,89 @@ state 23
     SEMICOLON       reduce using rule 9 (varppp -> dimDeclare dimDeclare .)
 
 
-state 24
+state 41
 
     (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT . R_SQUARE_BRACKET
 
-    R_SQUARE_BRACKET shift and go to state 27
+    R_SQUARE_BRACKET shift and go to state 47
 
 
-state 25
+state 42
+
+    (26) bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .
+
+    $end            reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
+    FUNCION         reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
+    PRINCIPAL       reduce using rule 26 (bloque -> L_CURLY_BRACKET R_CURLY_BRACKET .)
+
+
+state 43
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS . var bloque funcion
+    (3) var -> . VAR varp
+    (4) var -> . empty
+    (27) empty -> .
+
+    VAR             shift and go to state 7
+    L_CURLY_BRACKET reduce using rule 27 (empty -> .)
+
+    var                            shift and go to state 48
+    empty                          shift and go to state 8
+
+state 44
+
+    (20) parametro -> tipo ID . parametrop
+    (22) parametrop -> . COMMA tipo ID parametrop
+    (23) parametrop -> . empty
+    (27) empty -> .
+
+    COMMA           shift and go to state 50
+    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+
+    parametrop                     shift and go to state 49
+    empty                          shift and go to state 51
+
+state 45
 
     (5) varp -> tipo COLON ID varppp varpp SEMICOLON . varpppp
     (11) varpppp -> . varp
     (12) varpppp -> . empty
     (5) varp -> . tipo COLON ID varppp varpp SEMICOLON varpppp
-    (17) empty -> .
+    (27) empty -> .
     (14) tipo -> . INT
     (15) tipo -> . FLOAT
     (16) tipo -> . CHAR
 
-    $end            reduce using rule 17 (empty -> .)
-    INT             shift and go to state 11
-    FLOAT           shift and go to state 12
-    CHAR            shift and go to state 13
+    FUNCION         reduce using rule 27 (empty -> .)
+    PRINCIPAL       reduce using rule 27 (empty -> .)
+    L_CURLY_BRACKET reduce using rule 27 (empty -> .)
+    INT             shift and go to state 14
+    FLOAT           shift and go to state 15
+    CHAR            shift and go to state 16
 
-    tipo                           shift and go to state 10
-    varpppp                        shift and go to state 28
-    varp                           shift and go to state 29
-    empty                          shift and go to state 30
+    tipo                           shift and go to state 13
+    varpppp                        shift and go to state 52
+    varp                           shift and go to state 53
+    empty                          shift and go to state 54
 
-state 26
+state 46
 
     (6) varpp -> COMMA ID . varppp varpp
     (8) varppp -> . dimDeclare
     (9) varppp -> . dimDeclare dimDeclare
     (10) varppp -> . empty
     (13) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-    (17) empty -> .
+    (27) empty -> .
 
-    L_SQUARE_BRACKET shift and go to state 19
-    COMMA           reduce using rule 17 (empty -> .)
-    SEMICOLON       reduce using rule 17 (empty -> .)
+    L_SQUARE_BRACKET shift and go to state 31
+    COMMA           reduce using rule 27 (empty -> .)
+    SEMICOLON       reduce using rule 27 (empty -> .)
 
-    varppp                         shift and go to state 31
-    dimDeclare                     shift and go to state 17
-    empty                          shift and go to state 18
+    varppp                         shift and go to state 55
+    dimDeclare                     shift and go to state 29
+    empty                          shift and go to state 30
 
-state 27
+state 47
 
     (13) dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .
 
@@ -391,43 +596,132 @@ state 27
     SEMICOLON       reduce using rule 13 (dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET .)
 
 
-state 28
+state 48
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var . bloque funcion
+    (26) bloque -> . L_CURLY_BRACKET R_CURLY_BRACKET
+
+    L_CURLY_BRACKET shift and go to state 33
+
+    bloque                         shift and go to state 56
+
+state 49
+
+    (20) parametro -> tipo ID parametrop .
+
+    R_PARENTHESIS   reduce using rule 20 (parametro -> tipo ID parametrop .)
+
+
+state 50
+
+    (22) parametrop -> COMMA . tipo ID parametrop
+    (14) tipo -> . INT
+    (15) tipo -> . FLOAT
+    (16) tipo -> . CHAR
+
+    INT             shift and go to state 14
+    FLOAT           shift and go to state 15
+    CHAR            shift and go to state 16
+
+    tipo                           shift and go to state 57
+
+state 51
+
+    (23) parametrop -> empty .
+
+    R_PARENTHESIS   reduce using rule 23 (parametrop -> empty .)
+
+
+state 52
 
     (5) varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .
 
-    $end            reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
+    FUNCION         reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
+    PRINCIPAL       reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
+    L_CURLY_BRACKET reduce using rule 5 (varp -> tipo COLON ID varppp varpp SEMICOLON varpppp .)
 
 
-state 29
+state 53
 
     (11) varpppp -> varp .
 
-    $end            reduce using rule 11 (varpppp -> varp .)
+    FUNCION         reduce using rule 11 (varpppp -> varp .)
+    PRINCIPAL       reduce using rule 11 (varpppp -> varp .)
+    L_CURLY_BRACKET reduce using rule 11 (varpppp -> varp .)
 
 
-state 30
+state 54
 
     (12) varpppp -> empty .
 
-    $end            reduce using rule 12 (varpppp -> empty .)
+    FUNCION         reduce using rule 12 (varpppp -> empty .)
+    PRINCIPAL       reduce using rule 12 (varpppp -> empty .)
+    L_CURLY_BRACKET reduce using rule 12 (varpppp -> empty .)
 
 
-state 31
+state 55
 
     (6) varpp -> COMMA ID varppp . varpp
     (6) varpp -> . COMMA ID varppp varpp
     (7) varpp -> . empty
-    (17) empty -> .
+    (27) empty -> .
 
-    COMMA           shift and go to state 21
-    SEMICOLON       reduce using rule 17 (empty -> .)
+    COMMA           shift and go to state 38
+    SEMICOLON       reduce using rule 27 (empty -> .)
 
-    varpp                          shift and go to state 32
-    empty                          shift and go to state 22
+    varpp                          shift and go to state 58
+    empty                          shift and go to state 39
 
-state 32
+state 56
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque . funcion
+    (17) funcion -> . FUNCION funcionp
+    (18) funcion -> . empty
+    (27) empty -> .
+
+    FUNCION         shift and go to state 10
+    PRINCIPAL       reduce using rule 27 (empty -> .)
+
+    funcion                        shift and go to state 59
+    empty                          shift and go to state 11
+
+state 57
+
+    (22) parametrop -> COMMA tipo . ID parametrop
+
+    ID              shift and go to state 60
+
+
+state 58
 
     (6) varpp -> COMMA ID varppp varpp .
 
     SEMICOLON       reduce using rule 6 (varpp -> COMMA ID varppp varpp .)
+
+
+state 59
+
+    (19) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion .
+
+    PRINCIPAL       reduce using rule 19 (funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion .)
+
+
+state 60
+
+    (22) parametrop -> COMMA tipo ID . parametrop
+    (22) parametrop -> . COMMA tipo ID parametrop
+    (23) parametrop -> . empty
+    (27) empty -> .
+
+    COMMA           shift and go to state 50
+    R_PARENTHESIS   reduce using rule 27 (empty -> .)
+
+    parametrop                     shift and go to state 61
+    empty                          shift and go to state 51
+
+state 61
+
+    (22) parametrop -> COMMA tipo ID parametrop .
+
+    R_PARENTHESIS   reduce using rule 22 (parametrop -> COMMA tipo ID parametrop .)
 

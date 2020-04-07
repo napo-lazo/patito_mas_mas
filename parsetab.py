@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'AND ASSIGN CHAR COLON COMMA CTE_CHAR CTE_FLOAT CTE_INT DESDE DETERMINANT DIVIDE EQUALS ESCRIBE FLOAT FUNCION GREATER_THAN GREATER_THAN_EQUAL HACER HASTA HAZ ID INT INVERSE LECTURA LESS_THAN LESS_THAN_EQUAL LETRERO LPARENTHESIS L_CURLY_BRACKET L_SQUARE_BRACKET MIENTRAS MULTIPLY NOT NOT_EQUAL OR PRINCIPAL PROGRAMA REGRESA RPARENTHESIS R_CURLY_BRACKET R_SQUARE_BRACKET SEMICOLON SI SINO SUBTRACT SUM TRANSPOSED VAR VOID\n    start : programa\n    \n    programa : PROGRAMA ID SEMICOLON var\n    \n    var : VAR varp\n        | empty\n    \n    varp : tipo COLON ID varppp varpp SEMICOLON varpppp\n    \n    varpp : COMMA ID varppp varpp\n          | empty\n    \n    varppp : dimDeclare\n           | dimDeclare dimDeclare\n           | empty\n    \n    varpppp : varp\n            | empty\n    \n    dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET\n    \n    tipo : INT\n         | FLOAT\n         | CHAR\n    \n    empty :\n    '
+_lr_signature = 'AND ASSIGN CHAR COLON COMMA CTE_CHAR CTE_FLOAT CTE_INT DESDE DETERMINANT DIVIDE EQUALS ESCRIBE FLOAT FUNCION GREATER_THAN GREATER_THAN_EQUAL HACER HASTA HAZ ID INT INVERSE LECTURA LESS_THAN LESS_THAN_EQUAL LETRERO L_CURLY_BRACKET L_PARENTHESIS L_SQUARE_BRACKET MIENTRAS MULTIPLY NOT NOT_EQUAL OR PRINCIPAL PROGRAMA REGRESA R_CURLY_BRACKET R_PARENTHESIS R_SQUARE_BRACKET SEMICOLON SI SINO SUBTRACT SUM TRANSPOSED VAR VOID\n    start : programa\n    \n    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque\n    \n    var : VAR varp\n        | empty\n    \n    varp : tipo COLON ID varppp varpp SEMICOLON varpppp\n    \n    varpp : COMMA ID varppp varpp\n          | empty\n    \n    varppp : dimDeclare\n           | dimDeclare dimDeclare\n           | empty\n    \n    varpppp : varp\n            | empty\n    \n    dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET\n    \n    tipo : INT\n         | FLOAT\n         | CHAR\n    \n    funcion : FUNCION funcionp\n            | empty\n    \n    funcionp : tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion\n    \n    parametro : tipo ID parametrop\n              | empty\n    \n    parametrop : COMMA tipo ID parametrop\n               | empty\n    \n    tipoRetorno : tipo\n                | VOID\n    \n    bloque : L_CURLY_BRACKET R_CURLY_BRACKET\n    \n    empty :\n    '
     
-_lr_action_items = {'PROGRAMA':([0,],[3,]),'$end':([1,2,5,6,8,9,25,28,29,30,],[0,-1,-17,-2,-4,-3,-17,-5,-11,-12,]),'ID':([3,14,21,],[4,15,26,]),'SEMICOLON':([4,15,16,17,18,20,22,23,26,27,31,32,],[5,-17,-17,-8,-10,25,-7,-9,-17,-13,-17,-6,]),'VAR':([5,],[7,]),'INT':([7,25,],[11,11,]),'FLOAT':([7,25,],[12,12,]),'CHAR':([7,25,],[13,13,]),'COLON':([10,11,12,13,],[14,-14,-15,-16,]),'L_SQUARE_BRACKET':([15,17,26,27,],[19,19,19,-13,]),'COMMA':([15,16,17,18,23,26,27,31,],[-17,21,-8,-10,-9,-17,-13,21,]),'CTE_INT':([19,],[24,]),'R_SQUARE_BRACKET':([24,],[27,]),}
+_lr_action_items = {'PROGRAMA':([0,],[3,]),'$end':([1,2,32,42,],[0,-1,-2,-26,]),'ID':([3,14,15,16,19,20,21,22,35,38,57,],[4,-14,-15,-16,24,-24,-25,25,44,46,60,]),'SEMICOLON':([4,25,28,29,30,37,39,40,46,47,55,58,],[5,-27,-27,-8,-10,45,-7,-9,-27,-13,-27,-6,]),'VAR':([5,43,],[7,7,]),'FUNCION':([5,6,8,12,42,45,52,53,54,56,],[-27,10,-4,-3,-26,-27,-5,-11,-12,10,]),'PRINCIPAL':([5,6,8,9,11,12,18,42,45,52,53,54,56,59,],[-27,-27,-4,17,-18,-3,-17,-26,-27,-5,-11,-12,-27,-19,]),'INT':([7,10,27,45,50,],[14,14,14,14,14,]),'FLOAT':([7,10,27,45,50,],[15,15,15,15,15,]),'CHAR':([7,10,27,45,50,],[16,16,16,16,16,]),'L_CURLY_BRACKET':([8,12,26,43,45,48,52,53,54,],[-4,-3,33,-27,-27,33,-5,-11,-12,]),'VOID':([10,],[21,]),'COLON':([13,14,15,16,],[22,-14,-15,-16,]),'L_PARENTHESIS':([17,24,],[23,27,]),'R_PARENTHESIS':([23,27,34,36,44,49,51,60,61,],[26,-27,43,-21,-27,-20,-23,-27,-22,]),'L_SQUARE_BRACKET':([25,29,46,47,],[31,31,31,-13,]),'COMMA':([25,28,29,30,40,44,46,47,55,60,],[-27,38,-8,-10,-9,50,-27,-13,38,50,]),'CTE_INT':([31,],[41,]),'R_CURLY_BRACKET':([33,],[42,]),'R_SQUARE_BRACKET':([41,],[47,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'start':([0,],[1,]),'programa':([0,],[2,]),'var':([5,],[6,]),'empty':([5,15,16,25,26,31,],[8,18,22,30,18,22,]),'varp':([7,25,],[9,29,]),'tipo':([7,25,],[10,10,]),'varppp':([15,26,],[16,31,]),'dimDeclare':([15,17,26,],[17,23,17,]),'varpp':([16,31,],[20,32,]),'varpppp':([25,],[28,]),}
+_lr_goto_items = {'start':([0,],[1,]),'programa':([0,],[2,]),'var':([5,43,],[6,48,]),'empty':([5,6,25,27,28,43,44,45,46,55,56,60,],[8,11,30,36,39,8,51,54,30,39,11,51,]),'funcion':([6,56,],[9,59,]),'varp':([7,45,],[12,53,]),'tipo':([7,10,27,45,50,],[13,20,35,13,57,]),'funcionp':([10,],[18,]),'tipoRetorno':([10,],[19,]),'varppp':([25,46,],[28,55,]),'dimDeclare':([25,29,46,],[29,40,29,]),'bloque':([26,48,],[32,56,]),'parametro':([27,],[34,]),'varpp':([28,55,],[37,58,]),'parametrop':([44,60,],[49,61,]),'varpppp':([45,],[52,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -28,20 +28,30 @@ del _lr_goto_items
 _lr_productions = [
   ("S' -> start","S'",1,None,None,None),
   ('start -> programa','start',1,'p_start','patito.py',121),
-  ('programa -> PROGRAMA ID SEMICOLON var','programa',4,'p_programa','patito.py',127),
+  ('programa -> PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque','programa',9,'p_programa','patito.py',127),
   ('var -> VAR varp','var',2,'p_variables','patito.py',133),
   ('var -> empty','var',1,'p_variables','patito.py',134),
-  ('varp -> tipo COLON ID varppp varpp SEMICOLON varpppp','varp',7,'p_variablesp','patito.py',140),
-  ('varpp -> COMMA ID varppp varpp','varpp',4,'p_variablespp','patito.py',146),
-  ('varpp -> empty','varpp',1,'p_variablespp','patito.py',147),
-  ('varppp -> dimDeclare','varppp',1,'p_variablesppp','patito.py',153),
-  ('varppp -> dimDeclare dimDeclare','varppp',2,'p_variablesppp','patito.py',154),
-  ('varppp -> empty','varppp',1,'p_variablesppp','patito.py',155),
-  ('varpppp -> varp','varpppp',1,'p_variablespppp','patito.py',164),
-  ('varpppp -> empty','varpppp',1,'p_variablespppp','patito.py',165),
-  ('dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET','dimDeclare',3,'p_dimDeclare','patito.py',171),
-  ('tipo -> INT','tipo',1,'p_tipo','patito.py',177),
-  ('tipo -> FLOAT','tipo',1,'p_tipo','patito.py',178),
-  ('tipo -> CHAR','tipo',1,'p_tipo','patito.py',179),
-  ('empty -> <empty>','empty',0,'p_empty','patito.py',185),
+  ('varp -> tipo COLON ID varppp varpp SEMICOLON varpppp','varp',7,'p_variablesp','patito.py',143),
+  ('varpp -> COMMA ID varppp varpp','varpp',4,'p_variablespp','patito.py',149),
+  ('varpp -> empty','varpp',1,'p_variablespp','patito.py',150),
+  ('varppp -> dimDeclare','varppp',1,'p_variablesppp','patito.py',159),
+  ('varppp -> dimDeclare dimDeclare','varppp',2,'p_variablesppp','patito.py',160),
+  ('varppp -> empty','varppp',1,'p_variablesppp','patito.py',161),
+  ('varpppp -> varp','varpppp',1,'p_variablespppp','patito.py',170),
+  ('varpppp -> empty','varpppp',1,'p_variablespppp','patito.py',171),
+  ('dimDeclare -> L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET','dimDeclare',3,'p_dimDeclare','patito.py',177),
+  ('tipo -> INT','tipo',1,'p_tipo','patito.py',187),
+  ('tipo -> FLOAT','tipo',1,'p_tipo','patito.py',188),
+  ('tipo -> CHAR','tipo',1,'p_tipo','patito.py',189),
+  ('funcion -> FUNCION funcionp','funcion',2,'p_funcion','patito.py',195),
+  ('funcion -> empty','funcion',1,'p_funcion','patito.py',196),
+  ('funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion','funcionp',8,'p_funcionp','patito.py',205),
+  ('parametro -> tipo ID parametrop','parametro',3,'p_parametro','patito.py',211),
+  ('parametro -> empty','parametro',1,'p_parametro','patito.py',212),
+  ('parametrop -> COMMA tipo ID parametrop','parametrop',4,'p_parametrop','patito.py',221),
+  ('parametrop -> empty','parametrop',1,'p_parametrop','patito.py',222),
+  ('tipoRetorno -> tipo','tipoRetorno',1,'p_tipoRetorno','patito.py',231),
+  ('tipoRetorno -> VOID','tipoRetorno',1,'p_tipoRetorno','patito.py',232),
+  ('bloque -> L_CURLY_BRACKET R_CURLY_BRACKET','bloque',2,'p_bloque','patito.py',238),
+  ('empty -> <empty>','empty',0,'p_empty','patito.py',244),
 ]

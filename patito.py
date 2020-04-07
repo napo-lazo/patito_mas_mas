@@ -30,8 +30,8 @@ tokens = [
     'R_SQUARE_BRACKET',
     'CTE_INT',
     'COMMA',
-    'LPARENTHESIS',
-    'RPARENTHESIS',
+    'L_PARENTHESIS',
+    'R_PARENTHESIS',
     'L_CURLY_BRACKET',
     'R_CURLY_BRACKET',
     'ASSIGN',
@@ -86,8 +86,8 @@ t_COLON = r'\:'
 t_L_SQUARE_BRACKET = r'\['
 t_R_SQUARE_BRACKET = r'\]'
 t_COMMA = r'\,'
-t_LPARENTHESIS = r'\('
-t_RPARENTHESIS = r'\)'
+t_L_PARENTHESIS = r'\('
+t_R_PARENTHESIS = r'\)'
 t_L_CURLY_BRACKET = r'\{'
 t_R_CURLY_BRACKET = r'\}'
 t_ASSIGN = r'\='
@@ -124,16 +124,19 @@ def p_start(p):
 
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var
+    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
     '''
-    p[0] = (p[1], p[2], p[3], p[4])
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
 def p_variables(p):
     '''
     var : VAR varp
         | empty
     '''
-    p[0] = (p[1], p[2])
+    if len(p) == 3: 
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
 
 def p_variablesp(p):
     '''
@@ -146,7 +149,7 @@ def p_variablespp(p):
     varpp : COMMA ID varppp varpp
           | empty
     '''
-    if(len(p) == 5):
+    if len(p) == 5:
         p[0] = (p[1], p[2], p[3], p[4])
     else:
         p[0] = p[1]
@@ -157,7 +160,7 @@ def p_variablesppp(p):
            | dimDeclare dimDeclare
            | empty
     '''
-    if(len(p) == 3):
+    if len(p) == 3:
         p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
@@ -186,6 +189,55 @@ def p_tipo(p):
          | CHAR
     '''
     p[0] = p[1]
+
+def p_funcion(p):
+    '''
+    funcion : FUNCION funcionp
+            | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_funcionp(p):
+    '''
+    funcionp : tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+    '''
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
+
+def p_parametro(p):
+    '''
+    parametro : tipo ID parametrop
+              | empty
+    '''
+    if len(p) == 4:
+        p[0] = (p[1], p[2], p[3])
+    else: 
+        p[0] = p[1]
+
+def p_parametrop(p):
+    '''
+    parametrop : COMMA tipo ID parametrop
+               | empty
+    '''
+    if len(p) == 5:
+        p[0] = (p[1], p[2], p[3], p[4])
+    else:
+        p[0] = p[1]
+
+def p_tipoRetorno(p):
+    '''
+    tipoRetorno : tipo
+                | VOID
+    '''
+    p[0] = p[1]
+
+def p_bloque(p):
+    '''
+    bloque : L_CURLY_BRACKET R_CURLY_BRACKET
+    '''
+    p[0] = (p[1], p[2])
 
 def p_empty(p):
     '''
