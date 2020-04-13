@@ -490,6 +490,8 @@ def p_empty(p):
     '''
     pass
 
+def p_error(p):
+    print("ERROR de sintaxis")
 
 parser = yacc.yacc()
 
