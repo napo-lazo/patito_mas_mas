@@ -1,6 +1,9 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
+variablesTable = {}
+auxiliaryUtility = {}
+
 reserved = {
     'programa' : 'PROGRAMA',
     'var' : 'VAR',
@@ -121,6 +124,10 @@ def p_start(p):
     start : programa
     '''
     print(p[1])
+    print()
+    print(variablesTable)
+    print()
+    print(auxiliaryUtility)
 
 def p_programa(p):
     '''
@@ -130,29 +137,67 @@ def p_programa(p):
 
 def p_variables(p):
     '''
-    var : VAR varp
+    var : VAR var_seen varp
         | empty
     '''
-    if len(p) == 3: 
-        p[0] = (p[1], p[2])
+    if len(p) != 2: 
+        p[0] = (p[1], p[3])
+        
     else:
         p[0] = p[1]
 
+    del auxiliaryUtility['currentScope']
+
+def p_var_seen(p):
+    '''
+    var_seen :
+    '''
+    variablesTable['global'] = {'returnType' : 'void', 'variables' : {}}
+    auxiliaryUtility['currentScope'] = 'global'
+
+#add saving for multiple variables and arrays/matrixes
 def p_variablesp(p):
     '''
-    varp : tipo COLON ID varppp varpp SEMICOLON varpppp
+    varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+    p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
+
+def p_tipo_seen(p):
+    '''
+    tipo_seen :
+    '''
+    auxiliaryUtility['currentType'] = p[-1]
+
+def p_variable_seen(p):
+    '''
+    variable_seen : 
+                  | error error 
+    '''
+    try:
+        variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]]
+    except:
+        variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]] = {'type': auxiliaryUtility['currentType']}
+    else:
+        print('ERROR: Variable already exists')
+        raise SyntaxError
+    auxiliaryUtility['currentId'] = p[-1]
+
+def p_delete_type(p):
+    '''
+    delete_type :
+    '''
+    del auxiliaryUtility['currentType']
 
 def p_variablespp(p):
     '''
-    varpp : COMMA ID varppp varpp
+    varpp : COMMA ID variable_seen varppp varpp
           | empty
     '''
-    if len(p) == 5:
-        p[0] = (p[1], p[2], p[3], p[4])
+    if len(p) != 2:
+        p[0] = (p[1], p[2], p[4], p[5])
     else:
         p[0] = p[1]
+    
 
 def p_variablesppp(p):
     '''
@@ -165,6 +210,9 @@ def p_variablesppp(p):
     else:
         p[0] = p[1]
 
+    del auxiliaryUtility['currentId']
+    
+
 def p_variablespppp(p):
     '''
     varpppp : varp
@@ -172,15 +220,29 @@ def p_variablespppp(p):
     '''
     p[0] = p[1]
 
+
 def p_dimDeclare(p):
     '''
     dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+               | L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error  
     '''
     if(p[2] <= 0):
         print('ERROR: Array size cant be less than 1')
         raise SyntaxError
     else:
         p[0] = (p[1], p[2], p[3])
+    
+    try: 
+        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']
+    except:
+        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = [None] * int(p[2])
+    else:
+        tempList = []
+
+        for cell in variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']:
+            tempList.append([None] * int(p[2]))
+
+        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = tempList.copy()
 
 def p_tipo(p):
     '''
@@ -233,7 +295,6 @@ def p_tipoRetorno(p):
     '''
     p[0] = p[1]
 
-#agregar recursividad
 def p_bloque(p):
     '''
     bloque : L_CURLY_BRACKET bloquep R_CURLY_BRACKET
@@ -492,6 +553,7 @@ def p_empty(p):
 
 def p_error(p):
     print("ERROR de sintaxis")
+    parser.restart()
 
 parser = yacc.yacc()
 
