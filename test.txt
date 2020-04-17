@@ -1,0 +1,9 @@
+programa test;
+
+var int : n1, n2;
+
+principal(){
+    si(num1 >= 2) haz {
+        n1 = n2;
+    }
+}

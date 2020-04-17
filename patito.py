@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+import sys
 
 variablesTable = {}
 auxiliaryUtility = {}
@@ -111,7 +112,7 @@ t_DETERMINANT = r'\$'
 t_TRANSPOSED = r'\¡'
 t_INVERSE = r'\?'
 
-t_ignore = r' '
+t_ignore = ' \n'
 
 def t_error(t):
     print('Illegal characters')
@@ -142,11 +143,12 @@ def p_variables(p):
     '''
     if len(p) != 2: 
         p[0] = (p[1], p[3])
+        del auxiliaryUtility['currentScope']
         
     else:
         p[0] = p[1]
 
-    del auxiliaryUtility['currentScope']
+    
 
 def p_var_seen(p):
     '''
@@ -178,7 +180,7 @@ def p_variable_seen(p):
     except:
         variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]] = {'type': auxiliaryUtility['currentType']}
     else:
-        print('ERROR: Variable already exists')
+        print(f'ERROR: Variable {p[-1]} already exists')
         raise SyntaxError
     auxiliaryUtility['currentId'] = p[-1]
 
@@ -553,6 +555,7 @@ def p_empty(p):
 
 def p_error(p):
     print("ERROR de sintaxis")
+    print(p)
     parser.restart()
 
 parser = yacc.yacc()
@@ -569,12 +572,22 @@ parser = yacc.yacc()
     
 #     print(tok)
 
-
-# use ctrl c to break out of the loop
-while True:
+if(len(sys.argv) == 2):
     try:
-        s = input()
-    except EOFError:
-        break
+        with open(sys.argv[1]) as inputFile:
+            s = ''
+            for line in inputFile:
+                s += line
+            
+            parser.parse(s)
+    except:
+        print(f"File {sys.argv[1]} doesn't exists")
+else:
+    # use ctrl c to break out of the loop
+    while True:
+        try:
+            s = input()
+        except EOFError:
+            break
 
-    parser.parse(s)
+        parser.parse(s)
