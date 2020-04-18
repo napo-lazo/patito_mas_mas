@@ -2,6 +2,31 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 
+class ProxyLexer(object):
+    def __init__(self, originalLexer, EOF):
+        self.lexer = originalLexer
+        self.eof = EOF
+        self.end = False
+
+    def token(self):
+        tok = self.lexer.token()
+        # print(tok)
+        if tok is None:
+            if self.end:
+                self.end = False
+            else:
+                self.end = True
+                tok = lex.LexToken()
+                tok.type = self.eof
+                tok.value = None
+                tok.lexpos = self.lexer.lexpos
+                tok.lineno = self.lexer.lineno
+        return tok
+    
+    def __getattr__(self, name):
+            return getattr(self.lexer, name)
+
+
 variablesTable = {}
 auxiliaryUtility = {}
 
@@ -57,7 +82,8 @@ tokens = [
     'INVERSE',
     'CTE_FLOAT',
     'CTE_CHAR',
-    'LETRERO'
+    'LETRERO',
+    'EOF'
 ] + list(reserved.values())
 
 def t_CTE_FLOAT(t):
@@ -112,13 +138,20 @@ t_DETERMINANT = r'\$'
 t_TRANSPOSED = r'\¡'
 t_INVERSE = r'\?'
 
-t_ignore = ' \n'
+t_ignore = ' \t'
+
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
     print('Illegal characters')
     t.lexer.skip(1)
 
-lexer = lex.lex()
+originalLexer = lex.lex()
+
+lexer = ProxyLexer(originalLexer, 'EOF')
+
 
 def p_start(p):
     '''
@@ -132,7 +165,7 @@ def p_start(p):
 
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque
+    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
@@ -148,8 +181,6 @@ def p_variables(p):
     else:
         p[0] = p[1]
 
-    
-
 def p_var_seen(p):
     '''
     var_seen :
@@ -157,7 +188,6 @@ def p_var_seen(p):
     variablesTable['global'] = {'returnType' : 'void', 'variables' : {}}
     auxiliaryUtility['currentScope'] = 'global'
 
-#add saving for multiple variables and arrays/matrixes
 def p_variablesp(p):
     '''
     varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
@@ -543,7 +573,7 @@ def p_cicloCondicional(p):
 
 def p_cicloNoCondicional(p):
     '''
-    cicloNoCondicional : DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque
+    cicloNoCondicional : DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
@@ -553,9 +583,18 @@ def p_empty(p):
     '''
     pass
 
+# falta poder desplegar la linea de error cuando el error esta al final del archivo/input
 def p_error(p):
-    print("ERROR de sintaxis")
-    print(p)
+
+    if p.type == 'EOF':
+        print(f'EOF inesperado en linea {p.lexer.lineno}')
+        return
+    if p != None:
+        print(f"ERROR de sintaxis en linea {p.lexer.lineno}")
+    else:
+        print(p)
+        print("ERROR de sintaxis")
+        return 
     parser.restart()
 
 parser = yacc.yacc()
@@ -579,9 +618,9 @@ if(len(sys.argv) == 2):
             for line in inputFile:
                 s += line
             
-            parser.parse(s)
+            parser.parse(s, lexer=lexer)
     except:
-        print(f"File {sys.argv[1]} doesn't exists")
+        print(f"el archivo {sys.argv[1]} no existe")
 else:
     # use ctrl c to break out of the loop
     while True:
@@ -590,4 +629,4 @@ else:
         except EOFError:
             break
 
-        parser.parse(s)
+        parser.parse(s, lexer=lexer)
