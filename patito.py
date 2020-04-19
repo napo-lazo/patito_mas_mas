@@ -2,6 +2,10 @@ import ply.lex as lex
 import ply.yacc as yacc
 import sys
 
+
+# La clase ProxyLexer recibe la instancia del lexer original y una token de tipo EOF
+# La clase no aporta nada extra a la funcionalidad original del lexer, solo se encarga de agregar
+# una token de EOF al final de la lectura de tokens 
 class ProxyLexer(object):
     def __init__(self, originalLexer, EOF):
         self.lexer = originalLexer
@@ -27,9 +31,16 @@ class ProxyLexer(object):
             return getattr(self.lexer, name)
 
 
+# variablesTable guarda las variables globales y de las funciones 
+# tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
 variablesTable = {}
+
+# auxiliaryUtility es como un cache para guardar datos que se estan usando por un momento
+# por ejemplo: en la declaracion de variables aqui se guarda el scope, el tipo de las variables que se estan creando, etc
+# cuando se terminan de usar esos valores siempre se eliminan del diccionario 
 auxiliaryUtility = {}
 
+# diccionario de palabras reservadas
 reserved = {
     'programa' : 'PROGRAMA',
     'var' : 'VAR',
@@ -51,6 +62,7 @@ reserved = {
     'hacer' : 'HACER'
 }
 
+# lista de los tipos de tokens
 tokens = [
     'ID',
     'SEMICOLON', 
@@ -86,6 +98,7 @@ tokens = [
     'EOF'
 ] + list(reserved.values())
 
+# expresiones regulares para asignar el tipo de token al input recibido
 def t_CTE_FLOAT(t):
     r'\-?[0-9]+\.[0-9]+'
     t.value = float(t.value)
@@ -148,11 +161,14 @@ def t_error(t):
     print('Illegal characters')
     t.lexer.skip(1)
 
+# se instancia un lexer
 originalLexer = lex.lex()
 
+# despues este lexer es pasado a la clase ProxyLexer y se guarda como un lexer nuevo
 lexer = ProxyLexer(originalLexer, 'EOF')
 
 
+# gramatica para el parser
 def p_start(p):
     '''
     start : programa
@@ -163,6 +179,7 @@ def p_start(p):
     print()
     print(auxiliaryUtility)
 
+# el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
     programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
@@ -176,11 +193,14 @@ def p_variables(p):
     '''
     if len(p) != 2: 
         p[0] = (p[1], p[3])
+        
+        # borra el scope actual de la diccionario auxiliar porque aqui ya se termina el procesamiento de las variables globales 
         del auxiliaryUtility['currentScope']
         
     else:
         p[0] = p[1]
 
+# regla intermedia para asignar el scope actual como global
 def p_var_seen(p):
     '''
     var_seen :
@@ -194,26 +214,32 @@ def p_variablesp(p):
     '''
     p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
 
+# regla intermedia para asignar el tipo actual de las variables que se estan declarando
 def p_tipo_seen(p):
     '''
     tipo_seen :
     '''
     auxiliaryUtility['currentType'] = p[-1]
 
+# regla intermedia para crear una variable del tipo actual en la tabla de variables del scope actual
 def p_variable_seen(p):
     '''
     variable_seen : 
                   | error error 
     '''
+    # primero se revisa si ya hay una variable con ese nombre
     try:
         variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]]
+    # si no la hay se crea una de manera normal
     except:
         variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]] = {'type': auxiliaryUtility['currentType']}
+    # de lo contrario se tira un error de variable duplicada
     else:
         print(f'ERROR: Variable {p[-1]} already exists')
         raise SyntaxError
     auxiliaryUtility['currentId'] = p[-1]
 
+# regla intermedia que solo se encarga de eliminar el tipo actual del diccionario de auxiliares
 def p_delete_type(p):
     '''
     delete_type :
@@ -242,6 +268,7 @@ def p_variablesppp(p):
     else:
         p[0] = p[1]
 
+    # despues de declarar las dimensiones se elimina el id actual del diccionario de auxiliares
     del auxiliaryUtility['currentId']
     
 
@@ -258,22 +285,27 @@ def p_dimDeclare(p):
     dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
                | L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error  
     '''
+    # revisa que el tama;o de las dimensiones sea mayor o igual a 1 de lo contrario tira un error
     if(p[2] <= 0):
         print('ERROR: Array size cant be less than 1')
         raise SyntaxError
     else:
         p[0] = (p[1], p[2], p[3])
     
+    # revisa si ya hay un valor asignado a la variable
     try: 
         variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']
+    # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
     except:
         variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = [None] * int(p[2])
+    # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
     else:
         tempList = []
 
         for cell in variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']:
             tempList.append([None] * int(p[2]))
 
+        # lo asigna como una copia, de lo contrario todas las listas estarian apuntando al mismo espacio de memoria ocasionando que al cambiar una se cambien todas
         variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = tempList.copy()
 
 def p_tipo(p):
@@ -583,7 +615,9 @@ def p_empty(p):
     '''
     pass
 
-# falta poder desplegar la linea de error cuando el error esta al final del archivo/input
+# si el tipo de la token reportada es de EOF entonces el error es de un bracket faltante
+# de lo contrario solo se reporta un error generico 
+# en ambos casos se reporta en que linea se encuentra el error
 def p_error(p):
 
     if p.type == 'EOF':
@@ -611,6 +645,7 @@ parser = yacc.yacc()
     
 #     print(tok)
 
+# si se pasa el nombre de un archivo al correr el script, se compila ese archivo
 if(len(sys.argv) == 2):
     try:
         with open(sys.argv[1]) as inputFile:
@@ -618,9 +653,12 @@ if(len(sys.argv) == 2):
             for line in inputFile:
                 s += line
             
+            # se pasa el lexer nuevo al parser para poder hacer uso de la token EOF
             parser.parse(s, lexer=lexer)
     except:
         print(f"el archivo {sys.argv[1]} no existe")
+
+# de lo contrario solo se compila lo que se escriba en la terminal
 else:
     # use ctrl c to break out of the loop
     while True:
