@@ -40,6 +40,10 @@ variablesTable = {}
 # cuando se terminan de usar esos valores siempre se eliminan del diccionario 
 auxiliaryUtility = {}
 
+# formato del diccionario de funciones
+# funcDir = {'name-id': {'returnType': , 'varTable': <table-key>}}
+funcDir = {}
+
 # diccionario de palabras reservadas
 reserved = {
     'programa' : 'PROGRAMA',
@@ -175,6 +179,8 @@ def p_start(p):
     '''
     print(p[1])
     print()
+    print(funcDir)
+    print()
     print(variablesTable)
     print()
     print(auxiliaryUtility)
@@ -213,6 +219,7 @@ def p_variablesp(p):
     varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
     '''
     p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
+    funcDir[p[5]] = {'returnType':p[4], 'varTable': {}}
 
 # regla intermedia para asignar el tipo actual de las variables que se estan declarando
 def p_tipo_seen(p):
@@ -331,6 +338,7 @@ def p_funcionp(p):
     funcionp : tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
+    funcDir[p[2]] = {'returnType':p[1], 'varTable':{}}
 
 def p_parametro(p):
     '''
