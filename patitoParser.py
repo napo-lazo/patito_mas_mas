@@ -363,15 +363,25 @@ def p_cte(p):
 
 def p_llamadaFuncion(p):
     '''
-    llamadaFuncion : ID L_PARENTHESIS parametro R_PARENTHESIS
+    llamadaFuncion : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS
     '''
-    p[0] = (p[1], p[2], p[3], p[4])
+    p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_llamadaFuncionp(p):
+    '''
+    llamadaFuncionp : COMMA expresion
+                    | empty
+    '''
+    if len(p) == 3:
+        p[0] = (p[1], p[2])
+    else: 
+        p[0] = p[1]
 
 def p_funcionVacia(p):
     '''
-    funcionVacia : ID L_PARENTHESIS parametro R_PARENTHESIS SEMICOLON
+    funcionVacia : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS SEMICOLON
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5])
+    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
 
 def p_regresa(p):
     '''
