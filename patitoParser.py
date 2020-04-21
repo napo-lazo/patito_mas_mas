@@ -2,14 +2,34 @@ import patitoLexer
 from patitoLexer import tokens
 import ply.yacc as yacc
 
-# variablesTable guarda las variables globales y de las funciones 
-# tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
-variablesTable = {}
+# variablesTable guarda las variables globales y de las funciones
+class VariablesTable(object):
 
-# auxiliaryUtility es como un cache para guardar datos que se estan usando por un momento
-# por ejemplo: en la declaracion de variables aqui se guarda el scope, el tipo de las variables que se estan creando, etc
-# cuando se terminan de usar esos valores siempre se eliminan del diccionario 
-auxiliaryUtility = {}
+    def __init__(self):
+        #variablesTable tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
+        self.variablesTable = {}
+        self.currentScope = None
+        self.currentType = None
+        self.currentId = None
+
+    def createScope(self, scopeName, returnType):
+        self.variablesTable[scopeName] = {'returnType': returnType, 'variables' : {}}
+
+    def createVariable(self, variableName):
+        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType}
+    
+    def variableExists(self, variableName):
+        return self.variablesTable[self.currentScope]['variables'][variableName]
+    
+    def currentVariableValue(self):
+        return self.variablesTable[self.currentScope]['variables'][self.currentId]['value']
+    
+    def assignValueToCurrentVariable(self, value):
+        self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
+
+ 
+variablesTable = VariablesTable()
+
 
 # gramatica para el parser
 def p_start(p):
@@ -18,9 +38,8 @@ def p_start(p):
     '''
     print(p[1])
     print()
-    print(variablesTable)
+    print(variablesTable.variablesTable)
     print()
-    print(auxiliaryUtility)
 
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
@@ -37,8 +56,8 @@ def p_variables(p):
     if len(p) != 2: 
         p[0] = (p[1], p[3])
         
-        # borra el scope actual de la diccionario auxiliar porque aqui ya se termina el procesamiento de las variables globales 
-        del auxiliaryUtility['currentScope']
+        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales 
+        variablesTable.currentScope = None
         
     else:
         p[0] = p[1]
@@ -48,8 +67,8 @@ def p_var_seen(p):
     '''
     var_seen :
     '''
-    variablesTable['global'] = {'returnType' : 'void', 'variables' : {}}
-    auxiliaryUtility['currentScope'] = 'global'
+    variablesTable.createScope('global', 'void')
+    variablesTable.currentScope = 'global'
 
 def p_variablesp(p):
     '''
@@ -62,7 +81,7 @@ def p_tipo_seen(p):
     '''
     tipo_seen :
     '''
-    auxiliaryUtility['currentType'] = p[-1]
+    variablesTable.currentType = p[-1]
 
 # regla intermedia para crear una variable del tipo actual en la tabla de variables del scope actual
 def p_variable_seen(p):
@@ -72,22 +91,25 @@ def p_variable_seen(p):
     '''
     # primero se revisa si ya hay una variable con ese nombre
     try:
-        variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]]
+        variablesTable.variableExists(p[-1])
+
     # si no la hay se crea una de manera normal
     except:
-        variablesTable[auxiliaryUtility['currentScope']]['variables'][p[-1]] = {'type': auxiliaryUtility['currentType']}
+        variablesTable.createVariable(p[-1])
+
     # de lo contrario se tira un error de variable duplicada
     else:
         print(f'ERROR: Variable {p[-1]} already exists')
         raise SyntaxError
-    auxiliaryUtility['currentId'] = p[-1]
 
-# regla intermedia que solo se encarga de eliminar el tipo actual del diccionario de auxiliares
+    variablesTable.currentId = p[-1]
+
+# regla intermedia que solo se encarga de eliminar el tipo actual
 def p_delete_type(p):
     '''
     delete_type :
     '''
-    del auxiliaryUtility['currentType']
+    variablesTable.currentType = None
 
 def p_variablespp(p):
     '''
@@ -111,8 +133,8 @@ def p_variablesppp(p):
     else:
         p[0] = p[1]
 
-    # despues de declarar las dimensiones se elimina el id actual del diccionario de auxiliares
-    del auxiliaryUtility['currentId']
+    # despues de declarar las dimensiones se elimina el id actual
+    variablesTable.currentId = None
     
 
 def p_variablespppp(p):
@@ -137,19 +159,21 @@ def p_dimDeclare(p):
     
     # revisa si ya hay un valor asignado a la variable
     try: 
-        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']
+        variablesTable.currentVariableValue()
+
     # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
     except:
-        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = [None] * int(p[2])
+        variablesTable.assignValueToCurrentVariable([None] * int(p[2]))
+
     # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
     else:
         tempList = []
 
-        for cell in variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value']:
+        for cell in variablesTable.currentVariableValue():
             tempList.append([None] * int(p[2]))
 
         # lo asigna como una copia, de lo contrario todas las listas estarian apuntando al mismo espacio de memoria ocasionando que al cambiar una se cambien todas
-        variablesTable[auxiliaryUtility['currentScope']]['variables'][auxiliaryUtility['currentId']]['value'] = tempList.copy()
+        variablesTable.assignValueToCurrentVariable(tempList.copy())
 
 def p_tipo(p):
     '''
