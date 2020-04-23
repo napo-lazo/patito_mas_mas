@@ -2,6 +2,23 @@ import patitoLexer
 from patitoLexer import tokens
 import ply.yacc as yacc
 
+class VirutalDirectory(object):
+    def __init__(self):
+        self.globalIntsRange = [1000, 2999]
+        self.globalFloatsRange = [3000, 4999]
+        self.globalCharsRange = [5000, 6999]
+        self.globalBoolsRange = [7000, 8999]
+
+class QuadrupleManager(object):
+    def __init__(self):
+        self.virutalDirectory = VirutalDirectory()
+        self.semanticCube = {'+':{}, '-':{}, '*':{}, '/':{}}
+        self.jumpStack = []
+        self.operationStack = []
+        self.typeStack = []
+        self.operandStack = []
+        self.quadruplesList = []
+
 # variablesTable guarda las variables globales y de las funciones
 class VariablesTable(object):
 
