@@ -5,6 +5,7 @@ import ply.yacc as yacc
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
+        self.globalInts = []
         self.globalFloatsRange = [3000, 4999]
         self.globalCharsRange = [5000, 6999]
         self.globalBoolsRange = [7000, 8999]
@@ -56,8 +57,13 @@ class VariablesTable(object):
     def assignValueToCurrentVariable(self, value):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
 
+    def getTypeOfVariable(self, variableName):
+        if self.currentScope is None: 
+            return self.variablesTable['global']['variables'][variableName]['type']
+
  
 variablesTable = VariablesTable()
+quadrupleManager = QuadrupleManager()
 
 
 # gramatica para el parser
@@ -69,6 +75,10 @@ def p_start(p):
     print()
     print(variablesTable.variablesTable)
     print()
+    print(quadrupleManager.operationStack)
+    print(quadrupleManager.operandStack)
+    print(quadrupleManager.typeStack)
+    print(quadrupleManager.quadruplesList)
 
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
@@ -374,14 +384,38 @@ def p_factor(p):
 
 def p_factorp(p):
     '''
-    factorp : MULTIPLY factor
-            | DIVIDE factor
+    factorp : MULTIPLY operation_seen factor apply_operation
+            | DIVIDE operation_seen factor apply_operation
             | empty
     '''
     if len(p) == 3:
-        p[0] = (p[1], p[2])
+        p[0] = (p[1], p[3])
     else:
         p[0] = p[1]
+
+# regla intermedia que se encarga de realizar los quadruplos de multiplicar y dividir
+# por el momento solo puede procesar una sola division o multiplicacion y no verifica los tipos
+def p_apply_operation(p):
+    '''
+    apply_operation : 
+    '''
+    if len(quadrupleManager.operationStack) != 0:
+        operation = quadrupleManager.operationStack.pop()
+        if operation == '*':
+            leftOperand = quadrupleManager.operandStack.pop(-2)
+            rightOperand = quadrupleManager.operandStack.pop()
+            quadrupleManager.quadruplesList.append(('*', rightOperand, leftOperand, 1000))
+    else:
+        print("No quedan operadores")
+    print()
+
+# regla intermedia que se encarga de agregar el operador a la pila de operadores
+def p_operation_seen(p):
+    '''
+    operation_seen : 
+    '''
+    quadrupleManager.operationStack.append(p[-1])
+
 
 def p_matriz(p):
     '''
@@ -409,8 +443,12 @@ def p_cte(p):
     '''
     if len(p) == 4:
         p[0] = (p[1], p[2], p[3])
+
+    # Para cuando se recibe una variable
     elif len(p) == 3:
         p[0] = (p[1], p[2])
+        quadrupleManager.operandStack.append(p[1])
+        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
     else:
         p[0] = p[1]
 
