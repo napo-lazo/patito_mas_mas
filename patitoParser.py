@@ -38,6 +38,26 @@ class QuadrupleManager(object):
             return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
         except:
             return None
+    
+    def applyOperation(self, operatorsList):
+
+        if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
+            if self.operationStack[-1] == '(':
+                return 
+
+            operation = self.operationStack.pop()
+            leftOperand = self.operandStack.pop()
+            rightOperand = self.operandStack.pop()
+
+            resultType = self.verifyTypeCompatibility(operation)
+            if not resultType:
+                print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
+                raise SyntaxError
+            
+            self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
+            self.operandStack.append(self.virutalDirectory.globalIntsCounter)
+            self.typeStack.append(resultType)
+            self.virutalDirectory.globalIntsCounter += 1
 
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
@@ -358,18 +378,18 @@ def p_expresionp(p):
 
 def p_relacional(p):
     '''
-    relacional : aritmetica relacionalp
+    relacional : aritmetica apply_operation_relational relacionalp
     '''
     p[0] = (p[1], p[2])
 
 def p_relacionalp(p):
     '''
-    relacionalp : EQUALS relacional
-                | NOT_EQUAL relacional
-                | LESS_THAN relacional
-                | LESS_THAN_EQUAL relacional
-                | GREATER_THAN relacional
-                | GREATER_THAN_EQUAL relacional
+    relacionalp : EQUALS operation_seen relacional
+                | NOT_EQUAL operation_seen relacional
+                | LESS_THAN operation_seen relacional
+                | LESS_THAN_EQUAL operation_seen relacional
+                | GREATER_THAN operation_seen relacional
+                | GREATER_THAN_EQUAL operation_seen relacional
                 | empty
     '''
     if len(p) == 3:
@@ -396,7 +416,7 @@ def p_aritmeticap(p):
 
 def p_factor(p):
     '''
-    factor : matriz apply_operation factorp
+    factor : matriz apply_operation_factor factorp
     '''
     p[0] = (p[1], p[3])
 
@@ -412,34 +432,18 @@ def p_factorp(p):
         p[0] = p[1]
 
 # regla intermedia que se encarga de realizar los quadruplos de multiplicar y dividir
-# por el momento solo puede procesar una sola division o multiplicacion y no verifica los tipos
-def p_apply_operation(p):
+def p_apply_operation_factor(p):
     '''
-    apply_operation : 
+    apply_operation_factor : 
     '''
-    if len(quadrupleManager.operationStack) != 0:
-        if quadrupleManager.operationStack[-1] == '(':
-            return 
+    quadrupleManager.applyOperation(['*', '/'])
 
-        operation = quadrupleManager.operationStack.pop()
-        leftOperand = quadrupleManager.operandStack.pop()
-        rightOperand = quadrupleManager.operandStack.pop()
-
-        resultType = quadrupleManager.verifyTypeCompatibility(operation)
-        if not resultType:
-            print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
-            raise SyntaxError
-
-        if operation == '*':
-            quadrupleManager.quadruplesList.append(('*', rightOperand, leftOperand, quadrupleManager.virutalDirectory.globalIntsCounter))
-        elif operation == '/':
-            quadrupleManager.quadruplesList.append(('/', rightOperand, leftOperand, quadrupleManager.virutalDirectory.globalIntsCounter))
-
-        quadrupleManager.operandStack.append(quadrupleManager.virutalDirectory.globalIntsCounter)
-        quadrupleManager.typeStack.append(resultType)
-        quadrupleManager.virutalDirectory.globalIntsCounter += 1
-    else:
-        print("No quedan operadores\n")
+# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+def p_apply_operation_relational(p):
+    '''
+    apply_operation_relational : 
+    '''
+    quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
@@ -480,6 +484,7 @@ def p_cte(p):
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
+    # Falta para cuando el valor viene de un arreglo/matriz
     elif len(p) == 3:
         p[0] = (p[1], p[2])
         quadrupleManager.operandStack.append(p[1])
