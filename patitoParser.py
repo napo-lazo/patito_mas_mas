@@ -141,11 +141,12 @@ def p_variables(p):
 
 # regla intermedia para asignar el scope actual como global
 def p_var_seen(p):
-    '''
+    ''' 
     var_seen :
     '''
-    variablesTable.createScope('global', 'void')
-    variablesTable.currentScope = 'global'
+    if variablesTable.currentScope is None:
+        variablesTable.createScope('global', 'void')
+        variablesTable.currentScope = 'global'
 
 def p_variablesp(p):
     '''
