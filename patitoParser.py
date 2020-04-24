@@ -5,6 +5,7 @@ import ply.yacc as yacc
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
+        self.globalIntsCounter = 1000
         self.globalInts = []
         self.globalFloatsRange = [3000, 4999]
         self.globalCharsRange = [5000, 6999]
@@ -31,6 +32,20 @@ class QuadrupleManager(object):
         self.typeStack = []
         self.operandStack = []
         self.quadruplesList = []
+
+    def verifyTypeCompatibility(self, operation):
+        try:
+            return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
+        except:
+            return None
+
+    def clearData(self):
+        self.virutalDirectory.globalIntsCounter = 1000
+        self.jumpStack.clear()
+        self.operandStack.clear()
+        self.typeStack.clear()
+        self.operandStack.clear()
+        self.quadruplesList.clear()
 
 # variablesTable guarda las variables globales y de las funciones
 class VariablesTable(object):
@@ -79,6 +94,9 @@ def p_start(p):
     print(quadrupleManager.operandStack)
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
+
+    #limpia toda la informacion para poder volver a compilar sin problemas
+    quadrupleManager.clearData()
 
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
@@ -378,18 +396,18 @@ def p_aritmeticap(p):
 
 def p_factor(p):
     '''
-    factor : matriz factorp
+    factor : matriz apply_operation factorp
     '''
-    p[0] = (p[1], p[2])
+    p[0] = (p[1], p[3])
 
 def p_factorp(p):
     '''
-    factorp : MULTIPLY operation_seen factor apply_operation
-            | DIVIDE operation_seen factor apply_operation
+    factorp : MULTIPLY operation_seen factor 
+            | DIVIDE operation_seen factor 
             | empty
     '''
     if len(p) == 3:
-        p[0] = (p[1], p[3])
+        p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
 
@@ -400,21 +418,38 @@ def p_apply_operation(p):
     apply_operation : 
     '''
     if len(quadrupleManager.operationStack) != 0:
+        if quadrupleManager.operationStack[-1] == '(':
+            return 
+
         operation = quadrupleManager.operationStack.pop()
+        leftOperand = quadrupleManager.operandStack.pop()
+        rightOperand = quadrupleManager.operandStack.pop()
+
+        resultType = quadrupleManager.verifyTypeCompatibility(operation)
+        if not resultType:
+            print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
+            raise SyntaxError
+
         if operation == '*':
-            leftOperand = quadrupleManager.operandStack.pop(-2)
-            rightOperand = quadrupleManager.operandStack.pop()
-            quadrupleManager.quadruplesList.append(('*', rightOperand, leftOperand, 1000))
+            quadrupleManager.quadruplesList.append(('*', rightOperand, leftOperand, quadrupleManager.virutalDirectory.globalIntsCounter))
+        elif operation == '/':
+            quadrupleManager.quadruplesList.append(('/', rightOperand, leftOperand, quadrupleManager.virutalDirectory.globalIntsCounter))
+
+        quadrupleManager.operandStack.append(quadrupleManager.virutalDirectory.globalIntsCounter)
+        quadrupleManager.typeStack.append(resultType)
+        quadrupleManager.virutalDirectory.globalIntsCounter += 1
     else:
-        print("No quedan operadores")
-    print()
+        print("No quedan operadores\n")
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
     '''
     operation_seen : 
     '''
-    quadrupleManager.operationStack.append(p[-1])
+    if p[-1] == ')':
+        quadrupleManager.operationStack.pop()
+    else:
+        quadrupleManager.operationStack.append(p[-1])
 
 
 def p_matriz(p):
@@ -439,10 +474,10 @@ def p_cte(p):
         | CTE_CHAR
         | llamadaFuncion
         | ID dimId
-        | L_PARENTHESIS expresion R_PARENTHESIS
+        | L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
     '''
     if len(p) == 4:
-        p[0] = (p[1], p[2], p[3])
+        p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
     elif len(p) == 3:
