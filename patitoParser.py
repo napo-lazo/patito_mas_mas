@@ -51,7 +51,7 @@ class QuadrupleManager(object):
 
             resultType = self.verifyTypeCompatibility(operation)
             if not resultType:
-                print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
+                print(f'Los tipos de {rightOperand} y {leftOperand} no son compatibles con esta operacion: {operation}')
                 raise SyntaxError
             
             self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
@@ -355,9 +355,10 @@ def p_dim(p):
     '''
     p[0] = (p[1], p[2], p[3])
 
+# falta ver que rollo con el not
 def p_expresion(p):
     '''
-    expresion : relacional expresionp
+    expresion : relacional apply_operation_expresion expresionp
               | NOT relacional expresionp
     '''
     if len(p) == 4:
@@ -367,20 +368,27 @@ def p_expresion(p):
 
 def p_expresionp(p):
     '''
-    expresionp : AND expresion
-               | OR expresion
+    expresionp : AND operation_seen expresion
+               | OR operation_seen expresion
                | empty
     '''
-    if len(p) == 3:
-        p[0] = (p[1], p[2])
+    if len(p) == 4:
+        p[0] = (p[1], p[3])
     else:
         p[0] = p[1]
+
+# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+def p_apply_operation_expresion(p):
+    '''
+    apply_operation_expresion : 
+    '''
+    quadrupleManager.applyOperation(['||', '&&'])
 
 def p_relacional(p):
     '''
     relacional : aritmetica apply_operation_relational relacionalp
     '''
-    p[0] = (p[1], p[2])
+    p[0] = (p[1], p[3])
 
 def p_relacionalp(p):
     '''
@@ -392,10 +400,17 @@ def p_relacionalp(p):
                 | GREATER_THAN_EQUAL operation_seen relacional
                 | empty
     '''
-    if len(p) == 3:
-        p[0] = (p[1], p[2])
+    if len(p) == 4:
+        p[0] = (p[1], p[3])
     else:
         p[0] = p[1]
+
+# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+def p_apply_operation_relational(p):
+    '''
+    apply_operation_relational : 
+    '''
+    quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
 
 def p_aritmetica(p):
     '''
@@ -426,8 +441,8 @@ def p_factorp(p):
             | DIVIDE operation_seen factor 
             | empty
     '''
-    if len(p) == 3:
-        p[0] = (p[1], p[2])
+    if len(p) == 4:
+        p[0] = (p[1], p[3])
     else:
         p[0] = p[1]
 
@@ -437,13 +452,6 @@ def p_apply_operation_factor(p):
     apply_operation_factor : 
     '''
     quadrupleManager.applyOperation(['*', '/'])
-
-# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
-def p_apply_operation_relational(p):
-    '''
-    apply_operation_relational : 
-    '''
-    quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
