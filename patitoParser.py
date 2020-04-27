@@ -97,9 +97,11 @@ class VariablesTable(object):
             return self.variablesTable['global']['variables'][variableName]['type']
 
 class FunctionDirectory(object):
-    # funcDir = {'nameid': {'returnType': , 'varTable': <table-key>}}
+    # funcDir = {'nameid': {'returnType': datatype , 'parameters': {type: tipo, name: nombre},'varTable': <table-key>}}
     def __init__(self):
         self.functionDirectory={}
+    def createFunction(self, functionName, returnType, parameters):
+        self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': {}}
 
 variablesTable = VariablesTable()
 quadrupleManager = QuadrupleManager()
@@ -157,7 +159,6 @@ def p_variablesp(p):
     varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
     '''
     p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
-    #functionDirectory[p[5]] = {'returnType':p[4], 'varTable': {}}
 
 # regla intermedia para asignar el tipo actual de las variables que se estan declarando
 def p_tipo_seen(p):
@@ -281,7 +282,7 @@ def p_funcionp(p):
     funcionp : tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
-    #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
+    functionDirectory.createFunction(p[2], p[1], p[4])
 
 def p_parametro(p):
     '''
