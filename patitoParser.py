@@ -384,7 +384,7 @@ def p_expresionp(p):
     else:
         p[0] = p[1]
 
-# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+# regla intermedia que se encarga de realizar los quadruplos de operiones logicas
 def p_apply_operation_expresion(p):
     '''
     apply_operation_expresion : 
@@ -421,20 +421,27 @@ def p_apply_operation_relational(p):
 
 def p_aritmetica(p):
     '''
-    aritmetica : factor aritmeticap
+    aritmetica : factor apply_operation_aritmetica aritmeticap
     '''
     p[0] = (p[1], p[2])
 
 def p_aritmeticap(p):
     '''
-    aritmeticap : SUM aritmetica
-                | SUBTRACT aritmetica
+    aritmeticap : SUM operation_seen aritmetica
+                | SUBTRACT operation_seen aritmetica
                 | empty
     '''
     if len(p) == 3:
-        p[0] = (p[1], p[2])
+        p[0] = (p[1], p[3])
     else:
         p[0] = p[1]
+
+# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+def p_apply_operation_aritmetica(p):
+    '''
+    apply_operation_aritmetica : 
+    '''
+    quadrupleManager.applyOperation(['+', '-'])
 
 def p_factor(p):
     '''
