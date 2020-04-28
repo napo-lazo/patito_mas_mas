@@ -1,9 +1,14 @@
 programa test;
 
-var int : n1, n2;
+var int : a, b, c;
 
 principal(){
-    si(num1 >= 2) haz {
-        n1 = n2;
+    si(a >= 2) haz {
+        si(b == 3) haz {
+            c = a;
+        }
+        sino {
+            a = b;
+        }
     }
 }

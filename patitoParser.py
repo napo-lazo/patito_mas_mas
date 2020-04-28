@@ -34,6 +34,7 @@ class QuadrupleManager(object):
         self.typeStack = []
         self.operandStack = []
         self.quadruplesList = []
+        self.quadrupleCounter = 0
 
     def __verifyTypeCompatibility(self, operation):
         try:
@@ -49,21 +50,34 @@ class QuadrupleManager(object):
                 return 
 
             operation = self.operationStack.pop()
-            leftOperand = self.operandStack.pop()
             rightOperand = self.operandStack.pop()
+            leftOperand = self.operandStack.pop()
 
             resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
-                print(f'Los tipos de {rightOperand} y {leftOperand} no son compatibles con esta operacion: {operation}')
+                print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
                 raise SyntaxError
             
             if operation in ['=']:
                 self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
             else:
-                self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
+                self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.globalIntsCounter))
                 self.operandStack.append(self.virutalDirectory.globalIntsCounter)
                 self.typeStack.append(resultType)
                 self.virutalDirectory.globalIntsCounter += 1
+            self.quadrupleCounter += 1
+
+    def generateJump(self, jumpType):
+        self.jumpStack.append(self.quadrupleCounter)
+        if jumpType == 'false':
+            valueToTest = self.operandStack.pop()
+            self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
+        self.quadrupleCounter += 1
+    
+    def updateJump(self):
+        i = self.jumpStack.pop()
+        jumpToUpdate = self.quadruplesList[i]
+        self.quadruplesList[i] = (jumpToUpdate[0], jumpToUpdate[1], jumpToUpdate[2], self.quadrupleCounter)
 
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
@@ -72,6 +86,7 @@ class QuadrupleManager(object):
         self.typeStack.clear()
         self.operandStack.clear()
         self.quadruplesList.clear()
+        self.quadrupleCounter = 0
 
 # variablesTable guarda las variables globales y de las funciones
 class VariablesTable(object):
@@ -120,7 +135,8 @@ def p_start(p):
     print()
     print(variablesTable.variablesTable)
     print()
-    print(quadrupleManager.operationStack)
+    print(quadrupleManager.quadrupleCounter)
+    print(quadrupleManager.jumpStack)
     print(quadrupleManager.operandStack)
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
@@ -541,7 +557,7 @@ def p_cte(p):
         | ID dimId
         | L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
     '''
-    if len(p) == 4:
+    if len(p) == 6:
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
@@ -555,7 +571,21 @@ def p_cte(p):
         except:
             print(f'ERROR: la variable {p[1]} no ha sido declarada')
             raise SyntaxError
+
+    #TODO: por el momento solo esta pensado para ctes y no funciones 
     else:
+        quadrupleManager.operandStack.append(p[1])
+    #TODO: add verification of char constants
+        if type(p[1]) is int:
+            quadrupleManager.typeStack.append('int')
+        elif type(p[1]) is float:
+            quadrupleManager.typeStack.append('float')
+    #TODO: delete later
+        # try:
+        #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        # except:
+        #     print(f'ERROR: la variable {p[1]} no ha sido declarada')
+        #     raise SyntaxError
         p[0] = p[1]
 
 def p_llamadaFuncion(p):
@@ -633,9 +663,22 @@ def p_escriturapp(p):
 
 def p_decision(p):
     '''
-    decision : SI L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque decisionp
+    decision : SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+    p[0] = (p[1], p[2], p[3], p[4], p[6], p[7], p[9])
+
+def p_jump_false(p):
+    '''
+    jump_false : 
+    '''
+    #TODO: update generated GOTOs
+    quadrupleManager.generateJump('false')
+
+def p_update_jump(p):
+    '''
+    update_jump :
+    '''
+    quadrupleManager.updateJump()
 
 def p_decisionp(p):
     '''
