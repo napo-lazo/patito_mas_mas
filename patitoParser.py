@@ -39,6 +39,7 @@ class QuadrupleManager(object):
         except:
             return None
     
+    # Cuando se llame esta funcion se debe de llmar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
     def applyOperation(self, operatorsList):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
@@ -389,7 +390,10 @@ def p_apply_operation_expresion(p):
     '''
     apply_operation_expresion : 
     '''
-    quadrupleManager.applyOperation(['||', '&&'])
+    try:
+        quadrupleManager.applyOperation(['||', '&&'])
+    except:
+        raise SyntaxError
 
 def p_relacional(p):
     '''
@@ -417,7 +421,10 @@ def p_apply_operation_relational(p):
     '''
     apply_operation_relational : 
     '''
-    quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
+    try:
+        quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
+    except:
+        raise SyntaxError
 
 def p_aritmetica(p):
     '''
@@ -441,7 +448,10 @@ def p_apply_operation_aritmetica(p):
     '''
     apply_operation_aritmetica : 
     '''
-    quadrupleManager.applyOperation(['+', '-'])
+    try:
+        quadrupleManager.applyOperation(['+', '-'])
+    except:
+        raise SyntaxError
 
 def p_factor(p):
     '''
@@ -465,7 +475,10 @@ def p_apply_operation_factor(p):
     '''
     apply_operation_factor : 
     '''
-    quadrupleManager.applyOperation(['*', '/'])
+    try:
+        quadrupleManager.applyOperation(['*', '/'])
+    except:
+        raise SyntaxError
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
