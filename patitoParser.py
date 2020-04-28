@@ -5,6 +5,7 @@ import ply.yacc as yacc
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
+        # Por el momento solo se usa este contador para llevar un conteo de las variables temporales
         self.globalIntsCounter = 1000
         self.globalInts = []
         self.globalFloatsRange = [3000, 4999]
@@ -15,7 +16,8 @@ class QuadrupleManager(object):
     def __init__(self):
         self.virutalDirectory = VirutalDirectory()
         #Falta ver que rollo con las matrices y operaciones unarias, por el momento solo operaciones binarias, revisar comparasiones entre enteros y flotantes
-        self.semanticCube = {'+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
+        self.semanticCube = {'=':{('int', 'int'): 'int', ('float', 'float'): 'float', ('char', 'char'): 'char'},
+                             '+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '-':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '*':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '/':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'},
@@ -33,7 +35,7 @@ class QuadrupleManager(object):
         self.operandStack = []
         self.quadruplesList = []
 
-    def verifyTypeCompatibility(self, operation):
+    def __verifyTypeCompatibility(self, operation):
         try:
             return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
         except:
@@ -50,15 +52,18 @@ class QuadrupleManager(object):
             leftOperand = self.operandStack.pop()
             rightOperand = self.operandStack.pop()
 
-            resultType = self.verifyTypeCompatibility(operation)
+            resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
                 print(f'Los tipos de {rightOperand} y {leftOperand} no son compatibles con esta operacion: {operation}')
                 raise SyntaxError
             
-            self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
-            self.operandStack.append(self.virutalDirectory.globalIntsCounter)
-            self.typeStack.append(resultType)
-            self.virutalDirectory.globalIntsCounter += 1
+            if operation in ['=']:
+                self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
+            else:
+                self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
+                self.operandStack.append(self.virutalDirectory.globalIntsCounter)
+                self.typeStack.append(resultType)
+                self.virutalDirectory.globalIntsCounter += 1
 
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
@@ -342,9 +347,30 @@ def p_estatuto(p):
 
 def p_asignacion(p):
     '''
-    asignacion : ID dimId ASSIGN expresion SEMICOLON
+    asignacion : ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_operand_seen(p):
+    '''
+    operand_seen :
+    '''
+    quadrupleManager.operandStack.append(p[-1])
+    try:
+        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-1]))
+    except:
+        print(f'ERROR: la variable {p[-1]} no ha sido declarada')
+        raise SyntaxError
+
+# regla intermedia que se encarga de realizar los quadruplos de operiones logicas
+def p_apply_operation_assign(p):
+    '''
+    apply_operation_assign : 
+    '''
+    try:
+        quadrupleManager.applyOperation(['='])
+    except:
+        raise SyntaxError
 
 def p_dimId(p):
     '''
@@ -443,7 +469,7 @@ def p_aritmeticap(p):
     else:
         p[0] = p[1]
 
-# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+# regla intermedia que se encarga de realizar los quadruplos de operiones aritemticas
 def p_apply_operation_aritmetica(p):
     '''
     apply_operation_aritmetica : 
@@ -522,8 +548,13 @@ def p_cte(p):
     # Falta para cuando el valor viene de un arreglo/matriz
     elif len(p) == 3:
         p[0] = (p[1], p[2])
+    #TODO: Turn into a method for the quadruple manager 
         quadrupleManager.operandStack.append(p[1])
-        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        try:
+            quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        except:
+            print(f'ERROR: la variable {p[1]} no ha sido declarada')
+            raise SyntaxError
     else:
         p[0] = p[1]
 
