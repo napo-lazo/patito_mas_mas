@@ -68,11 +68,18 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
 
     def generateJump(self, jumpType):
-        self.jumpStack.append(self.quadrupleCounter)
         if jumpType == 'false':
+            self.jumpStack.append(self.quadrupleCounter)
             valueToTest = self.operandStack.pop()
             self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
-        self.quadrupleCounter += 1
+            self.quadrupleCounter += 1
+        else:
+            aux = self.jumpStack.pop()
+            self.jumpStack.append(self.quadrupleCounter)
+            self.jumpStack.append(aux)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter +=1
+            self.updateJump()
     
     def updateJump(self):
         i = self.jumpStack.pop()
@@ -663,9 +670,9 @@ def p_escriturapp(p):
 
 def p_decision(p):
     '''
-    decision : SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
+    decision : SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[6], p[7], p[9])
+    p[0] = (p[1], p[2], p[3], p[4], p[6], p[7], p[8])
 
 def p_jump_false(p):
     '''
@@ -682,13 +689,19 @@ def p_update_jump(p):
 
 def p_decisionp(p):
     '''
-    decisionp : SINO bloque
-              | empty
+    decisionp : SINO jump bloque update_jump
+              | empty update_jump
     '''
-    if len(p) == 3:
-        p[0] = (p[1], p[2])
+    if len(p) == 5:
+        p[0] = (p[1], p[4])
     else:
         p[0] = p[1]
+
+def p_jump(p):
+    '''
+    jump :
+    '''
+    quadrupleManager.generateJump('jump')
 
 def p_cicloCondicional(p):
     '''

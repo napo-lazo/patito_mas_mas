@@ -12,7 +12,7 @@ if(len(sys.argv) == 2):
             
             # se pasa el lexer nuevo al parser para poder hacer uso de la token EOF
             parser.parse(s, lexer=lexer)
-    except:
+    except FileNotFoundError:
         print(f"el archivo {sys.argv[1]} no existe")
 
 # de lo contrario solo se compila lo que se escriba en la terminal

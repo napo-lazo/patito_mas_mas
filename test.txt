@@ -11,4 +11,7 @@ principal(){
             a = b;
         }
     }
+    sino {
+        c = a + b;
+    }
 }

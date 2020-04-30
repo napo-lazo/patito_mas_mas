@@ -103,39 +103,40 @@ Rule 97    escriturap -> LETRERO escriturapp
 Rule 98    escriturap -> expresion escriturapp
 Rule 99    escriturapp -> COMMA escriturap
 Rule 100   escriturapp -> empty
-Rule 101   decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
+Rule 101   decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
 Rule 102   jump_false -> <empty>
 Rule 103   update_jump -> <empty>
-Rule 104   decisionp -> SINO bloque
-Rule 105   decisionp -> empty
-Rule 106   cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
-Rule 107   cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
-Rule 108   empty -> <empty>
+Rule 104   decisionp -> SINO jump bloque update_jump
+Rule 105   decisionp -> empty update_jump
+Rule 106   jump -> <empty>
+Rule 107   cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+Rule 108   cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+Rule 109   empty -> <empty>
 
 Terminals, with rules where they appear
 
 AND                  : 52
-ASSIGN               : 43 107
+ASSIGN               : 43 108
 CHAR                 : 22
 COLON                : 6
 COMMA                : 11 28 88 94 99
 CTE_CHAR             : 83
 CTE_FLOAT            : 82
 CTE_INT              : 18 19 81
-DESDE                : 107
+DESDE                : 108
 DETERMINANT          : 77
 DIVIDE               : 72
-EOF                  : 2 107
+EOF                  : 2 108
 EQUALS               : 57
 ESCRIBE              : 96
 FLOAT                : 21
 FUNCION              : 23
 GREATER_THAN         : 61
 GREATER_THAN_EQUAL   : 62
-HACER                : 107
-HASTA                : 107
-HAZ                  : 101 106
-ID                   : 2 6 11 25 26 28 43 85 87 90 93 107
+HACER                : 108
+HASTA                : 108
+HAZ                  : 101 107
+ID                   : 2 6 11 25 26 28 43 85 87 90 93 108
 INT                  : 20
 INVERSE              : 79
 LECTURA              : 92
@@ -143,9 +144,9 @@ LESS_THAN            : 59
 LESS_THAN_EQUAL      : 60
 LETRERO              : 97
 L_CURLY_BRACKET      : 32
-L_PARENTHESIS        : 2 25 86 87 90 91 92 96 101 106
+L_PARENTHESIS        : 2 25 86 87 90 91 92 96 101 107
 L_SQUARE_BRACKET     : 18 19 49
-MIENTRAS             : 106
+MIENTRAS             : 107
 MULTIPLY             : 71
 NOT                  : 51
 NOT_EQUAL            : 58
@@ -154,7 +155,7 @@ PRINCIPAL            : 2
 PROGRAMA             : 2
 REGRESA              : 91
 R_CURLY_BRACKET      : 32
-R_PARENTHESIS        : 2 25 86 87 90 91 92 96 101 106
+R_PARENTHESIS        : 2 25 86 87 90 91 92 96 101 107
 R_SQUARE_BRACKET     : 18 19 49
 SEMICOLON            : 2 6 43 90 91 92 96
 SI                   : 101
@@ -176,7 +177,7 @@ apply_operation_relational : 56
 aritmetica           : 56 66 67
 aritmeticap          : 65
 asignacion           : 35
-bloque               : 2 25 101 104 106 107
+bloque               : 2 25 101 104 107 108
 bloquep              : 32 33
 cicloCondicional     : 41
 cicloNoCondicional   : 42
@@ -186,19 +187,20 @@ decisionp            : 101
 delete_type          : 6
 dim                  : 46 47 47
 dimDeclare           : 13 14 14
-dimId                : 43 85 93 107
+dimId                : 43 85 93 108
 empty                : 4 12 15 17 24 27 29 34 48 54 63 68 73 80 89 95 100 105
 escritura            : 39
 escriturap           : 96 99
 escriturapp          : 97 98
 estatuto             : 33
-expresion            : 43 49 52 53 86 87 88 90 91 98 101 106 107 107
+expresion            : 43 49 52 53 86 87 88 90 91 98 101 107 108 108
 expresionp           : 50 51
 factor               : 65 71 72
 factorp              : 70
 funcion              : 2 25
 funcionVacia         : 36
 funcionp             : 23
+jump                 : 104
 jump_false           : 101
 lectura              : 38
 lecturap             : 92 94
@@ -219,7 +221,7 @@ start                : 0
 tipo                 : 6 26 28 30
 tipoRetorno          : 25
 tipo_seen            : 6
-update_jump          : 101
+update_jump          : 104 105
 var                  : 2 25
 var_seen             : 3
 variable_seen        : 6 11
@@ -273,11 +275,11 @@ state 5
     (2) programa -> PROGRAMA ID SEMICOLON . var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
     (3) var -> . VAR var_seen varp
     (4) var -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     VAR             shift and go to state 7
-    FUNCION         reduce using rule 108 (empty -> .)
-    PRINCIPAL       reduce using rule 108 (empty -> .)
+    FUNCION         reduce using rule 109 (empty -> .)
+    PRINCIPAL       reduce using rule 109 (empty -> .)
 
     var                            shift and go to state 6
     empty                          shift and go to state 8
@@ -287,10 +289,10 @@ state 6
     (2) programa -> PROGRAMA ID SEMICOLON var . funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
     (23) funcion -> . FUNCION funcionp
     (24) funcion -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     FUNCION         shift and go to state 10
-    PRINCIPAL       reduce using rule 108 (empty -> .)
+    PRINCIPAL       reduce using rule 109 (empty -> .)
 
     funcion                        shift and go to state 9
     empty                          shift and go to state 11
@@ -478,12 +480,12 @@ state 27
     (20) tipo -> . INT
     (21) tipo -> . FLOAT
     (22) tipo -> . CHAR
-    (108) empty -> .
+    (109) empty -> .
 
     INT             shift and go to state 18
     FLOAT           shift and go to state 19
     CHAR            shift and go to state 20
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     parametro                      shift and go to state 31
     tipo                           shift and go to state 32
@@ -516,17 +518,17 @@ state 30
     (40) estatuto -> . decision
     (41) estatuto -> . cicloCondicional
     (42) estatuto -> . cicloNoCondicional
-    (108) empty -> .
+    (109) empty -> .
     (43) asignacion -> . ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign SEMICOLON
     (90) funcionVacia -> . ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS SEMICOLON
     (91) regresa -> . REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
     (92) lectura -> . LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
     (96) escritura -> . ESCRIBE L_PARENTHESIS escriturap R_PARENTHESIS SEMICOLON
-    (101) decision -> . SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
-    (106) cicloCondicional -> . MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
-    (107) cicloNoCondicional -> . DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    (101) decision -> . SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
+    (107) cicloCondicional -> . MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    (108) cicloNoCondicional -> . DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
 
-    R_CURLY_BRACKET reduce using rule 108 (empty -> .)
+    R_CURLY_BRACKET reduce using rule 109 (empty -> .)
     ID              shift and go to state 47
     REGRESA         shift and go to state 48
     LECTURA         shift and go to state 49
@@ -608,17 +610,17 @@ state 37
     (40) estatuto -> . decision
     (41) estatuto -> . cicloCondicional
     (42) estatuto -> . cicloNoCondicional
-    (108) empty -> .
+    (109) empty -> .
     (43) asignacion -> . ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign SEMICOLON
     (90) funcionVacia -> . ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS SEMICOLON
     (91) regresa -> . REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
     (92) lectura -> . LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
     (96) escritura -> . ESCRIBE L_PARENTHESIS escriturap R_PARENTHESIS SEMICOLON
-    (101) decision -> . SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
-    (106) cicloCondicional -> . MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
-    (107) cicloNoCondicional -> . DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    (101) decision -> . SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
+    (107) cicloCondicional -> . MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    (108) cicloNoCondicional -> . DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
 
-    R_CURLY_BRACKET reduce using rule 108 (empty -> .)
+    R_CURLY_BRACKET reduce using rule 109 (empty -> .)
     ID              shift and go to state 47
     REGRESA         shift and go to state 48
     LECTURA         shift and go to state 49
@@ -793,21 +795,21 @@ state 50
 
 state 51
 
-    (101) decision -> SI . L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
+    (101) decision -> SI . L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
 
     L_PARENTHESIS   shift and go to state 65
 
 
 state 52
 
-    (106) cicloCondicional -> MIENTRAS . L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    (107) cicloCondicional -> MIENTRAS . L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
 
     L_PARENTHESIS   shift and go to state 66
 
 
 state 53
 
-    (107) cicloNoCondicional -> DESDE . ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE . ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
 
     ID              shift and go to state 67
 
@@ -817,10 +819,10 @@ state 54
     (25) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS . var bloque funcion
     (3) var -> . VAR var_seen varp
     (4) var -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     VAR             shift and go to state 7
-    L_CURLY_BRACKET reduce using rule 108 (empty -> .)
+    L_CURLY_BRACKET reduce using rule 109 (empty -> .)
 
     var                            shift and go to state 68
     empty                          shift and go to state 8
@@ -830,10 +832,10 @@ state 55
     (26) parametro -> tipo ID . parametrop
     (28) parametrop -> . COMMA tipo ID parametrop
     (29) parametrop -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 70
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     parametrop                     shift and go to state 69
     empty                          shift and go to state 71
@@ -846,11 +848,11 @@ state 56
     (15) varppp -> . empty
     (18) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
     (19) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error
-    (108) empty -> .
+    (109) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 75
-    COMMA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
 
     varppp                         shift and go to state 72
     dimDeclare                     shift and go to state 73
@@ -895,10 +897,10 @@ state 60
     (47) dimId -> . dim dim
     (48) dimId -> . empty
     (49) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
-    (108) empty -> .
+    (109) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 80
-    ASSIGN          reduce using rule 108 (empty -> .)
+    ASSIGN          reduce using rule 109 (empty -> .)
 
     dimId                          shift and go to state 77
     dim                            shift and go to state 78
@@ -1015,7 +1017,7 @@ state 64
 
 state 65
 
-    (101) decision -> SI L_PARENTHESIS . expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
+    (101) decision -> SI L_PARENTHESIS . expresion R_PARENTHESIS jump_false HAZ bloque decisionp
     (50) expresion -> . relacional apply_operation_expresion expresionp
     (51) expresion -> . NOT relacional expresionp
     (56) relacional -> . aritmetica apply_operation_relational relacionalp
@@ -1047,7 +1049,7 @@ state 65
 
 state 66
 
-    (106) cicloCondicional -> MIENTRAS L_PARENTHESIS . expresion R_PARENTHESIS HAZ bloque
+    (107) cicloCondicional -> MIENTRAS L_PARENTHESIS . expresion R_PARENTHESIS HAZ bloque
     (50) expresion -> . relacional apply_operation_expresion expresionp
     (51) expresion -> . NOT relacional expresionp
     (56) relacional -> . aritmetica apply_operation_relational relacionalp
@@ -1079,15 +1081,15 @@ state 66
 
 state 67
 
-    (107) cicloNoCondicional -> DESDE ID . dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID . dimId ASSIGN expresion HASTA expresion HACER bloque EOF
     (46) dimId -> . dim
     (47) dimId -> . dim dim
     (48) dimId -> . empty
     (49) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
-    (108) empty -> .
+    (109) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 80
-    ASSIGN          reduce using rule 108 (empty -> .)
+    ASSIGN          reduce using rule 109 (empty -> .)
 
     dimId                          shift and go to state 102
     dim                            shift and go to state 78
@@ -1134,10 +1136,10 @@ state 72
     (6) varp -> tipo tipo_seen COLON ID variable_seen varppp . varpp delete_type SEMICOLON varpppp
     (11) varpp -> . COMMA ID variable_seen varppp varpp
     (12) varpp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 106
-    SEMICOLON       reduce using rule 108 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
 
     varpp                          shift and go to state 105
     empty                          shift and go to state 107
@@ -1287,31 +1289,31 @@ state 81
     (47) dimId -> . dim dim
     (48) dimId -> . empty
     (49) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
-    (108) empty -> .
+    (109) empty -> .
 
     L_PARENTHESIS   shift and go to state 114
     L_SQUARE_BRACKET shift and go to state 80
-    DETERMINANT     reduce using rule 108 (empty -> .)
-    TRANSPOSED      reduce using rule 108 (empty -> .)
-    INVERSE         reduce using rule 108 (empty -> .)
-    MULTIPLY        reduce using rule 108 (empty -> .)
-    DIVIDE          reduce using rule 108 (empty -> .)
-    SUM             reduce using rule 108 (empty -> .)
-    SUBTRACT        reduce using rule 108 (empty -> .)
-    EQUALS          reduce using rule 108 (empty -> .)
-    NOT_EQUAL       reduce using rule 108 (empty -> .)
-    LESS_THAN       reduce using rule 108 (empty -> .)
-    LESS_THAN_EQUAL reduce using rule 108 (empty -> .)
-    GREATER_THAN    reduce using rule 108 (empty -> .)
-    GREATER_THAN_EQUAL reduce using rule 108 (empty -> .)
-    AND             reduce using rule 108 (empty -> .)
-    OR              reduce using rule 108 (empty -> .)
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    DETERMINANT     reduce using rule 109 (empty -> .)
+    TRANSPOSED      reduce using rule 109 (empty -> .)
+    INVERSE         reduce using rule 109 (empty -> .)
+    MULTIPLY        reduce using rule 109 (empty -> .)
+    DIVIDE          reduce using rule 109 (empty -> .)
+    SUM             reduce using rule 109 (empty -> .)
+    SUBTRACT        reduce using rule 109 (empty -> .)
+    EQUALS          reduce using rule 109 (empty -> .)
+    NOT_EQUAL       reduce using rule 109 (empty -> .)
+    LESS_THAN       reduce using rule 109 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 109 (empty -> .)
+    GREATER_THAN    reduce using rule 109 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 109 (empty -> .)
+    AND             reduce using rule 109 (empty -> .)
+    OR              reduce using rule 109 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     dimId                          shift and go to state 113
     dim                            shift and go to state 78
@@ -1336,10 +1338,10 @@ state 83
     (90) funcionVacia -> ID L_PARENTHESIS expresion . llamadaFuncionp R_PARENTHESIS SEMICOLON
     (88) llamadaFuncionp -> . COMMA expresion
     (89) llamadaFuncionp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 117
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     llamadaFuncionp                shift and go to state 116
     empty                          shift and go to state 118
@@ -1467,29 +1469,29 @@ state 89
     (78) matrizp -> . TRANSPOSED
     (79) matrizp -> . INVERSE
     (80) matrizp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     DETERMINANT     shift and go to state 125
     TRANSPOSED      shift and go to state 126
     INVERSE         shift and go to state 127
-    MULTIPLY        reduce using rule 108 (empty -> .)
-    DIVIDE          reduce using rule 108 (empty -> .)
-    SUM             reduce using rule 108 (empty -> .)
-    SUBTRACT        reduce using rule 108 (empty -> .)
-    EQUALS          reduce using rule 108 (empty -> .)
-    NOT_EQUAL       reduce using rule 108 (empty -> .)
-    LESS_THAN       reduce using rule 108 (empty -> .)
-    LESS_THAN_EQUAL reduce using rule 108 (empty -> .)
-    GREATER_THAN    reduce using rule 108 (empty -> .)
-    GREATER_THAN_EQUAL reduce using rule 108 (empty -> .)
-    AND             reduce using rule 108 (empty -> .)
-    OR              reduce using rule 108 (empty -> .)
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    MULTIPLY        reduce using rule 109 (empty -> .)
+    DIVIDE          reduce using rule 109 (empty -> .)
+    SUM             reduce using rule 109 (empty -> .)
+    SUBTRACT        reduce using rule 109 (empty -> .)
+    EQUALS          reduce using rule 109 (empty -> .)
+    NOT_EQUAL       reduce using rule 109 (empty -> .)
+    LESS_THAN       reduce using rule 109 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 109 (empty -> .)
+    GREATER_THAN    reduce using rule 109 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 109 (empty -> .)
+    AND             reduce using rule 109 (empty -> .)
+    OR              reduce using rule 109 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     matrizp                        shift and go to state 124
     empty                          shift and go to state 128
@@ -1623,11 +1625,11 @@ state 96
     (47) dimId -> . dim dim
     (48) dimId -> . empty
     (49) dim -> . L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
-    (108) empty -> .
+    (109) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 80
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     dimId                          shift and go to state 131
     dim                            shift and go to state 78
@@ -1645,10 +1647,10 @@ state 98
     (97) escriturap -> LETRERO . escriturapp
     (99) escriturapp -> . COMMA escriturap
     (100) escriturapp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 134
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     escriturapp                    shift and go to state 133
     empty                          shift and go to state 135
@@ -1658,31 +1660,31 @@ state 99
     (98) escriturap -> expresion . escriturapp
     (99) escriturapp -> . COMMA escriturap
     (100) escriturapp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 134
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     escriturapp                    shift and go to state 136
     empty                          shift and go to state 135
 
 state 100
 
-    (101) decision -> SI L_PARENTHESIS expresion . R_PARENTHESIS jump_false HAZ bloque update_jump decisionp
+    (101) decision -> SI L_PARENTHESIS expresion . R_PARENTHESIS jump_false HAZ bloque decisionp
 
     R_PARENTHESIS   shift and go to state 137
 
 
 state 101
 
-    (106) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion . R_PARENTHESIS HAZ bloque
+    (107) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion . R_PARENTHESIS HAZ bloque
 
     R_PARENTHESIS   shift and go to state 138
 
 
 state 102
 
-    (107) cicloNoCondicional -> DESDE ID dimId . ASSIGN expresion HASTA expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID dimId . ASSIGN expresion HASTA expresion HACER bloque EOF
 
     ASSIGN          shift and go to state 139
 
@@ -1692,10 +1694,10 @@ state 103
     (25) funcionp -> tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque . funcion
     (23) funcion -> . FUNCION funcionp
     (24) funcion -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     FUNCION         shift and go to state 10
-    PRINCIPAL       reduce using rule 108 (empty -> .)
+    PRINCIPAL       reduce using rule 109 (empty -> .)
 
     funcion                        shift and go to state 140
     empty                          shift and go to state 11
@@ -1938,16 +1940,16 @@ state 119
     (52) expresionp -> . AND operation_seen expresion
     (53) expresionp -> . OR operation_seen expresion
     (54) expresionp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     AND             shift and go to state 152
     OR              shift and go to state 153
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     expresionp                     shift and go to state 151
     empty                          shift and go to state 154
@@ -1958,16 +1960,16 @@ state 120
     (52) expresionp -> . AND operation_seen expresion
     (53) expresionp -> . OR operation_seen expresion
     (54) expresionp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     AND             shift and go to state 152
     OR              shift and go to state 153
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     expresionp                     shift and go to state 155
     empty                          shift and go to state 154
@@ -1982,7 +1984,7 @@ state 121
     (61) relacionalp -> . GREATER_THAN operation_seen relacional
     (62) relacionalp -> . GREATER_THAN_EQUAL operation_seen relacional
     (63) relacionalp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     EQUALS          shift and go to state 157
     NOT_EQUAL       shift and go to state 158
@@ -1990,14 +1992,14 @@ state 121
     LESS_THAN_EQUAL shift and go to state 160
     GREATER_THAN    shift and go to state 161
     GREATER_THAN_EQUAL shift and go to state 162
-    AND             reduce using rule 108 (empty -> .)
-    OR              reduce using rule 108 (empty -> .)
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    AND             reduce using rule 109 (empty -> .)
+    OR              reduce using rule 109 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     relacionalp                    shift and go to state 156
     empty                          shift and go to state 163
@@ -2008,24 +2010,24 @@ state 122
     (66) aritmeticap -> . SUM operation_seen aritmetica
     (67) aritmeticap -> . SUBTRACT operation_seen aritmetica
     (68) aritmeticap -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     SUM             shift and go to state 165
     SUBTRACT        shift and go to state 166
-    EQUALS          reduce using rule 108 (empty -> .)
-    NOT_EQUAL       reduce using rule 108 (empty -> .)
-    LESS_THAN       reduce using rule 108 (empty -> .)
-    LESS_THAN_EQUAL reduce using rule 108 (empty -> .)
-    GREATER_THAN    reduce using rule 108 (empty -> .)
-    GREATER_THAN_EQUAL reduce using rule 108 (empty -> .)
-    AND             reduce using rule 108 (empty -> .)
-    OR              reduce using rule 108 (empty -> .)
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    EQUALS          reduce using rule 109 (empty -> .)
+    NOT_EQUAL       reduce using rule 109 (empty -> .)
+    LESS_THAN       reduce using rule 109 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 109 (empty -> .)
+    GREATER_THAN    reduce using rule 109 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 109 (empty -> .)
+    AND             reduce using rule 109 (empty -> .)
+    OR              reduce using rule 109 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     aritmeticap                    shift and go to state 164
     empty                          shift and go to state 167
@@ -2036,26 +2038,26 @@ state 123
     (71) factorp -> . MULTIPLY operation_seen factor
     (72) factorp -> . DIVIDE operation_seen factor
     (73) factorp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     MULTIPLY        shift and go to state 169
     DIVIDE          shift and go to state 170
-    SUM             reduce using rule 108 (empty -> .)
-    SUBTRACT        reduce using rule 108 (empty -> .)
-    EQUALS          reduce using rule 108 (empty -> .)
-    NOT_EQUAL       reduce using rule 108 (empty -> .)
-    LESS_THAN       reduce using rule 108 (empty -> .)
-    LESS_THAN_EQUAL reduce using rule 108 (empty -> .)
-    GREATER_THAN    reduce using rule 108 (empty -> .)
-    GREATER_THAN_EQUAL reduce using rule 108 (empty -> .)
-    AND             reduce using rule 108 (empty -> .)
-    OR              reduce using rule 108 (empty -> .)
-    COMMA           reduce using rule 108 (empty -> .)
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
-    R_SQUARE_BRACKET reduce using rule 108 (empty -> .)
-    HASTA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
-    HACER           reduce using rule 108 (empty -> .)
+    SUM             reduce using rule 109 (empty -> .)
+    SUBTRACT        reduce using rule 109 (empty -> .)
+    EQUALS          reduce using rule 109 (empty -> .)
+    NOT_EQUAL       reduce using rule 109 (empty -> .)
+    LESS_THAN       reduce using rule 109 (empty -> .)
+    LESS_THAN_EQUAL reduce using rule 109 (empty -> .)
+    GREATER_THAN    reduce using rule 109 (empty -> .)
+    GREATER_THAN_EQUAL reduce using rule 109 (empty -> .)
+    AND             reduce using rule 109 (empty -> .)
+    OR              reduce using rule 109 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
+    R_SQUARE_BRACKET reduce using rule 109 (empty -> .)
+    HASTA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
+    HACER           reduce using rule 109 (empty -> .)
 
     factorp                        shift and go to state 168
     empty                          shift and go to state 171
@@ -2199,10 +2201,10 @@ state 131
     (93) lecturap -> ID dimId . lecturapp
     (94) lecturapp -> . COMMA lecturap
     (95) lecturapp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 175
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     lecturapp                      shift and go to state 174
     empty                          shift and go to state 176
@@ -2273,7 +2275,7 @@ state 136
 
 state 137
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS . jump_false HAZ bloque update_jump decisionp
+    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS . jump_false HAZ bloque decisionp
     (102) jump_false -> .
 
     HAZ             reduce using rule 102 (jump_false -> .)
@@ -2282,14 +2284,14 @@ state 137
 
 state 138
 
-    (106) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS . HAZ bloque
+    (107) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS . HAZ bloque
 
     HAZ             shift and go to state 180
 
 
 state 139
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN . expresion HASTA expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN . expresion HASTA expresion HACER bloque EOF
     (50) expresion -> . relacional apply_operation_expresion expresionp
     (51) expresion -> . NOT relacional expresionp
     (56) relacional -> . aritmetica apply_operation_relational relacionalp
@@ -2331,10 +2333,10 @@ state 141
     (28) parametrop -> COMMA tipo ID . parametrop
     (28) parametrop -> . COMMA tipo ID parametrop
     (29) parametrop -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 70
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     parametrop                     shift and go to state 182
     empty                          shift and go to state 71
@@ -2436,10 +2438,10 @@ state 147
     (87) llamadaFuncion -> ID L_PARENTHESIS expresion . llamadaFuncionp R_PARENTHESIS
     (88) llamadaFuncionp -> . COMMA expresion
     (89) llamadaFuncionp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 117
-    R_PARENTHESIS   reduce using rule 108 (empty -> .)
+    R_PARENTHESIS   reduce using rule 109 (empty -> .)
 
     llamadaFuncionp                shift and go to state 187
     empty                          shift and go to state 118
@@ -2845,14 +2847,14 @@ state 178
 
 state 179
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false . HAZ bloque update_jump decisionp
+    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false . HAZ bloque decisionp
 
     HAZ             shift and go to state 203
 
 
 state 180
 
-    (106) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ . bloque
+    (107) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ . bloque
     (32) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 30
@@ -2861,7 +2863,7 @@ state 180
 
 state 181
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion . HASTA expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion . HASTA expresion HACER bloque EOF
 
     HASTA           shift and go to state 205
 
@@ -2879,14 +2881,14 @@ state 183
     (16) varpppp -> . varp
     (17) varpppp -> . empty
     (6) varp -> . tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
-    (108) empty -> .
+    (109) empty -> .
     (20) tipo -> . INT
     (21) tipo -> . FLOAT
     (22) tipo -> . CHAR
 
-    FUNCION         reduce using rule 108 (empty -> .)
-    PRINCIPAL       reduce using rule 108 (empty -> .)
-    L_CURLY_BRACKET reduce using rule 108 (empty -> .)
+    FUNCION         reduce using rule 109 (empty -> .)
+    PRINCIPAL       reduce using rule 109 (empty -> .)
+    L_CURLY_BRACKET reduce using rule 109 (empty -> .)
     INT             shift and go to state 18
     FLOAT           shift and go to state 19
     CHAR            shift and go to state 20
@@ -2904,11 +2906,11 @@ state 184
     (15) varppp -> . empty
     (18) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
     (19) dimDeclare -> . L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error
-    (108) empty -> .
+    (109) empty -> .
 
     L_SQUARE_BRACKET shift and go to state 75
-    COMMA           reduce using rule 108 (empty -> .)
-    SEMICOLON       reduce using rule 108 (empty -> .)
+    COMMA           reduce using rule 109 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
 
     varppp                         shift and go to state 209
     dimDeclare                     shift and go to state 73
@@ -3321,7 +3323,7 @@ state 202
 
 state 203
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ . bloque update_jump decisionp
+    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ . bloque decisionp
     (32) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 30
@@ -3330,21 +3332,21 @@ state 203
 
 state 204
 
-    (106) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .
+    (107) cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .
 
-    ID              reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    REGRESA         reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    LECTURA         reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    ESCRIBE         reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    SI              reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    MIENTRAS        reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    DESDE           reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
-    R_CURLY_BRACKET reduce using rule 106 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    ID              reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    REGRESA         reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    LECTURA         reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    ESCRIBE         reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    SI              reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    MIENTRAS        reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    DESDE           reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
+    R_CURLY_BRACKET reduce using rule 107 (cicloCondicional -> MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque .)
 
 
 state 205
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA . expresion HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA . expresion HACER bloque EOF
     (50) expresion -> . relacional apply_operation_expresion expresionp
     (51) expresion -> . NOT relacional expresionp
     (56) relacional -> . aritmetica apply_operation_relational relacionalp
@@ -3406,10 +3408,10 @@ state 209
     (11) varpp -> COMMA ID variable_seen varppp . varpp
     (11) varpp -> . COMMA ID variable_seen varppp varpp
     (12) varpp -> . empty
-    (108) empty -> .
+    (109) empty -> .
 
     COMMA           shift and go to state 106
-    SEMICOLON       reduce using rule 108 (empty -> .)
+    SEMICOLON       reduce using rule 109 (empty -> .)
 
     varpp                          shift and go to state 228
     empty                          shift and go to state 107
@@ -3678,26 +3680,29 @@ state 225
 
 state 226
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque . update_jump decisionp
-    (103) update_jump -> .
+    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque . decisionp
+    (104) decisionp -> . SINO jump bloque update_jump
+    (105) decisionp -> . empty update_jump
+    (109) empty -> .
 
-    SINO            reduce using rule 103 (update_jump -> .)
-    ID              reduce using rule 103 (update_jump -> .)
-    REGRESA         reduce using rule 103 (update_jump -> .)
-    LECTURA         reduce using rule 103 (update_jump -> .)
-    ESCRIBE         reduce using rule 103 (update_jump -> .)
-    SI              reduce using rule 103 (update_jump -> .)
-    MIENTRAS        reduce using rule 103 (update_jump -> .)
-    DESDE           reduce using rule 103 (update_jump -> .)
-    R_CURLY_BRACKET reduce using rule 103 (update_jump -> .)
+    SINO            shift and go to state 231
+    ID              reduce using rule 109 (empty -> .)
+    REGRESA         reduce using rule 109 (empty -> .)
+    LECTURA         reduce using rule 109 (empty -> .)
+    ESCRIBE         reduce using rule 109 (empty -> .)
+    SI              reduce using rule 109 (empty -> .)
+    MIENTRAS        reduce using rule 109 (empty -> .)
+    DESDE           reduce using rule 109 (empty -> .)
+    R_CURLY_BRACKET reduce using rule 109 (empty -> .)
 
-    update_jump                    shift and go to state 230
+    decisionp                      shift and go to state 230
+    empty                          shift and go to state 232
 
 state 227
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion . HACER bloque EOF
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion . HACER bloque EOF
 
-    HACER           shift and go to state 231
+    HACER           shift and go to state 233
 
 
 state 228
@@ -3723,50 +3728,46 @@ state 229
 
 state 230
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump . decisionp
-    (104) decisionp -> . SINO bloque
-    (105) decisionp -> . empty
-    (108) empty -> .
+    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .
 
-    SINO            shift and go to state 233
-    ID              reduce using rule 108 (empty -> .)
-    REGRESA         reduce using rule 108 (empty -> .)
-    LECTURA         reduce using rule 108 (empty -> .)
-    ESCRIBE         reduce using rule 108 (empty -> .)
-    SI              reduce using rule 108 (empty -> .)
-    MIENTRAS        reduce using rule 108 (empty -> .)
-    DESDE           reduce using rule 108 (empty -> .)
-    R_CURLY_BRACKET reduce using rule 108 (empty -> .)
+    ID              reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    REGRESA         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    LECTURA         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    ESCRIBE         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    SI              reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    MIENTRAS        reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    DESDE           reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
+    R_CURLY_BRACKET reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
 
-    decisionp                      shift and go to state 232
-    empty                          shift and go to state 234
 
 state 231
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER . bloque EOF
-    (32) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
+    (104) decisionp -> SINO . jump bloque update_jump
+    (106) jump -> .
 
-    L_CURLY_BRACKET shift and go to state 30
+    L_CURLY_BRACKET reduce using rule 106 (jump -> .)
 
-    bloque                         shift and go to state 235
+    jump                           shift and go to state 234
 
 state 232
 
-    (101) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .
+    (105) decisionp -> empty . update_jump
+    (103) update_jump -> .
 
-    ID              reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    REGRESA         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    LECTURA         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    ESCRIBE         reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    SI              reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    MIENTRAS        reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    DESDE           reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
-    R_CURLY_BRACKET reduce using rule 101 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump decisionp .)
+    ID              reduce using rule 103 (update_jump -> .)
+    REGRESA         reduce using rule 103 (update_jump -> .)
+    LECTURA         reduce using rule 103 (update_jump -> .)
+    ESCRIBE         reduce using rule 103 (update_jump -> .)
+    SI              reduce using rule 103 (update_jump -> .)
+    MIENTRAS        reduce using rule 103 (update_jump -> .)
+    DESDE           reduce using rule 103 (update_jump -> .)
+    R_CURLY_BRACKET reduce using rule 103 (update_jump -> .)
 
+    update_jump                    shift and go to state 235
 
 state 233
 
-    (104) decisionp -> SINO . bloque
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER . bloque EOF
     (32) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 30
@@ -3775,49 +3776,74 @@ state 233
 
 state 234
 
-    (105) decisionp -> empty .
+    (104) decisionp -> SINO jump . bloque update_jump
+    (32) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
-    ID              reduce using rule 105 (decisionp -> empty .)
-    REGRESA         reduce using rule 105 (decisionp -> empty .)
-    LECTURA         reduce using rule 105 (decisionp -> empty .)
-    ESCRIBE         reduce using rule 105 (decisionp -> empty .)
-    SI              reduce using rule 105 (decisionp -> empty .)
-    MIENTRAS        reduce using rule 105 (decisionp -> empty .)
-    DESDE           reduce using rule 105 (decisionp -> empty .)
-    R_CURLY_BRACKET reduce using rule 105 (decisionp -> empty .)
+    L_CURLY_BRACKET shift and go to state 30
 
+    bloque                         shift and go to state 237
 
 state 235
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque . EOF
+    (105) decisionp -> empty update_jump .
 
-    EOF             shift and go to state 237
+    ID              reduce using rule 105 (decisionp -> empty update_jump .)
+    REGRESA         reduce using rule 105 (decisionp -> empty update_jump .)
+    LECTURA         reduce using rule 105 (decisionp -> empty update_jump .)
+    ESCRIBE         reduce using rule 105 (decisionp -> empty update_jump .)
+    SI              reduce using rule 105 (decisionp -> empty update_jump .)
+    MIENTRAS        reduce using rule 105 (decisionp -> empty update_jump .)
+    DESDE           reduce using rule 105 (decisionp -> empty update_jump .)
+    R_CURLY_BRACKET reduce using rule 105 (decisionp -> empty update_jump .)
 
 
 state 236
 
-    (104) decisionp -> SINO bloque .
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque . EOF
 
-    ID              reduce using rule 104 (decisionp -> SINO bloque .)
-    REGRESA         reduce using rule 104 (decisionp -> SINO bloque .)
-    LECTURA         reduce using rule 104 (decisionp -> SINO bloque .)
-    ESCRIBE         reduce using rule 104 (decisionp -> SINO bloque .)
-    SI              reduce using rule 104 (decisionp -> SINO bloque .)
-    MIENTRAS        reduce using rule 104 (decisionp -> SINO bloque .)
-    DESDE           reduce using rule 104 (decisionp -> SINO bloque .)
-    R_CURLY_BRACKET reduce using rule 104 (decisionp -> SINO bloque .)
+    EOF             shift and go to state 238
 
 
 state 237
 
-    (107) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .
+    (104) decisionp -> SINO jump bloque . update_jump
+    (103) update_jump -> .
 
-    ID              reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    REGRESA         reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    LECTURA         reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    ESCRIBE         reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    SI              reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    MIENTRAS        reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    DESDE           reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
-    R_CURLY_BRACKET reduce using rule 107 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    ID              reduce using rule 103 (update_jump -> .)
+    REGRESA         reduce using rule 103 (update_jump -> .)
+    LECTURA         reduce using rule 103 (update_jump -> .)
+    ESCRIBE         reduce using rule 103 (update_jump -> .)
+    SI              reduce using rule 103 (update_jump -> .)
+    MIENTRAS        reduce using rule 103 (update_jump -> .)
+    DESDE           reduce using rule 103 (update_jump -> .)
+    R_CURLY_BRACKET reduce using rule 103 (update_jump -> .)
+
+    update_jump                    shift and go to state 239
+
+state 238
+
+    (108) cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .
+
+    ID              reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    REGRESA         reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    LECTURA         reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    ESCRIBE         reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    SI              reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    MIENTRAS        reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    DESDE           reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+    R_CURLY_BRACKET reduce using rule 108 (cicloNoCondicional -> DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF .)
+
+
+state 239
+
+    (104) decisionp -> SINO jump bloque update_jump .
+
+    ID              reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    REGRESA         reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    LECTURA         reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    ESCRIBE         reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    SI              reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    MIENTRAS        reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    DESDE           reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
+    R_CURLY_BRACKET reduce using rule 104 (decisionp -> SINO jump bloque update_jump .)
 
