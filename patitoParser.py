@@ -2,8 +2,6 @@ import patitoLexer
 from patitoLexer import tokens
 import ply.yacc as yacc
 
-#TODO: check if conditionals are recieving booleans else return an error
-
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
@@ -31,20 +29,28 @@ class QuadrupleManager(object):
                              '!=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
                              '&&':{('bool', 'bool'): 'bool'},
                              '||':{('bool', 'bool'): 'bool'}}
+        # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
+        # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
         self.operationStack = []
+        # stack donde se guardan los tipos de los operandos para realizar validanciones de tipo
         self.typeStack = []
+        # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
         self.operandStack = []
+        # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
+        # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
         self.quadrupleCounter = 0
 
+    # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
     def __verifyTypeCompatibility(self, operation):
         try:
             return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
         except:
             return None
     
-    # Cuando se llame esta funcion se debe de llmar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
+    # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
+    # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
     def applyOperation(self, operatorsList):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
@@ -69,6 +75,7 @@ class QuadrupleManager(object):
                 self.virutalDirectory.globalIntsCounter += 1
             self.quadrupleCounter += 1
 
+    # metodo publico que se encarga de generar un salto inicial 
     def generateJump(self, jumpType):
         if jumpType == 'false':
             self.jumpStack.append(self.quadrupleCounter)
@@ -90,6 +97,7 @@ class QuadrupleManager(object):
             self.quadrupleCounter +=1
             self.updateJump('normal')
     
+    # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
     def updateJump(self, jumpType):
         if jumpType == 'normal':
             i = self.jumpStack.pop()
@@ -102,6 +110,7 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
             self.updateJump('normal')
 
+    # metodo publico para limpiar los stacks y reiniciar los contadores
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
         self.jumpStack.clear()
