@@ -1,9 +1,19 @@
 programa test;
 
-var int : n1, n2;
+var int : a, b, c, d;
 
 principal(){
-    si(num1 >= 2) haz {
-        n1 = n2;
+    mientras (a + b * c < d) haz {
+        si (a + b < c) haz {
+            a = b + c;
+        }
+        sino {
+            mientras (b > c + d) haz {
+                a = b + c * d;
+                b = a - d;
+            }
+        }
     }
+    a = b * c;
+    c = 0;
 }

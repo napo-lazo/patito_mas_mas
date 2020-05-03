@@ -5,6 +5,7 @@ import ply.yacc as yacc
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
+        # Por el momento solo se usa este contador para llevar un conteo de las variables temporales
         self.globalIntsCounter = 1000
         self.globalInts = []
         self.globalFloatsRange = [3000, 4999]
@@ -15,7 +16,8 @@ class QuadrupleManager(object):
     def __init__(self):
         self.virutalDirectory = VirutalDirectory()
         #Falta ver que rollo con las matrices y operaciones unarias, por el momento solo operaciones binarias, revisar comparasiones entre enteros y flotantes
-        self.semanticCube = {'+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
+        self.semanticCube = {'=':{('int', 'int'): 'int', ('float', 'float'): 'float', ('char', 'char'): 'char'},
+                             '+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '-':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '*':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '/':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'},
@@ -27,18 +29,28 @@ class QuadrupleManager(object):
                              '!=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
                              '&&':{('bool', 'bool'): 'bool'},
                              '||':{('bool', 'bool'): 'bool'}}
+        # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
+        # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
         self.operationStack = []
+        # stack donde se guardan los tipos de los operandos para realizar validanciones de tipo
         self.typeStack = []
+        # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
         self.operandStack = []
+        # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
+        # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
+        self.quadrupleCounter = 0
 
-    def verifyTypeCompatibility(self, operation):
+    # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
+    def __verifyTypeCompatibility(self, operation):
         try:
             return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
         except:
             return None
     
+    # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
+    # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
     def applyOperation(self, operatorsList):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
@@ -46,19 +58,59 @@ class QuadrupleManager(object):
                 return 
 
             operation = self.operationStack.pop()
-            leftOperand = self.operandStack.pop()
             rightOperand = self.operandStack.pop()
-
-            resultType = self.verifyTypeCompatibility(operation)
+            leftOperand = self.operandStack.pop()
+            
+            resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
-                print(f'Los tipos de {rightOperand} y {leftOperand} no son compatibles con esta operacion: {operation}')
+                print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
                 raise SyntaxError
             
-            self.quadruplesList.append((operation, rightOperand, leftOperand, self.virutalDirectory.globalIntsCounter))
-            self.operandStack.append(self.virutalDirectory.globalIntsCounter)
-            self.typeStack.append(resultType)
-            self.virutalDirectory.globalIntsCounter += 1
+            if operation in ['=']:
+                self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
+            else:
+                self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.globalIntsCounter))
+                self.operandStack.append(self.virutalDirectory.globalIntsCounter)
+                self.typeStack.append(resultType)
+                self.virutalDirectory.globalIntsCounter += 1
+            self.quadrupleCounter += 1
 
+    # metodo publico que se encarga de generar un salto inicial 
+    def generateJump(self, jumpType):
+        if jumpType == 'false':
+            self.jumpStack.append(self.quadrupleCounter)
+            valueToTest = self.operandStack.pop()
+            #TODO: consider adding to semantic cube
+            if self.typeStack.pop() == 'bool':
+                self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
+                self.quadrupleCounter += 1
+            else:
+                print(f'el valor de {valueToTest} no es un booleano')
+                raise SyntaxError
+        elif jumpType == 'jump_cycle':
+            self.jumpStack.append(self.quadrupleCounter)
+        elif jumpType == 'jump_else':
+            aux = self.jumpStack.pop()
+            self.jumpStack.append(self.quadrupleCounter)
+            self.jumpStack.append(aux)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter +=1
+            self.updateJump('normal')
+    
+    # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
+    def updateJump(self, jumpType):
+        if jumpType == 'normal':
+            i = self.jumpStack.pop()
+            jumpToUpdate = self.quadruplesList[i]
+            self.quadruplesList[i] = (jumpToUpdate[0], jumpToUpdate[1], jumpToUpdate[2], self.quadrupleCounter)
+        elif jumpType == 'cycle':
+            aux = self.jumpStack.pop()
+            self.quadruplesList.append(('GOTO', -1, -1, self.jumpStack.pop()))
+            self.jumpStack.append(aux)
+            self.quadrupleCounter += 1
+            self.updateJump('normal')
+
+    # metodo publico para limpiar los stacks y reiniciar los contadores
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
         self.jumpStack.clear()
@@ -66,6 +118,7 @@ class QuadrupleManager(object):
         self.typeStack.clear()
         self.operandStack.clear()
         self.quadruplesList.clear()
+        self.quadrupleCounter = 0
 
 # variablesTable guarda las variables globales y de las funciones
 class VariablesTable(object):
@@ -116,7 +169,8 @@ def p_start(p):
     print()
     print(variablesTable.variablesTable)
     print()
-    print(quadrupleManager.operationStack)
+    print(quadrupleManager.quadrupleCounter)
+    print(quadrupleManager.jumpStack)
     print(quadrupleManager.operandStack)
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
@@ -342,9 +396,30 @@ def p_estatuto(p):
 
 def p_asignacion(p):
     '''
-    asignacion : ID dimId ASSIGN expresion SEMICOLON
+    asignacion : ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+def p_operand_seen(p):
+    '''
+    operand_seen :
+    '''
+    quadrupleManager.operandStack.append(p[-1])
+    try:
+        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-1]))
+    except:
+        print(f'ERROR: la variable {p[-1]} no ha sido declarada')
+        raise SyntaxError
+
+# regla intermedia que se encarga de realizar los quadruplos de operiones logicas
+def p_apply_operation_assign(p):
+    '''
+    apply_operation_assign : 
+    '''
+    try:
+        quadrupleManager.applyOperation(['='])
+    except:
+        raise SyntaxError
 
 def p_dimId(p):
     '''
@@ -390,7 +465,10 @@ def p_apply_operation_expresion(p):
     '''
     apply_operation_expresion : 
     '''
-    quadrupleManager.applyOperation(['||', '&&'])
+    try:
+        quadrupleManager.applyOperation(['||', '&&'])
+    except:
+        raise SyntaxError
 
 def p_relacional(p):
     '''
@@ -418,7 +496,10 @@ def p_apply_operation_relational(p):
     '''
     apply_operation_relational : 
     '''
-    quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
+    try:
+        quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='])
+    except:
+        raise SyntaxError
 
 def p_aritmetica(p):
     '''
@@ -437,12 +518,15 @@ def p_aritmeticap(p):
     else:
         p[0] = p[1]
 
-# regla intermedia que se encarga de realizar los quadruplos de operiones relacionales
+# regla intermedia que se encarga de realizar los quadruplos de operiones aritemticas
 def p_apply_operation_aritmetica(p):
     '''
     apply_operation_aritmetica : 
     '''
-    quadrupleManager.applyOperation(['+', '-'])
+    try:
+        quadrupleManager.applyOperation(['+', '-'])
+    except:
+        raise SyntaxError
 
 def p_factor(p):
     '''
@@ -466,7 +550,10 @@ def p_apply_operation_factor(p):
     '''
     apply_operation_factor : 
     '''
-    quadrupleManager.applyOperation(['*', '/'])
+    try:
+        quadrupleManager.applyOperation(['*', '/'])
+    except:
+        raise SyntaxError
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
@@ -503,16 +590,35 @@ def p_cte(p):
         | ID dimId
         | L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
     '''
-    if len(p) == 4:
+    if len(p) == 6:
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
     # Falta para cuando el valor viene de un arreglo/matriz
     elif len(p) == 3:
         p[0] = (p[1], p[2])
+    #TODO: Turn into a method for the quadruple manager 
         quadrupleManager.operandStack.append(p[1])
-        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        try:
+            quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        except:
+            print(f'ERROR: la variable {p[1]} no ha sido declarada')
+            raise SyntaxError
+
+    #TODO: por el momento solo esta pensado para ctes y no funciones 
     else:
+        quadrupleManager.operandStack.append(p[1])
+    #TODO: add verification of char constants
+        if type(p[1]) is int:
+            quadrupleManager.typeStack.append('int')
+        elif type(p[1]) is float:
+            quadrupleManager.typeStack.append('float')
+    #TODO: delete later
+        # try:
+        #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
+        # except:
+        #     print(f'ERROR: la variable {p[1]} no ha sido declarada')
+        #     raise SyntaxError
         p[0] = p[1]
 
 def p_llamadaFuncion(p):
@@ -590,31 +696,91 @@ def p_escriturapp(p):
 
 def p_decision(p):
     '''
-    decision : SI L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque decisionp
+    decision : SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7])
+    p[0] = (p[1], p[2], p[3], p[4], p[6], p[7], p[8])
+
+def p_jump_false(p):
+    '''
+    jump_false : 
+    '''
+    #TODO: update generated GOTOs
+    quadrupleManager.generateJump('false')
+
+def p_update_jump(p):
+    '''
+    update_jump :
+    '''
+    quadrupleManager.updateJump('normal')
 
 def p_decisionp(p):
     '''
-    decisionp : SINO bloque
-              | empty
+    decisionp : SINO jump_else bloque update_jump
+              | empty update_jump
     '''
-    if len(p) == 3:
+    if len(p) == 5:
         p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
 
+def p_jump_else(p):
+    '''
+    jump_else :
+    '''
+    quadrupleManager.generateJump('jump_else')
+
 def p_cicloCondicional(p):
     '''
-    cicloCondicional : MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    cicloCondicional : MIENTRAS jump_cycle L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump_cycle
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
+    p[0] = (p[1], p[3], p[4], p[5], p[7], p[8])
+
+def p_jump_cycle(p):
+    '''
+    jump_cycle : 
+    '''
+    quadrupleManager.generateJump('jump_cycle')
+
+def p_update_jump_cycle(p):
+    '''
+    update_jump_cycle : 
+    '''
+    quadrupleManager.updateJump('cycle')
 
 def p_cicloNoCondicional(p):
     '''
-    cicloNoCondicional : DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    cicloNoCondicional : DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_add_gt(p):
+    '''
+    add_gt :
+    '''
+    quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
+    quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
+    quadrupleManager.operandStack.append(p[-10])
+    quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-10]))
+    quadrupleManager.operationStack.append('>')
+
+def p_add_one(p):
+    '''
+    add_one : 
+    '''
+    aux = quadrupleManager.jumpStack[-2]
+    temp = quadrupleManager.quadruplesList[aux][1]
+    quadrupleManager.operandStack.append(temp)
+    quadrupleManager.typeStack.append('int')
+    quadrupleManager.operandStack.append(1)
+    quadrupleManager.operationStack.append('+')
+    quadrupleManager.applyOperation(['+'])
+
+    aux = quadrupleManager.operandStack.pop()
+    quadrupleManager.operandStack.append(temp)
+    quadrupleManager.operandStack.append(aux)
+    quadrupleManager.operationStack.append('=')
+    quadrupleManager.applyOperation(['='])
+    print(quadrupleManager.quadruplesList)
 
 def p_empty(p):
     '''
