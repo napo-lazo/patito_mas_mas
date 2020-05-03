@@ -2,6 +2,8 @@ import patitoLexer
 from patitoLexer import tokens
 import ply.yacc as yacc
 
+#TODO: check if conditionals are recieving booleans else return an error
+
 class VirutalDirectory(object):
     def __init__(self):
         self.globalIntsRange = [1000, 2999]
@@ -52,7 +54,7 @@ class QuadrupleManager(object):
             operation = self.operationStack.pop()
             rightOperand = self.operandStack.pop()
             leftOperand = self.operandStack.pop()
-
+            
             resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
                 print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
@@ -71,8 +73,13 @@ class QuadrupleManager(object):
         if jumpType == 'false':
             self.jumpStack.append(self.quadrupleCounter)
             valueToTest = self.operandStack.pop()
-            self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
-            self.quadrupleCounter += 1
+            #TODO: consider adding to semantic cube
+            if self.typeStack.pop() == 'bool':
+                self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
+                self.quadrupleCounter += 1
+            else:
+                print(f'el valor de {valueToTest} no es un booleano')
+                raise SyntaxError
         elif jumpType == 'jump_cycle':
             self.jumpStack.append(self.quadrupleCounter)
         elif jumpType == 'jump_else':
@@ -732,9 +739,38 @@ def p_update_jump_cycle(p):
 
 def p_cicloNoCondicional(p):
     '''
-    cicloNoCondicional : DESDE ID dimId ASSIGN expresion HASTA expresion HACER bloque EOF
+    cicloNoCondicional : DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_add_gt(p):
+    '''
+    add_gt :
+    '''
+    quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
+    quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
+    quadrupleManager.operandStack.append(p[-10])
+    quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-10]))
+    quadrupleManager.operationStack.append('>')
+
+def p_add_one(p):
+    '''
+    add_one : 
+    '''
+    aux = quadrupleManager.jumpStack[-2]
+    temp = quadrupleManager.quadruplesList[aux][1]
+    quadrupleManager.operandStack.append(temp)
+    quadrupleManager.typeStack.append('int')
+    quadrupleManager.operandStack.append(1)
+    quadrupleManager.operationStack.append('+')
+    quadrupleManager.applyOperation(['+'])
+
+    aux = quadrupleManager.operandStack.pop()
+    quadrupleManager.operandStack.append(temp)
+    quadrupleManager.operandStack.append(aux)
+    quadrupleManager.operationStack.append('=')
+    quadrupleManager.applyOperation(['='])
+    print(quadrupleManager.quadruplesList)
 
 def p_empty(p):
     '''
