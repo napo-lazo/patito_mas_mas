@@ -1,17 +1,19 @@
 programa test;
 
-var int : a, b, c;
+var int : a, b, c, d;
 
 principal(){
-    si(a >= 2) haz {
-        si(b == 3) haz {
-            c = a;
+    mientras (a + b * c < d) haz {
+        si (a + b < c) haz {
+            a = b + c;
         }
         sino {
-            a = b;
+            mientras (b > c + d) haz {
+                a = b + c * d;
+                b = a - d;
+            }
         }
     }
-    sino {
-        c = a + b;
-    }
+    a = b * c;
+    c = 0;
 }

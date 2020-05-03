@@ -73,18 +73,27 @@ class QuadrupleManager(object):
             valueToTest = self.operandStack.pop()
             self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
             self.quadrupleCounter += 1
-        else:
+        elif jumpType == 'jump_cycle':
+            self.jumpStack.append(self.quadrupleCounter)
+        elif jumpType == 'jump_else':
             aux = self.jumpStack.pop()
             self.jumpStack.append(self.quadrupleCounter)
             self.jumpStack.append(aux)
             self.quadruplesList.append(('GOTO', -1, -1, '-'))
             self.quadrupleCounter +=1
-            self.updateJump()
+            self.updateJump('normal')
     
-    def updateJump(self):
-        i = self.jumpStack.pop()
-        jumpToUpdate = self.quadruplesList[i]
-        self.quadruplesList[i] = (jumpToUpdate[0], jumpToUpdate[1], jumpToUpdate[2], self.quadrupleCounter)
+    def updateJump(self, jumpType):
+        if jumpType == 'normal':
+            i = self.jumpStack.pop()
+            jumpToUpdate = self.quadruplesList[i]
+            self.quadruplesList[i] = (jumpToUpdate[0], jumpToUpdate[1], jumpToUpdate[2], self.quadrupleCounter)
+        elif jumpType == 'cycle':
+            aux = self.jumpStack.pop()
+            self.quadruplesList.append(('GOTO', -1, -1, self.jumpStack.pop()))
+            self.jumpStack.append(aux)
+            self.quadrupleCounter += 1
+            self.updateJump('normal')
 
     def clearData(self):
         self.virutalDirectory.globalIntsCounter = 1000
@@ -685,29 +694,41 @@ def p_update_jump(p):
     '''
     update_jump :
     '''
-    quadrupleManager.updateJump()
+    quadrupleManager.updateJump('normal')
 
 def p_decisionp(p):
     '''
-    decisionp : SINO jump bloque update_jump
+    decisionp : SINO jump_else bloque update_jump
               | empty update_jump
     '''
     if len(p) == 5:
-        p[0] = (p[1], p[4])
+        p[0] = (p[1], p[2])
     else:
         p[0] = p[1]
 
-def p_jump(p):
+def p_jump_else(p):
     '''
-    jump :
+    jump_else :
     '''
-    quadrupleManager.generateJump('jump')
+    quadrupleManager.generateJump('jump_else')
 
 def p_cicloCondicional(p):
     '''
-    cicloCondicional : MIENTRAS L_PARENTHESIS expresion R_PARENTHESIS HAZ bloque
+    cicloCondicional : MIENTRAS jump_cycle L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump_cycle
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
+    p[0] = (p[1], p[3], p[4], p[5], p[7], p[8])
+
+def p_jump_cycle(p):
+    '''
+    jump_cycle : 
+    '''
+    quadrupleManager.generateJump('jump_cycle')
+
+def p_update_jump_cycle(p):
+    '''
+    update_jump_cycle : 
+    '''
+    quadrupleManager.updateJump('cycle')
 
 def p_cicloNoCondicional(p):
     '''
