@@ -2,6 +2,20 @@ programa test;
 
 var int : a, b, c, d;
 
+funcion int func1(int n1, int n2, float n3)
+var int : a, b, c; 
+{
+    si (a + b == c) haz {
+        b = c + 1;
+    }
+}
+
+funcion int func2()
+var int : a, b, c;
+{
+
+}
+
 principal(){
     mientras (a + b * c < d) haz {
         si (a + b < c) haz {
