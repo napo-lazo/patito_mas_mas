@@ -171,10 +171,10 @@ def p_variables(p):
         p[0] = (p[1], p[3])
         
         # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales
-        temp = funcDir.currentScope
-        funcDir.currentScope = None
-        logs.append(f'Se elimino "{temp}" como el scope actual\n')
-        del(temp)
+        # temp = funcDir.currentScope
+        # funcDir.currentScope = None
+        # logs.append(f'Se elimino "{temp}" como el scope actual\n')
+        # del(temp)
         
     else:
         p[0] = p[1]
@@ -357,12 +357,6 @@ def p_create_func_scope(p):
     else:
         print(f'Error: {p[-1]} ya existe')
         raise SyntaxError
-
-def p_clear_current_scope(p):
-    '''
-    clear_current_scope :
-    '''     
-    funcDir.currentScope = None
 
 def p_parametro(p):
     '''

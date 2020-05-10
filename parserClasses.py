@@ -32,6 +32,11 @@ class VariablesTable(object):
     def getTypeOfVariable(self, variableName):
         if self.currentScope is None: 
             return self.variablesTable['global']['variables'][variableName]['type']
+        else:
+            try: 
+                return self.variablesTable[self.currentScope]['variables'][variableName]['type']
+            except:
+                return self.variablesTable['global']['variables'][variableName]['type']
 
     def addParameterToList(self, paramName, paramType):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
