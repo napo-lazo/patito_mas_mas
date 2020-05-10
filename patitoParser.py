@@ -1,4 +1,5 @@
 import patitoLexer
+from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
 
@@ -55,6 +56,7 @@ class QuadrupleManager(object):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
             if self.operationStack[-1] == '(':
+                logs.append('Se agrego un "(" al operationStack\n')
                 return 
 
             operation = self.operationStack.pop()
@@ -68,12 +70,17 @@ class QuadrupleManager(object):
             
             if operation in ['=']:
                 self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
+                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
                 self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.globalIntsCounter))
+                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.globalIntsCounter}"\n')
                 self.operandStack.append(self.virutalDirectory.globalIntsCounter)
+                logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.globalIntsCounter}" al operandStack\n')
                 self.typeStack.append(resultType)
+                logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.globalIntsCounter += 1
             self.quadrupleCounter += 1
+        
 
     # metodo publico que se encarga de generar un salto inicial 
     def generateJump(self, jumpType):
@@ -191,8 +198,11 @@ def p_variables(p):
     if len(p) != 2: 
         p[0] = (p[1], p[3])
         
-        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales 
+        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales
+        temp = variablesTable.currentScope
         variablesTable.currentScope = None
+        logs.append(f'Se elimino "{temp}" como el scope actual\n')
+        del(temp)
         
     else:
         p[0] = p[1]
@@ -204,7 +214,9 @@ def p_var_seen(p):
     '''
     if variablesTable.currentScope is None:
         variablesTable.createScope('global', 'void')
+        logs.append('Se creo la funcion global de retorno tipo void en el dirFunc\n')
         variablesTable.currentScope = 'global'
+        logs.append('global se asigno como el scope actual\n')
 
 def p_variablesp(p):
     '''
@@ -219,6 +231,7 @@ def p_tipo_seen(p):
     tipo_seen :
     '''
     variablesTable.currentType = p[-1]
+    logs.append(f'Se asigno {p[-1]} como el tipo de variable actual\n')
 
 # regla intermedia para crear una variable del tipo actual en la tabla de variables del scope actual
 def p_variable_seen(p):
@@ -233,6 +246,7 @@ def p_variable_seen(p):
     # si no la hay se crea una de manera normal
     except:
         variablesTable.createVariable(p[-1])
+        logs.append(f'Se agrego la variable "{p[-1]}" al scope de {variablesTable.currentScope}\n')
 
     # de lo contrario se tira un error de variable duplicada
     else:
@@ -246,7 +260,10 @@ def p_delete_type(p):
     '''
     delete_type :
     '''
-    variablesTable.currentType = None
+    temp = variablesTable.currentType
+    variablesTable.currentType = None   
+    logs.append(f'Se elimino "{temp}" como el scope actual\n')
+    del(temp)
 
 def p_variablespp(p):
     '''
@@ -271,7 +288,10 @@ def p_variablesppp(p):
         p[0] = p[1]
 
     # despues de declarar las dimensiones se elimina el id actual
+    temp = variablesTable.currentId
     variablesTable.currentId = None
+    logs.append(f'Se elimino "{temp}" como la variable actual')
+    del(temp)
     
 
 def p_variablespppp(p):
@@ -301,6 +321,7 @@ def p_dimDeclare(p):
     # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
     except:
         variablesTable.assignValueToCurrentVariable([None] * int(p[2]))
+        logs.append(f'Se le asigno a {variablesTable.currentId} una lista vacia de tama;o {p[2]}')
 
     # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
     else:
@@ -311,6 +332,7 @@ def p_dimDeclare(p):
 
         # lo asigna como una copia, de lo contrario todas las listas estarian apuntando al mismo espacio de memoria ocasionando que al cambiar una se cambien todas
         variablesTable.assignValueToCurrentVariable(tempList.copy())
+        logs.append(f'Se le asigno a cada casilla de la lista de {variablesTable.currentId} una lista vacia de tama;o {p[2]}')
 
 def p_tipo(p):
     '''
@@ -404,8 +426,10 @@ def p_operand_seen(p):
     operand_seen :
     '''
     quadrupleManager.operandStack.append(p[-1])
+    logs.append(f'Se agrego "{p[-1]}" al operandStack\n')
     try:
         quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-1]))
+        logs.append(f'Se agrego "{quadrupleManager.typeStack[-1]}" al typeStack\n')
     except:
         print(f'ERROR: la variable {p[-1]} no ha sido declarada')
         raise SyntaxError
@@ -561,8 +585,10 @@ def p_operation_seen(p):
     '''
     if p[-1] == ')':
         quadrupleManager.operationStack.pop()
+        logs.append('Se termino un parentesis\n')
     else:
         quadrupleManager.operationStack.append(p[-1])
+        logs.append(f'Se agrego {p[-1]} al operantionStack\n')
 
 
 def p_matriz(p):
@@ -586,38 +612,36 @@ def p_cte(p):
         | CTE_FLOAT
         | CTE_CHAR
         | llamadaFuncion
-        | ID dimId
+        | ID operand_seen dimId
         | L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
     '''
     if len(p) == 6:
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
-    # Falta para cuando el valor viene de un arreglo/matriz
-    elif len(p) == 3:
-        p[0] = (p[1], p[2])
-    #TODO: Turn into a method for the quadruple manager 
-        quadrupleManager.operandStack.append(p[1])
-        try:
-            quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
-        except:
-            print(f'ERROR: la variable {p[1]} no ha sido declarada')
-            raise SyntaxError
+    # TODO: Falta para cuando el valor viene de un arreglo/matriz y despues convertirlo y ver si se puede reusar en regla gramatical
+    elif len(p) == 4:
+        p[0] = (p[1], p[3])
 
-    #TODO: por el momento solo esta pensado para ctes y no funciones 
-    else:
-        quadrupleManager.operandStack.append(p[1])
-    #TODO: add verification of char constants
-        if type(p[1]) is int:
-            quadrupleManager.typeStack.append('int')
-        elif type(p[1]) is float:
-            quadrupleManager.typeStack.append('float')
-    #TODO: delete later
+        # quadrupleManager.operandStack.append(p[1])
+        # logs.append(f'Se agrego {p[1]} al operandStack')
         # try:
         #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
         # except:
         #     print(f'ERROR: la variable {p[1]} no ha sido declarada')
         #     raise SyntaxError
+
+    #TODO: por el momento solo esta pensado para ctes y no funciones 
+    else:
+        quadrupleManager.operandStack.append(p[1])
+        logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
+        #TODO: add verification of char constants
+        if type(p[1]) is int:
+            quadrupleManager.typeStack.append('int')
+        elif type(p[1]) is float:
+            quadrupleManager.typeStack.append('float')
+        logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
+
         p[0] = p[1]
 
 def p_llamadaFuncion(p):
@@ -703,7 +727,6 @@ def p_jump_false(p):
     '''
     jump_false : 
     '''
-    #TODO: update generated GOTOs
     quadrupleManager.generateJump('false')
 
 def p_update_jump(p):
