@@ -158,9 +158,18 @@ def p_start(p):
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
+    programa : PROGRAMA ID SEMICOLON var funcion clear_scope PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_clear_scope(p):
+    '''
+    clear_scope :
+    '''
+    temp = funcDir.currentScope
+    funcDir.currentScope = None
+    logs.append(f'Se elimino {temp} como el scope actual\n')
+    del(temp)
 
 def p_variables(p):
     '''
@@ -239,7 +248,7 @@ def p_delete_type(p):
     '''
     temp = funcDir.currentType
     funcDir.currentType = None   
-    logs.append(f'Se elimino "{temp}" como el scope actual\n')
+    logs.append(f'Se elimino "{temp}" como el tipo actual\n')
     del(temp)
 
 def p_variablespp(p):
@@ -267,7 +276,7 @@ def p_variablesppp(p):
     # despues de declarar las dimensiones se elimina el id actual
     temp = funcDir.currentId
     funcDir.currentId = None
-    logs.append(f'Se elimino "{temp}" como la variable actual')
+    logs.append(f'Se elimino "{temp}" como la variable actual\n')
     del(temp)
     
 
@@ -301,7 +310,7 @@ def p_dimDeclare(p):
     # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
     except:
         funcDir.assignValueToCurrentVariable([None] * int(p[2]))
-        logs.append(f'Se le asigno a {funcDir.currentId} una lista vacia de tama;o {p[2]}')
+        logs.append(f'Se le asigno a {funcDir.currentId} una lista vacia de tama;o {p[2]}\n')
 
     # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
     else:
@@ -339,7 +348,6 @@ def p_funcionp(p):
     funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
-    funcDir.currentScope = None
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
 
 def p_create_func_scope(p):
@@ -353,7 +361,9 @@ def p_create_func_scope(p):
         funcDir.scopeExists(p[-1])
     except:
         funcDir.createScope(p[-1], p[-2])
+        logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
         funcDir.currentScope = p[-1]
+        logs.append(f'{p[-1]} se asigno como el scope actual\n')
     else:
         print(f'Error: {p[-1]} ya existe')
         raise SyntaxError
@@ -373,6 +383,7 @@ def p_save_param(p):
     save_param :
     '''
     funcDir.addParameterToList(p[-1], p[-2])
+    logs.append(f'Se agrego el parametro "{p[-1]}" de tipo "{p[-2]}" al scope de func1\n')
 
 def p_parametrop(p):
     '''

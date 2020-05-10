@@ -30,6 +30,7 @@ class VariablesTable(object):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
 
     def getTypeOfVariable(self, variableName):
+        print(f'{variableName} del scope {self.currentScope}')
         if self.currentScope is None: 
             return self.variablesTable['global']['variables'][variableName]['type']
         else:

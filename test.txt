@@ -6,7 +6,7 @@ funcion int func1(int n1, int n2, float n3)
 var int : a, b, c; 
 {
     si (a + b == d) haz {
-        b = c + 1;
+        b = n2 + 1;
     }
 }
 
