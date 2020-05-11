@@ -10,10 +10,11 @@ var int : a, b, c;
     }
 }
 
-funcion int func2()
+funcion int func2(int n1)
 var int : a, b, c;
 {
-
+    func1(2 + 3, b, 4.0);
+    b = c;
 }
 
 principal(){

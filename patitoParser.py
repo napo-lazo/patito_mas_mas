@@ -81,9 +81,20 @@ class QuadrupleManager(object):
                 logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.globalIntsCounter += 1
             self.quadrupleCounter += 1
-        
 
-    # metodo publico que se encarga de generar un salto inicial 
+    def generateParameter(self, parameter, parameterPosition):
+        self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
+        self.quadrupleCounter += 1
+
+    def generateGoSub(self, funcName):
+        #TODO: tirar error
+        if funcDir.areParametersFinished():
+            self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
+        else:
+            print('Error: faltan parametros')
+
+    # metodo publico que se encarga de generar un salto inicial
+    #TODO: Refactorizar funcion
     def generateJump(self, jumpType):
         if jumpType == 'false':
             self.jumpStack.append(self.quadrupleCounter)
@@ -104,6 +115,11 @@ class QuadrupleManager(object):
             self.quadruplesList.append(('GOTO', -1, -1, '-'))
             self.quadrupleCounter +=1
             self.updateJump('normal')
+        elif jumpType == 'jump':
+            self.jumpStack.append(self.quadrupleCounter)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter += 1
+
     
     # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
     def updateJump(self, jumpType):
@@ -158,9 +174,15 @@ def p_start(p):
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var funcion clear_scope PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
+    programa : PROGRAMA ID SEMICOLON jump var funcion clear_scope PRINCIPAL update_jump L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_jump(p):
+    '''
+    jump :
+    '''
+    quadrupleManager.generateJump('jump')
 
 def p_clear_scope(p):
     '''
@@ -364,6 +386,7 @@ def p_create_func_scope(p):
         logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
         funcDir.currentScope = p[-1]
         logs.append(f'{p[-1]} se asigno como el scope actual\n')
+        funcDir.addFunctionStart(quadrupleManager)
     else:
         print(f'Error: {p[-1]} ya existe')
         raise SyntaxError
@@ -668,19 +691,47 @@ def p_llamadaFuncion(p):
 
 def p_llamadaFuncionp(p):
     '''
-    llamadaFuncionp : COMMA expresion
+    llamadaFuncionp : expresion verify_parameter llamadaFuncionpp
                     | empty
     '''
     if len(p) == 3:
+        p[0] = p[1]
+    else: 
+        p[0] = p[1]
+    
+
+def p_llamadaFuncionpp(p):
+    '''
+    llamadaFuncionpp : COMMA expresion verify_parameter llamadaFuncionpp
+                    | empty
+    '''
+    if len(p) == 4:
         p[0] = (p[1], p[2])
     else: 
         p[0] = p[1]
 
+def p_verify_parameter(p):
+    '''
+    verify_parameter :
+    '''
+    funcDir.verifyParameter(quadrupleManager)
+
 def p_funcionVacia(p):
     '''
-    funcionVacia : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS SEMICOLON
+    funcionVacia : ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS SEMICOLON
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
+    p[0] = (p[1], p[3], p[4], p[5], p[6])
+    quadrupleManager.generateGoSub(funcDir.functionCalled)
+    funcDir.functionCalled = None
+    funcDir.parameterCounter = 0
+
+def p_set_func_scope(p):
+    '''
+    set_func_scope :
+    '''
+    #TODO: cuadruplo de ERA va aqui
+    funcDir.functionCalled = p[-1]
+
 
 def p_regresa(p):
     '''

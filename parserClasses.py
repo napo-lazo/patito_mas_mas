@@ -7,6 +7,8 @@ class VariablesTable(object):
         self.currentScope = None
         self.currentType = None
         self.currentId = None
+        self.functionCalled = None
+        self.parameterCounter = 0
 
     def scopeExists(self, scopeName):
         return self.variablesTable[scopeName]
@@ -39,6 +41,28 @@ class VariablesTable(object):
             except:
                 return self.variablesTable['global']['variables'][variableName]['type']
 
+    def addFunctionStart(self, quadrupleManager):
+        self.variablesTable[self.currentScope]['startsAt'] = quadrupleManager.quadrupleCounter
+
+    def getFunctionStart(self):
+        return self.variablesTable[self.functionCalled]['startsAt']
+
     def addParameterToList(self, paramName, paramType):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
             self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType}
+
+    def verifyParameter(self, quadrupleManager):
+        #TODO: Throw error if parameters are missing
+        if self.parameterCounter < len(self.variablesTable[self.functionCalled]['parameters']):
+            if quadrupleManager.typeStack.pop() != self.variablesTable[self.functionCalled]['parameters'][self.parameterCounter]:
+                print(f'Error: El tipo del parametro {self.parameterCounter} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+            else:
+                quadrupleManager.generateParameter(quadrupleManager.operandStack.pop(), self.parameterCounter)
+                self.parameterCounter += 1
+        elif self.parameterCounter >= len(self.variablesTable[self.functionCalled]['parameters']):
+            print('Error: Parametros de mas')
+    
+    def areParametersFinished(self):
+        return self.parameterCounter == len(self.variablesTable[self.functionCalled]['parameters'])
+
+    #TODO: GOSUB verifica que no falten parametros
