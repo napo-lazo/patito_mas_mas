@@ -1,4 +1,6 @@
 import patitoLexer
+from parserClasses import VariablesTable
+from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
 
@@ -55,6 +57,7 @@ class QuadrupleManager(object):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
             if self.operationStack[-1] == '(':
+                logs.append('Se agrego un "(" al operationStack\n')
                 return 
 
             operation = self.operationStack.pop()
@@ -68,12 +71,17 @@ class QuadrupleManager(object):
             
             if operation in ['=']:
                 self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
+                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
                 self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.globalIntsCounter))
+                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.globalIntsCounter}"\n')
                 self.operandStack.append(self.virutalDirectory.globalIntsCounter)
+                logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.globalIntsCounter}" al operandStack\n')
                 self.typeStack.append(resultType)
+                logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.globalIntsCounter += 1
             self.quadrupleCounter += 1
+        
 
     # metodo publico que se encarga de generar un salto inicial 
     def generateJump(self, jumpType):
@@ -120,43 +128,8 @@ class QuadrupleManager(object):
         self.quadruplesList.clear()
         self.quadrupleCounter = 0
 
-# variablesTable guarda las variables globales y de las funciones
-class VariablesTable(object):
 
-    def __init__(self):
-        #variablesTable tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
-        self.variablesTable = {}
-        self.currentScope = None
-        self.currentType = None
-        self.currentId = None
-
-    def createScope(self, scopeName, returnType):
-        self.variablesTable[scopeName] = {'returnType': returnType, 'variables' : {}}
-
-    def createVariable(self, variableName):
-        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType}
-    
-    def variableExists(self, variableName):
-        return self.variablesTable[self.currentScope]['variables'][variableName]
-    
-    def currentVariableValue(self):
-        return self.variablesTable[self.currentScope]['variables'][self.currentId]['value']
-    
-    def assignValueToCurrentVariable(self, value):
-        self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
-
-    def getTypeOfVariable(self, variableName):
-        if self.currentScope is None: 
-            return self.variablesTable['global']['variables'][variableName]['type']
-
-class FunctionDirectory(object):
-    # funcDir = {'nameid': {'returnType': datatype , 'parameters': {type: tipo, name: nombre},'varTable': <table-key>}}
-    def __init__(self):
-        self.functionDirectory={}
-    def createFunction(self, functionName, returnType, parameters):
-        self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': {}}
-
-variablesTable = VariablesTable()
+funcDir = VariablesTable()
 quadrupleManager = QuadrupleManager()
 functionDirectory = FunctionDirectory()
 
@@ -167,7 +140,7 @@ def p_start(p):
     '''
     print(p[1])
     print()
-    print(variablesTable.variablesTable)
+    print(funcDir.variablesTable)
     print()
     print(quadrupleManager.quadrupleCounter)
     print(quadrupleManager.jumpStack)
@@ -181,9 +154,18 @@ def p_start(p):
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var funcion PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
+    programa : PROGRAMA ID SEMICOLON var funcion clear_scope PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_clear_scope(p):
+    '''
+    clear_scope :
+    '''
+    temp = funcDir.currentScope
+    funcDir.currentScope = None
+    logs.append(f'Se elimino {temp} como el scope actual\n')
+    del(temp)
 
 def p_variables(p):
     '''
@@ -193,8 +175,11 @@ def p_variables(p):
     if len(p) != 2: 
         p[0] = (p[1], p[3])
         
-        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales 
-        variablesTable.currentScope = None
+        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales
+        # temp = funcDir.currentScope
+        # funcDir.currentScope = None
+        # logs.append(f'Se elimino "{temp}" como el scope actual\n')
+        # del(temp)
         
     else:
         p[0] = p[1]
@@ -204,50 +189,63 @@ def p_var_seen(p):
     ''' 
     var_seen :
     '''
-    if variablesTable.currentScope is None:
-        variablesTable.createScope('global', 'void')
-        variablesTable.currentScope = 'global'
+    if funcDir.currentScope is None:
+        funcDir.createScope('global', 'void')
+        logs.append('Se creo la funcion global de retorno tipo void en el dirFunc\n')
+        funcDir.currentScope = 'global'
+        logs.append('global se asigno como el scope actual\n')
 
 def p_variablesp(p):
+    # this error raise doesn't stop the compilation
     '''
     varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
+         | tipo tipo_seen COLON ID error varppp varpp delete_type SEMICOLON varpppp
     '''
     p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
+    #functionDirectory[p[5]] = {'returnType':p[4], 'varTable': {}}
 
 # regla intermedia para asignar el tipo actual de las variables que se estan declarando
 def p_tipo_seen(p):
     '''
     tipo_seen :
     '''
-    variablesTable.currentType = p[-1]
+    funcDir.currentType = p[-1]
+    logs.append(f'Se asigno {p[-1]} como el tipo de variable actual\n')
 
 # regla intermedia para crear una variable del tipo actual en la tabla de variables del scope actual
 def p_variable_seen(p):
     '''
     variable_seen : 
-                  | error error 
     '''
+    # '''
+    # variable_seen : 
+    #               | error error 
+    # '''
     # primero se revisa si ya hay una variable con ese nombre
     try:
-        variablesTable.variableExists(p[-1])
+        funcDir.variableExists(p[-1])
 
     # si no la hay se crea una de manera normal
     except:
-        variablesTable.createVariable(p[-1])
+        funcDir.createVariable(p[-1])
+        logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
     # de lo contrario se tira un error de variable duplicada
     else:
-        print(f'ERROR: Variable {p[-1]} already exists')
+        print(f'ERROR: Variable "{p[-1]}" already exists')
         raise SyntaxError
 
-    variablesTable.currentId = p[-1]
+    funcDir.currentId = p[-1]
 
 # regla intermedia que solo se encarga de eliminar el tipo actual
 def p_delete_type(p):
     '''
     delete_type :
     '''
-    variablesTable.currentType = None
+    temp = funcDir.currentType
+    funcDir.currentType = None   
+    logs.append(f'Se elimino "{temp}" como el tipo actual\n')
+    del(temp)
 
 def p_variablespp(p):
     '''
@@ -272,7 +270,10 @@ def p_variablesppp(p):
         p[0] = p[1]
 
     # despues de declarar las dimensiones se elimina el id actual
-    variablesTable.currentId = None
+    temp = funcDir.currentId
+    funcDir.currentId = None
+    logs.append(f'Se elimino "{temp}" como la variable actual\n')
+    del(temp)
     
 
 def p_variablespppp(p):
@@ -286,8 +287,11 @@ def p_variablespppp(p):
 def p_dimDeclare(p):
     '''
     dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-               | L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error  
     '''
+    # '''
+    # dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
+    #            | L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error  
+    # '''
     # revisa que el tama;o de las dimensiones sea mayor o igual a 1 de lo contrario tira un error
     if(p[2] <= 0):
         print('ERROR: Array size cant be less than 1')
@@ -297,21 +301,23 @@ def p_dimDeclare(p):
     
     # revisa si ya hay un valor asignado a la variable
     try: 
-        variablesTable.currentVariableValue()
+        funcDir.currentVariableValue()
 
     # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
     except:
-        variablesTable.assignValueToCurrentVariable([None] * int(p[2]))
+        funcDir.assignValueToCurrentVariable([None] * int(p[2]))
+        logs.append(f'Se le asigno a {funcDir.currentId} una lista vacia de tama;o {p[2]}\n')
 
     # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
     else:
         tempList = []
 
-        for cell in variablesTable.currentVariableValue():
+        for cell in funcDir.currentVariableValue():
             tempList.append([None] * int(p[2]))
 
         # lo asigna como una copia, de lo contrario todas las listas estarian apuntando al mismo espacio de memoria ocasionando que al cambiar una se cambien todas
-        variablesTable.assignValueToCurrentVariable(tempList.copy())
+        funcDir.assignValueToCurrentVariable(tempList.copy())
+        logs.append(f'Se le asigno a cada casilla de la lista de {funcDir.currentId} una lista vacia de tama;o {p[2]}')
 
 def p_tipo(p):
     '''
@@ -324,6 +330,7 @@ def p_tipo(p):
 def p_funcion(p):
     '''
     funcion : FUNCION funcionp
+            | FUNCION error
             | empty
     '''
     if len(p) == 3:
@@ -332,29 +339,55 @@ def p_funcion(p):
         p[0] = p[1]
 
 def p_funcionp(p):
+    # poner una regla de error aqui permite que el codigo termine de compilar y marca el error
     '''
-    funcionp : tipoRetorno ID L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+    funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
-    functionDirectory.createFunction(p[2], p[1], p[4])
+    #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
+
+def p_create_func_scope(p):
+    '''
+    create_func_scope : 
+    '''
+    if p[-1] == 'global':
+        print('Error: global es una palabra reservada')
+        raise SyntaxError
+    try:
+        funcDir.scopeExists(p[-1])
+    except:
+        funcDir.createScope(p[-1], p[-2])
+        logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
+        funcDir.currentScope = p[-1]
+        logs.append(f'{p[-1]} se asigno como el scope actual\n')
+    else:
+        print(f'Error: {p[-1]} ya existe')
+        raise SyntaxError
 
 def p_parametro(p):
     '''
-    parametro : tipo ID parametrop
+    parametro : tipo ID save_param parametrop
               | empty
     '''
-    if len(p) == 4:
-        p[0] = (p[1], p[2], p[3])
+    if len(p) == 5:
+        p[0] = (p[1], p[2], p[4])
     else: 
         p[0] = p[1]
 
+def p_save_param(p):
+    '''
+    save_param :
+    '''
+    funcDir.addParameterToList(p[-1], p[-2])
+    logs.append(f'Se agrego el parametro "{p[-1]}" de tipo "{p[-2]}" al scope de func1\n')
+
 def p_parametrop(p):
     '''
-    parametrop : COMMA tipo ID parametrop
+    parametrop : COMMA tipo ID save_param parametrop
                | empty
     '''
-    if len(p) == 5:
-        p[0] = (p[1], p[2], p[3], p[4])
+    if len(p) == 6:
+        p[0] = (p[1], p[2], p[3], p[5])
     else:
         p[0] = p[1]
 
@@ -405,8 +438,10 @@ def p_operand_seen(p):
     operand_seen :
     '''
     quadrupleManager.operandStack.append(p[-1])
+    logs.append(f'Se agrego "{p[-1]}" al operandStack\n')
     try:
-        quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-1]))
+        quadrupleManager.typeStack.append(funcDir.getTypeOfVariable(p[-1]))
+        logs.append(f'Se agrego "{quadrupleManager.typeStack[-1]}" al typeStack\n')
     except:
         print(f'ERROR: la variable {p[-1]} no ha sido declarada')
         raise SyntaxError
@@ -562,8 +597,10 @@ def p_operation_seen(p):
     '''
     if p[-1] == ')':
         quadrupleManager.operationStack.pop()
+        logs.append('Se termino un parentesis\n')
     else:
         quadrupleManager.operationStack.append(p[-1])
+        logs.append(f'Se agrego {p[-1]} al operantionStack\n')
 
 
 def p_matriz(p):
@@ -587,38 +624,36 @@ def p_cte(p):
         | CTE_FLOAT
         | CTE_CHAR
         | llamadaFuncion
-        | ID dimId
+        | ID operand_seen dimId
         | L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
     '''
     if len(p) == 6:
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
-    # Falta para cuando el valor viene de un arreglo/matriz
-    elif len(p) == 3:
-        p[0] = (p[1], p[2])
-    #TODO: Turn into a method for the quadruple manager 
-        quadrupleManager.operandStack.append(p[1])
-        try:
-            quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
-        except:
-            print(f'ERROR: la variable {p[1]} no ha sido declarada')
-            raise SyntaxError
+    # TODO: Falta para cuando el valor viene de un arreglo/matriz y despues convertirlo y ver si se puede reusar en regla gramatical
+    elif len(p) == 4:
+        p[0] = (p[1], p[3])
 
-    #TODO: por el momento solo esta pensado para ctes y no funciones 
-    else:
-        quadrupleManager.operandStack.append(p[1])
-    #TODO: add verification of char constants
-        if type(p[1]) is int:
-            quadrupleManager.typeStack.append('int')
-        elif type(p[1]) is float:
-            quadrupleManager.typeStack.append('float')
-    #TODO: delete later
+        # quadrupleManager.operandStack.append(p[1])
+        # logs.append(f'Se agrego {p[1]} al operandStack')
         # try:
         #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
         # except:
         #     print(f'ERROR: la variable {p[1]} no ha sido declarada')
         #     raise SyntaxError
+
+    #TODO: por el momento solo esta pensado para ctes y no funciones 
+    else:
+        quadrupleManager.operandStack.append(p[1])
+        logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
+        #TODO: add verification of char constants
+        if type(p[1]) is int:
+            quadrupleManager.typeStack.append('int')
+        elif type(p[1]) is float:
+            quadrupleManager.typeStack.append('float')
+        logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
+
         p[0] = p[1]
 
 def p_llamadaFuncion(p):
@@ -704,7 +739,6 @@ def p_jump_false(p):
     '''
     jump_false : 
     '''
-    #TODO: update generated GOTOs
     quadrupleManager.generateJump('false')
 
 def p_update_jump(p):
@@ -760,7 +794,7 @@ def p_add_gt(p):
     quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
     quadrupleManager.typeStack.append(quadrupleManager.typeStack[-1])
     quadrupleManager.operandStack.append(p[-10])
-    quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[-10]))
+    quadrupleManager.typeStack.append(funcDir.getTypeOfVariable(p[-10]))
     quadrupleManager.operationStack.append('>')
 
 def p_add_one(p):
