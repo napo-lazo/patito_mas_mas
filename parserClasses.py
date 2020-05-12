@@ -42,6 +42,16 @@ class VariablesTable(object):
     def addParameterToList(self, paramName, paramType):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
             self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType}
+    
+    # para ERA activation record hay que crear un espacio en memoria 
+    # se puede leer la funcion, identificar y contar variables para reservar espacios de ese tamano 
+    # con la ayuda de varTable asignandoles direcciones a cada variable
+
+    #def getFunctionSize(self):
+    #   rgresa variableCount(int) + variableCount(float) + ....
+
+    #def variableCount(self, vartype):
+    #   return count number of ints, floats, chars or booleans
 
 class FunctionDirectory(object):
     # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}
@@ -55,12 +65,6 @@ class FunctionDirectory(object):
 
     def createFunction(self, functionName, returnType, parameters):
         self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': VariablesTable()}
-        # activation record , crea un espacio en memoria 
-        # se puede leer la funcion, identificar y contar variables para reservar espacios de ese tamano 
-        # con la ayuda de varTable asignandoles direcciones a cada variable
-    
-    #def variableCount(self, vartype):
-        # count number of ints, floats, chars or booleans
     
     def releaseVars(self):
         # release vartable, end function, update temporal var count
