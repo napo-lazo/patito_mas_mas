@@ -10,7 +10,7 @@ Se elimino "c" como la variable actual
 Se agrego la variable "d" al scope de global
 Se elimino "d" como la variable actual
 Se elimino "int" como el tipo actual
-Se creo la funcion func1 de retorno tipo int en el dirFunc
+Se creo la funcion func1 de retorno tipo void en el dirFunc
 func1 se asigno como el scope actual
 Se agrego el parametro "n1" de tipo "int" al scope de func1
 Se agrego el parametro "n2" de tipo "int" al scope de func1
@@ -78,6 +78,8 @@ Se agrego = al operantionStack
 Se agrego "c" al operandStack
 Se agrego "int" al typeStack
 Se realizo b = c
+Se agrego la constante "3" al operandStack
+Se agrego "<class 'int'>" al typeStack
 Se elimino func2 como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack

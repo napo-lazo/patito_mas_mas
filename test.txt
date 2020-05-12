@@ -2,12 +2,13 @@ programa test;
 
 var int : a, b, c, d;
 
-funcion int func1(int n1, int n2, float n3)
+funcion void func1(int n1, int n2, float n3)
 var int : a, b, c; 
 {
     si (a + b == d) haz {
         b = n2 + 1;
     }
+
 }
 
 funcion int func2(int n1)
@@ -15,6 +16,7 @@ var int : a, b, c;
 {
     func1(2 + 3, b, 4.0);
     b = c;
+    regresa(3);
 }
 
 principal(){

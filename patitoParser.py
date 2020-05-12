@@ -92,6 +92,15 @@ class QuadrupleManager(object):
             self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
         else:
             print('Error: faltan parametros')
+    
+    def generateEndFunc(self):
+        self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
+        self.quadrupleCounter += 1
+
+    def generateReturn(self, returnCounter):
+        if returnCounter > 0:
+            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, self.quadrupleCounter))
+            self.quadrupleCounter += 1
 
     # metodo publico que se encarga de generar un salto inicial
     #TODO: Refactorizar funcion
@@ -367,7 +376,7 @@ def p_funcion(p):
 def p_funcionp(p):
     # poner una regla de error aqui permite que el codigo termine de compilar y marca el error
     '''
-    funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+    funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque end_func funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
@@ -390,6 +399,15 @@ def p_create_func_scope(p):
     else:
         print(f'Error: {p[-1]} ya existe')
         raise SyntaxError
+
+def p_end_func(p):
+    '''
+    end_func :
+    '''
+    funcDir.verifyFunctionCompatibility(quadrupleManager)
+    quadrupleManager.generateReturn(funcDir.callFromReturn)
+    funcDir.callFromReturn = 0
+    quadrupleManager.generateEndFunc()
 
 def p_parametro(p):
     '''
@@ -685,7 +703,7 @@ def p_cte(p):
 
 def p_llamadaFuncion(p):
     '''
-    llamadaFuncion : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS
+    llamadaFuncion : ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
@@ -702,7 +720,7 @@ def p_llamadaFuncionp(p):
 
 def p_llamadaFuncionpp(p):
     '''
-    llamadaFuncionpp : COMMA expresion verify_parameter llamadaFuncionpp
+    llamadaFuncionpp : COMMA llamadaFuncionp
                     | empty
     '''
     if len(p) == 4:
@@ -730,7 +748,13 @@ def p_set_func_scope(p):
     set_func_scope :
     '''
     #TODO: cuadruplo de ERA va aqui
-    funcDir.functionCalled = p[-1]
+    try: 
+        funcDir.scopeExists(p[-1])
+    except:
+        print('Error: funcion no existe')
+        raise SyntaxError
+    else:
+        funcDir.functionCalled = p[-1]
 
 
 def p_regresa(p):
@@ -738,6 +762,8 @@ def p_regresa(p):
     regresa : REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+    funcDir.callFromReturn += 1
+    
 
 def p_lectura(p):
     '''

@@ -9,6 +9,7 @@ class VariablesTable(object):
         self.currentId = None
         self.functionCalled = None
         self.parameterCounter = 0
+        self.callFromReturn = 0
 
     def scopeExists(self, scopeName):
         return self.variablesTable[scopeName]
@@ -64,5 +65,26 @@ class VariablesTable(object):
     
     def areParametersFinished(self):
         return self.parameterCounter == len(self.variablesTable[self.functionCalled]['parameters'])
+
+    def verifyFunctionCompatibility(self, quadrupleManager):
+
+        if self.callFromReturn == 0 and self.variablesTable[self.currentScope]['returnType'] != 'void':
+            print('Falta que la funcion regrese un valor')
+            return
+
+        if self.callFromReturn >= 1 and self.variablesTable[self.currentScope]['returnType'] == 'void':
+            print('Funcion void no puede regresar valores')
+            return
+
+        if self.callFromReturn >= 1:
+            aux = quadrupleManager.typeStack.pop()
+        else:
+            return
+
+        if aux == self.variablesTable[self.currentScope]['returnType']:
+            print('tipos son validos')
+        else:
+            print('Los tipos no son validos')
+        
 
     #TODO: GOSUB verifica que no falten parametros
