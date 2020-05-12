@@ -1,5 +1,6 @@
 import patitoLexer
 from parserClasses import VariablesTable
+#from parserClases import FunctionDirectory
 from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
@@ -13,6 +14,12 @@ class VirutalDirectory(object):
         self.globalFloatsRange = [3000, 4999]
         self.globalCharsRange = [5000, 6999]
         self.globalBoolsRange = [7000, 8999]
+        self.localFloatsRange = [9000, 10999]
+        self.localCharsRange = [11000, 12999]
+        self.localBoolsRange = [13000, 14999]
+        self.cteFloatsRange = [15000, 16999]
+        self.cteCharsRange = [17000, 18999]
+        self.cteBoolsRange = [19000, 20999]
 
 class QuadrupleManager(object):
     def __init__(self):
@@ -131,7 +138,7 @@ class QuadrupleManager(object):
 
 funcDir = VariablesTable()
 quadrupleManager = QuadrupleManager()
-functionDirectory = FunctionDirectory()
+#functionDirectory = FunctionDirectory()
 
 # gramatica para el parser
 def p_start(p):
@@ -345,6 +352,7 @@ def p_funcionp(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
+    #functionDirectory[p[2]].localVariableCount = p[5].length()
 
 def p_create_func_scope(p):
     '''
@@ -689,12 +697,18 @@ def p_lectura(p):
     lectura : LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+    quadrupleManager.applyOperation(['lee', p[3]])
+    result = quadrupleManager.operationStack.pop()
+    quadrupleManager.applyOperation(['lee', result])
 
 def p_lecturap(p):
     '''
     lecturap : ID dimId lecturapp
     '''
     p[0] = (p[1], p[2], p[3])
+    quadrupleManager.applyOperation(['lee', p[3]])
+    result = quadrupleManager.operationStack.pop()
+    quadrupleManager.applyOperation(['lee', result])
 
 def p_lecturapp(p):
     '''
@@ -712,12 +726,23 @@ def p_escritura(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
+    # generatecuad (write, escriturap, null, null)
+    # res = pilaop.pop()
+    # genera write, res, null, null
+    quadrupleManager.applyOperation(['escribe', p[3]])
+    result = quadrupleManager.operationStack.pop()
+    quadrupleManager.applyOperation(['escribe', result])
+
 def p_escriturap(p):
     '''
     escriturap : LETRERO escriturapp
                | expresion escriturapp
     '''
     p[0] = (p[1], p[2])
+    quadrupleManager.applyOperation(['escribe', p[2]])
+    result = quadrupleManager.operationStack.pop()
+    quadrupleManager.applyOperation(['escribe', result])
+
 
 def p_escriturapp(p):
     '''
