@@ -44,17 +44,23 @@ class VariablesTable(object):
             self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType}
 
 class FunctionDirectory(object):
-    # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': {type: <tipo>, name: <nombre>},'varTable': <table>}}
+    # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}
     def __init__(self):
         self.functionDirectory={}
         self.parameterCount = 0
-        self.localVariablesCount = 0
-        self.tempVariablesCount = 0
+        self.localVariableCount = 0
+        self.tempVariableCount = 0
         # Con este defines en donde empieza la funcion
         self.quadrupleCounter = 0
 
     def createFunction(self, functionName, returnType, parameters):
         self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': VariablesTable()}
+        # activation record , crea un espacio en memoria 
+        # se puede leer la funcion, identificar y contar variables para reservar espacios de ese tamano 
+        # con la ayuda de varTable asignandoles direcciones a cada variable
+    
+    #def variableCount(self, vartype):
+        # count number of ints, floats, chars or booleans
     
     def releaseVars(self):
         # release vartable, end function, update temporal var count
