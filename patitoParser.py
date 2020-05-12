@@ -88,9 +88,36 @@ class QuadrupleManager(object):
                 logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.globalIntsCounter += 1
             self.quadrupleCounter += 1
-        
 
-    # metodo publico que se encarga de generar un salto inicial 
+    def generateParameter(self, parameter, parameterPosition):
+        self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
+        self.quadrupleCounter += 1
+
+    def generateGoSub(self, funcName):
+        #TODO: tirar error
+        if funcDir.areParametersFinished():
+            self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
+        else:
+            print('Error: faltan parametros')
+    
+    def generateEndFunc(self):
+        self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
+        self.quadrupleCounter += 1
+
+    def generateReturn(self, returnCounter):
+        if returnCounter > 0:
+            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, self.quadrupleCounter))
+            self.quadrupleCounter += 1
+    
+    def generateERA(self):
+        self.quadrupleList.append(('ERA', -1, -1, funcDir.getFunctionSize()))
+    
+    def generateEndProg(self):
+        if funcDir.areFunctionsFinished():
+            self.quadruplesList.append(('ENDPROG', -1, -1, -1))
+
+    # metodo publico que se encarga de generar un salto inicial
+    #TODO: Refactorizar funcion
     def generateJump(self, jumpType):
         if jumpType == 'false':
             self.jumpStack.append(self.quadrupleCounter)
@@ -111,6 +138,11 @@ class QuadrupleManager(object):
             self.quadruplesList.append(('GOTO', -1, -1, '-'))
             self.quadrupleCounter +=1
             self.updateJump('normal')
+        elif jumpType == 'jump':
+            self.jumpStack.append(self.quadrupleCounter)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter += 1
+
     
     # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
     def updateJump(self, jumpType):
@@ -697,6 +729,8 @@ def p_lectura(p):
     lectura : LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+
+    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[3]))
     quadrupleManager.applyOperation(['lee', p[3]])
     result = quadrupleManager.operationStack.pop()
     quadrupleManager.applyOperation(['lee', result])
@@ -706,6 +740,8 @@ def p_lecturap(p):
     lecturap : ID dimId lecturapp
     '''
     p[0] = (p[1], p[2], p[3])
+
+    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[3]))
     quadrupleManager.applyOperation(['lee', p[3]])
     result = quadrupleManager.operationStack.pop()
     quadrupleManager.applyOperation(['lee', result])
@@ -729,7 +765,7 @@ def p_escritura(p):
     # generatecuad (write, escriturap, null, null)
     # res = pilaop.pop()
     # genera write, res, null, null
-    quadrupleManager.applyOperation(['escribe', p[3]])
+    quadrupleManager.quadruplesList.append(('escribe', -1, -1, p[3]))
     result = quadrupleManager.operationStack.pop()
     quadrupleManager.applyOperation(['escribe', result])
 
@@ -739,7 +775,7 @@ def p_escriturap(p):
                | expresion escriturapp
     '''
     p[0] = (p[1], p[2])
-    quadrupleManager.applyOperation(['escribe', p[2]])
+    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[2]))
     result = quadrupleManager.operationStack.pop()
     quadrupleManager.applyOperation(['escribe', result])
 
