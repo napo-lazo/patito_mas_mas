@@ -10,6 +10,12 @@ Se elimino "c" como la variable actual
 Se agrego la variable "d" al scope de global
 Se elimino "d" como la variable actual
 Se elimino "int" como el tipo actual
+Se asigno float como el tipo de variable actual
+Se agrego la variable "e" al scope de global
+Se elimino "e" como la variable actual
+Se agrego la variable "f" al scope de global
+Se elimino "f" como la variable actual
+Se elimino "float" como el tipo actual
 Se creo la funcion func1 de retorno tipo void en el dirFunc
 func1 se asigno como el scope actual
 Se agrego el parametro "n1" de tipo "int" al scope de func1

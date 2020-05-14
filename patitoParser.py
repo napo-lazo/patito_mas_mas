@@ -7,20 +7,41 @@ import ply.yacc as yacc
 
 class VirutalDirectory(object):
     def __init__(self):
-        self.globalIntsRange = [1000, 2999]
-        # Por el momento solo se usa este contador para llevar un conteo de las variables temporales
+
+        self.genericCounter = 1000
+
+        self.IntRanges = [3500, 11000, 18500, 26000]
+        self.FloatRanges = [6000, 13500, 21000, 28500]
+        self.CharRanges = [8500, 16000, 23500, -1]
+        self.BoolRanges = [-1, -1, -1, 31000]
+
         self.globalIntsCounter = 1000
-        self.globalInts = []
-        #TODO: Change to upper limit
-        self.globalFloatsRange = [3000, 4999]
-        self.globalCharsRange = [5000, 6999]
-        self.globalBoolsRange = [7000, 8999]
-        self.localFloatsRange = [9000, 10999]
-        self.localCharsRange = [11000, 12999]
-        self.localBoolsRange = [13000, 14999]
-        self.cteFloatsRange = [15000, 16999]
-        self.cteCharsRange = [17000, 18999]
-        self.cteBoolsRange = [19000, 20999]
+        self.globalFloatsCounter = 3500
+        self.globalCharsCounter = 6000
+        self.localIntsCounter = 8500
+        self.localFloatsCounter = 11000
+        self.localCharsCounter = 13500
+        self.cteIntsCounter = 16000
+        self.cteFloatsCounter = 18500
+        self.cteCharsCounter = 21000
+        self.tempIntsCounter = 23500
+        self.tempFloatsCounter = 26000
+        self.tempBoolsCounter = 28500
+
+    def generateAddressForVariable(self, scope, type):
+        if scope == 'global':
+            if type == 'int':
+                self.globalIntsCounter += 1
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.globalFloatsCounter += 1
+                return self.globalFloatsCounter - 1
+            else:
+                self.globalCharsCounter += 1
+                return self.globalCharsCounter - 1
+        else:
+            pass
+
 
 class QuadrupleManager(object):
     def __init__(self):
@@ -83,13 +104,13 @@ class QuadrupleManager(object):
                 self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
                 logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
-                self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.globalIntsCounter))
-                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.globalIntsCounter}"\n')
-                self.operandStack.append(self.virutalDirectory.globalIntsCounter)
-                logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.globalIntsCounter}" al operandStack\n')
+                self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.genericCounter))
+                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
+                self.operandStack.append(self.virutalDirectory.genericCounter)
+                logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.genericCounter}" al operandStack\n')
                 self.typeStack.append(resultType)
                 logs.append(f'Se agrego "{resultType}" al typeStack\n')
-                self.virutalDirectory.globalIntsCounter += 1
+                self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
 
     def generateParameter(self, parameter, parameterPosition):
@@ -117,10 +138,10 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
     
     def generateReturnAssignment(self):
-        self.quadruplesList.append(('=', self.returnValuesStack.pop(), -1, self.virutalDirectory.globalIntsCounter))
+        self.quadruplesList.append(('=', self.returnValuesStack.pop(), -1, self.virutalDirectory.genericCounter))
         self.typeStack.append(self.returnTypeStack.pop())
         self.quadrupleCounter += 1
-        self.virutalDirectory.globalIntsCounter += 1
+        self.virutalDirectory.genericCounter += 1
 
     def generateERA(self):
         self.quadrupleList.append(('ERA', -1, -1, funcDir.getFunctionSize()))
@@ -172,7 +193,7 @@ class QuadrupleManager(object):
 
     # metodo publico para limpiar los stacks y reiniciar los contadores
     def clearData(self):
-        self.virutalDirectory.globalIntsCounter = 1000
+        self.virutalDirectory.genericCounter = 1000
         self.jumpStack.clear()
         self.operandStack.clear()
         self.typeStack.clear()
@@ -284,7 +305,7 @@ def p_variable_seen(p):
 
     # si no la hay se crea una de manera normal
     except:
-        funcDir.createVariable(p[-1])
+        funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable(funcDir.currentScope, funcDir.currentType))
         logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
     # de lo contrario se tira un error de variable duplicada
@@ -403,24 +424,6 @@ def p_funcionp(p):
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
     #functionDirectory[p[2]].localVariableCount = p[5].length()
-
-def p_create_func_scope(p):
-    '''
-    create_func_scope : 
-    '''
-    if p[-1] == 'global':
-        print('Error: global es una palabra reservada')
-        raise SyntaxError
-    try:
-        funcDir.scopeExists(p[-1])
-    except:
-        funcDir.createScope(p[-1], p[-2])
-        logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
-        funcDir.currentScope = p[-1]
-        logs.append(f'{p[-1]} se asigno como el scope actual\n')
-    else:
-        print(f'Error: {p[-1]} ya existe')
-        raise SyntaxError
 
 def p_create_func_scope(p):
     '''

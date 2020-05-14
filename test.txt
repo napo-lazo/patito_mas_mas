@@ -1,6 +1,7 @@
 programa test;
 
 var int : a, b, c, d;
+    float : e, f;
 
 funcion void func1(int n1, int n2, float n3)
 var int : a, b, c; 

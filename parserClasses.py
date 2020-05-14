@@ -23,8 +23,8 @@ class FunctionDirectory(object):
         else:
             self.variablesTable[scopeName] = {'returnType': returnType, 'parameters' : [], 'variables' : {}}
 
-    def createVariable(self, variableName):
-        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType}
+    def createVariable(self, variableName, virtualAddress):
+        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress}
     
     def variableExists(self, variableName):
         return self.variablesTable[self.currentScope]['variables'][variableName]
