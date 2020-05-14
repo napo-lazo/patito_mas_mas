@@ -39,6 +39,16 @@ class VirutalDirectory(object):
             else:
                 self.globalCharsCounter += 1
                 return self.globalCharsCounter - 1
+        elif scope == 'cte':
+            if type == 'int':
+                self.cteIntsCounter += 1
+                return self.cteIntsCounter - 1
+            elif type == 'float':
+                self.cteFloatsCounter += 1
+                return self.cteFloatsCounter - 1
+            else:
+                self.cteCharsCounter += 1
+                return self.cteCharsCounter - 1
         else:
             if type == 'int':
                 self.localIntsCounter += 1
@@ -226,6 +236,8 @@ def p_start(p):
     print(p[1])
     print()
     print(funcDir.variablesTable)
+    print()
+    print(funcDir.ctesTable)
     print()
     print(quadrupleManager.quadrupleCounter)
     print(quadrupleManager.jumpStack)
@@ -754,8 +766,12 @@ def p_cte(p):
         logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
         #TODO: add verification of char constants
         if type(p[1]) is int:
+            if not funcDir.constantExists(p[1]):
+                funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
             quadrupleManager.typeStack.append('int')
         elif type(p[1]) is float:
+            if not funcDir.constantExists(p[1]):
+                funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'float') ,'float')
             quadrupleManager.typeStack.append('float')
         logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 

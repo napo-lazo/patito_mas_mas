@@ -4,6 +4,7 @@ class FunctionDirectory(object):
     def __init__(self):
         #variablesTable tiene el formato de {nombreScope : {returnType : valor, parameters: [type1, type2, etc] variables : {nombreVar1 : {type : valor, value : valor}}}} 
         self.variablesTable = {}
+        self.ctesTable = {}
         self.currentScope = None
         self.currentType = None
         self.currentId = None
@@ -13,6 +14,16 @@ class FunctionDirectory(object):
         #########################
         self.localVariableCount = 0
         self.tempVariableCount = 0
+
+    def constantExists(self, constant):
+        try:
+            self.ctesTable[constant]
+            return True
+        except:
+            return False
+
+    def addConstant(self, constant, virtualAddress, typeOfConstant):
+        self.ctesTable[constant] = {'virtualAddress': virtualAddress, 'type' : typeOfConstant}
 
     def scopeExists(self, scopeName):
         return self.variablesTable[scopeName]
