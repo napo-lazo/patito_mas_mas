@@ -2,7 +2,7 @@
 class FunctionDirectory(object):
 
     def __init__(self):
-        #variablesTable tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
+        #variablesTable tiene el formato de {nombreScope : {returnType : valor, parameters: [type1, type2, etc] variables : {nombreVar1 : {type : valor, value : valor}}}} 
         self.variablesTable = {}
         self.currentScope = None
         self.currentType = None
