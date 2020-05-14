@@ -40,7 +40,20 @@ class VirutalDirectory(object):
                 self.globalCharsCounter += 1
                 return self.globalCharsCounter - 1
         else:
-            pass
+            if type == 'int':
+                self.localIntsCounter += 1
+                return self.localIntsCounter - 1
+            elif type == 'float':
+                self.localFloatsCounter += 1
+                return self.localFloatsCounter - 1
+            else:
+                self.localCharsCounter += 1
+                return self.localCharsCounter - 1
+    
+    def resetLocalAddresses(self):
+        self.localIntsCounter = 8500
+        self.localFloatsCounter = 11000
+        self.localCharsCounter = 13500
 
 
 class QuadrupleManager(object):
@@ -451,6 +464,7 @@ def p_end_func(p):
     funcDir.verifyFunctionCompatibility(quadrupleManager)
     quadrupleManager.generateReturn(funcDir.callFromReturn)
     funcDir.callFromReturn = 0
+    quadrupleManager.virutalDirectory.resetLocalAddresses()
     quadrupleManager.generateEndFunc()
 
 def p_parametro(p):

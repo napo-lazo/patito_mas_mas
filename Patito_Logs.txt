@@ -29,6 +29,12 @@ Se elimino "b" como la variable actual
 Se agrego la variable "c" al scope de func1
 Se elimino "c" como la variable actual
 Se elimino "int" como el tipo actual
+Se asigno float como el tipo de variable actual
+Se agrego la variable "r1" al scope de func1
+Se elimino "r1" como la variable actual
+Se agrego la variable "s2" al scope de func1
+Se elimino "s2" como la variable actual
+Se elimino "float" como el tipo actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
 Se agrego + al operantionStack
@@ -67,6 +73,12 @@ Se elimino "b" como la variable actual
 Se agrego la variable "c" al scope de func2
 Se elimino "c" como la variable actual
 Se elimino "int" como el tipo actual
+Se asigno float como el tipo de variable actual
+Se agrego la variable "f1" al scope de func2
+Se elimino "f1" como la variable actual
+Se agrego la variable "f2" al scope de func2
+Se elimino "f2" como la variable actual
+Se elimino "float" como el tipo actual
 Se agrego la constante "2" al operandStack
 Se agrego "<class 'int'>" al typeStack
 Se agrego + al operantionStack
