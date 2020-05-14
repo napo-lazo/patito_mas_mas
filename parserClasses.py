@@ -77,7 +77,7 @@ class VariablesTable(object):
             return
 
         if self.callFromReturn >= 1:
-            aux = quadrupleManager.typeStack.pop()
+            aux = quadrupleManager.typeStack[-1]
         else:
             return
 
@@ -86,5 +86,7 @@ class VariablesTable(object):
         else:
             print('Los tipos no son validos')
         
+    def isVoid(self):
+        return self.variablesTable[self.functionCalled]['returnType'] == 'void'
 
     #TODO: GOSUB verifica que no falten parametros

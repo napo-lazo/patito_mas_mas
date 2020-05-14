@@ -94,7 +94,7 @@ Rule 88    cte -> CTE_CHAR
 Rule 89    cte -> llamadaFuncion
 Rule 90    cte -> ID operand_seen dimId
 Rule 91    cte -> L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-Rule 92    llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+Rule 92    llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 Rule 93    llamadaFuncionp -> expresion verify_parameter llamadaFuncionpp
 Rule 94    llamadaFuncionp -> empty
 Rule 95    llamadaFuncionpp -> COMMA llamadaFuncionp
@@ -231,7 +231,7 @@ llamadaFuncionpp     : 93
 matriz               : 75
 matrizp              : 81
 operand_seen         : 48 90 119
-operation_seen       : 48 57 58 62 63 64 65 66 67 71 72 76 77 91 91 119
+operation_seen       : 48 57 58 62 63 64 65 66 67 71 72 76 77 91 91 92 92 119
 parametro            : 27
 parametrop           : 30 33
 programa             : 1
@@ -1137,7 +1137,7 @@ state 80
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -1180,7 +1180,7 @@ state 82
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     LETRERO         shift and go to state 115
     NOT             shift and go to state 102
@@ -1214,7 +1214,7 @@ state 83
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -1401,7 +1401,7 @@ state 97
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -1436,7 +1436,7 @@ state 98
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     R_PARENTHESIS   reduce using rule 122 (empty -> .)
@@ -1506,7 +1506,7 @@ state 102
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -1738,7 +1738,7 @@ state 110
 state 111
 
     (90) cte -> ID . operand_seen dimId
-    (92) llamadaFuncion -> ID . set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> ID . set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
     (49) operand_seen -> .
     (99) set_func_scope -> .
 
@@ -1848,7 +1848,7 @@ state 118
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -2055,7 +2055,7 @@ state 131
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -2365,7 +2365,7 @@ state 143
 
 state 144
 
-    (92) llamadaFuncion -> ID set_func_scope . L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> ID set_func_scope . L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     L_PARENTHESIS   shift and go to state 190
 
@@ -2421,7 +2421,7 @@ state 149
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     LETRERO         shift and go to state 115
     NOT             shift and go to state 102
@@ -2558,7 +2558,7 @@ state 162
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -2980,41 +2980,18 @@ state 189
 
 state 190
 
-    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS . llamadaFuncionp R_PARENTHESIS
-    (93) llamadaFuncionp -> . expresion verify_parameter llamadaFuncionpp
-    (94) llamadaFuncionp -> . empty
-    (55) expresion -> . relacional apply_operation_expresion expresionp
-    (56) expresion -> . NOT relacional expresionp
-    (122) empty -> .
-    (61) relacional -> . aritmetica apply_operation_relational relacionalp
-    (70) aritmetica -> . factor apply_operation_aritmetica aritmeticap
-    (75) factor -> . matriz apply_operation_factor factorp
-    (81) matriz -> . cte matrizp
-    (86) cte -> . CTE_INT
-    (87) cte -> . CTE_FLOAT
-    (88) cte -> . CTE_CHAR
-    (89) cte -> . llamadaFuncion
-    (90) cte -> . ID operand_seen dimId
-    (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS . operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
+    (80) operation_seen -> .
 
-    NOT             shift and go to state 102
-    R_PARENTHESIS   reduce using rule 122 (empty -> .)
-    CTE_INT         shift and go to state 107
-    CTE_FLOAT       shift and go to state 108
-    CTE_CHAR        shift and go to state 109
-    ID              shift and go to state 111
-    L_PARENTHESIS   shift and go to state 99
+    NOT             reduce using rule 80 (operation_seen -> .)
+    CTE_INT         reduce using rule 80 (operation_seen -> .)
+    CTE_FLOAT       reduce using rule 80 (operation_seen -> .)
+    CTE_CHAR        reduce using rule 80 (operation_seen -> .)
+    ID              reduce using rule 80 (operation_seen -> .)
+    L_PARENTHESIS   reduce using rule 80 (operation_seen -> .)
+    R_PARENTHESIS   reduce using rule 80 (operation_seen -> .)
 
-    llamadaFuncionp                shift and go to state 220
-    expresion                      shift and go to state 129
-    empty                          shift and go to state 130
-    relacional                     shift and go to state 101
-    aritmetica                     shift and go to state 103
-    factor                         shift and go to state 104
-    matriz                         shift and go to state 105
-    cte                            shift and go to state 106
-    llamadaFuncion                 shift and go to state 110
+    operation_seen                 shift and go to state 220
 
 state 191
 
@@ -3172,7 +3149,7 @@ state 205
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     R_PARENTHESIS   reduce using rule 122 (empty -> .)
@@ -3243,7 +3220,7 @@ state 208
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -3275,7 +3252,7 @@ state 209
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -3305,7 +3282,7 @@ state 210
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3333,7 +3310,7 @@ state 211
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3361,7 +3338,7 @@ state 212
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3389,7 +3366,7 @@ state 213
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3417,7 +3394,7 @@ state 214
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3445,7 +3422,7 @@ state 215
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3472,7 +3449,7 @@ state 216
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3498,7 +3475,7 @@ state 217
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3523,7 +3500,7 @@ state 218
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3547,7 +3524,7 @@ state 219
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     CTE_INT         shift and go to state 107
     CTE_FLOAT       shift and go to state 108
@@ -3562,10 +3539,41 @@ state 219
 
 state 220
 
-    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp . R_PARENTHESIS
+    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen . llamadaFuncionp R_PARENTHESIS operation_seen
+    (93) llamadaFuncionp -> . expresion verify_parameter llamadaFuncionpp
+    (94) llamadaFuncionp -> . empty
+    (55) expresion -> . relacional apply_operation_expresion expresionp
+    (56) expresion -> . NOT relacional expresionp
+    (122) empty -> .
+    (61) relacional -> . aritmetica apply_operation_relational relacionalp
+    (70) aritmetica -> . factor apply_operation_aritmetica aritmeticap
+    (75) factor -> . matriz apply_operation_factor factorp
+    (81) matriz -> . cte matrizp
+    (86) cte -> . CTE_INT
+    (87) cte -> . CTE_FLOAT
+    (88) cte -> . CTE_CHAR
+    (89) cte -> . llamadaFuncion
+    (90) cte -> . ID operand_seen dimId
+    (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
-    R_PARENTHESIS   shift and go to state 241
+    NOT             shift and go to state 102
+    R_PARENTHESIS   reduce using rule 122 (empty -> .)
+    CTE_INT         shift and go to state 107
+    CTE_FLOAT       shift and go to state 108
+    CTE_CHAR        shift and go to state 109
+    ID              shift and go to state 111
+    L_PARENTHESIS   shift and go to state 99
 
+    llamadaFuncionp                shift and go to state 241
+    expresion                      shift and go to state 129
+    empty                          shift and go to state 130
+    relacional                     shift and go to state 101
+    aritmetica                     shift and go to state 103
+    factor                         shift and go to state 104
+    matriz                         shift and go to state 105
+    cte                            shift and go to state 106
+    llamadaFuncion                 shift and go to state 110
 
 state 221
 
@@ -3605,7 +3613,7 @@ state 224
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -3864,29 +3872,9 @@ state 240
 
 state 241
 
-    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .
+    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp . R_PARENTHESIS operation_seen
 
-    DETERMINANT     reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    TRANSPOSED      reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    INVERSE         reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    MULTIPLY        reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    DIVIDE          reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    SUM             reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    SUBTRACT        reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    EQUALS          reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    NOT_EQUAL       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    LESS_THAN       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    LESS_THAN_EQUAL reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    GREATER_THAN    reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    GREATER_THAN_EQUAL reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    AND             reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    OR              reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    R_PARENTHESIS   reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    COMMA           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    R_SQUARE_BRACKET reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    SEMICOLON       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    HASTA           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
-    HACER           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS .)
+    R_PARENTHESIS   shift and go to state 246
 
 
 state 242
@@ -3896,7 +3884,7 @@ state 242
     (114) decisionp -> . empty update_jump
     (122) empty -> .
 
-    SINO            shift and go to state 247
+    SINO            shift and go to state 248
     ID              reduce using rule 122 (empty -> .)
     REGRESA         reduce using rule 122 (empty -> .)
     LECTURA         reduce using rule 122 (empty -> .)
@@ -3906,8 +3894,8 @@ state 242
     DESDE           reduce using rule 122 (empty -> .)
     R_CURLY_BRACKET reduce using rule 122 (empty -> .)
 
-    decisionp                      shift and go to state 246
-    empty                          shift and go to state 248
+    decisionp                      shift and go to state 247
+    empty                          shift and go to state 249
 
 state 243
 
@@ -3916,7 +3904,7 @@ state 243
 
     L_CURLY_BRACKET shift and go to state 41
 
-    bloque                         shift and go to state 249
+    bloque                         shift and go to state 250
 
 state 244
 
@@ -3925,7 +3913,7 @@ state 244
 
     HASTA           reduce using rule 50 (apply_operation_assign -> .)
 
-    apply_operation_assign         shift and go to state 250
+    apply_operation_assign         shift and go to state 251
 
 state 245
 
@@ -3943,6 +3931,35 @@ state 245
 
 state 246
 
+    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS . operation_seen
+    (80) operation_seen -> .
+
+    DETERMINANT     reduce using rule 80 (operation_seen -> .)
+    TRANSPOSED      reduce using rule 80 (operation_seen -> .)
+    INVERSE         reduce using rule 80 (operation_seen -> .)
+    MULTIPLY        reduce using rule 80 (operation_seen -> .)
+    DIVIDE          reduce using rule 80 (operation_seen -> .)
+    SUM             reduce using rule 80 (operation_seen -> .)
+    SUBTRACT        reduce using rule 80 (operation_seen -> .)
+    EQUALS          reduce using rule 80 (operation_seen -> .)
+    NOT_EQUAL       reduce using rule 80 (operation_seen -> .)
+    LESS_THAN       reduce using rule 80 (operation_seen -> .)
+    LESS_THAN_EQUAL reduce using rule 80 (operation_seen -> .)
+    GREATER_THAN    reduce using rule 80 (operation_seen -> .)
+    GREATER_THAN_EQUAL reduce using rule 80 (operation_seen -> .)
+    AND             reduce using rule 80 (operation_seen -> .)
+    OR              reduce using rule 80 (operation_seen -> .)
+    R_PARENTHESIS   reduce using rule 80 (operation_seen -> .)
+    COMMA           reduce using rule 80 (operation_seen -> .)
+    R_SQUARE_BRACKET reduce using rule 80 (operation_seen -> .)
+    SEMICOLON       reduce using rule 80 (operation_seen -> .)
+    HASTA           reduce using rule 80 (operation_seen -> .)
+    HACER           reduce using rule 80 (operation_seen -> .)
+
+    operation_seen                 shift and go to state 252
+
+state 247
+
     (110) decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .
 
     ID              reduce using rule 110 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
@@ -3955,16 +3972,16 @@ state 246
     R_CURLY_BRACKET reduce using rule 110 (decision -> SI L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque decisionp .)
 
 
-state 247
+state 248
 
     (113) decisionp -> SINO . jump_else bloque update_jump
     (115) jump_else -> .
 
     L_CURLY_BRACKET reduce using rule 115 (jump_else -> .)
 
-    jump_else                      shift and go to state 251
+    jump_else                      shift and go to state 253
 
-state 248
+state 249
 
     (114) decisionp -> empty . update_jump
     (112) update_jump -> .
@@ -3978,9 +3995,9 @@ state 248
     DESDE           reduce using rule 112 (update_jump -> .)
     R_CURLY_BRACKET reduce using rule 112 (update_jump -> .)
 
-    update_jump                    shift and go to state 252
+    update_jump                    shift and go to state 254
 
-state 249
+state 250
 
     (116) cicloCondicional -> MIENTRAS jump_cycle L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque . update_jump_cycle
     (118) update_jump_cycle -> .
@@ -3994,25 +4011,52 @@ state 249
     DESDE           reduce using rule 118 (update_jump_cycle -> .)
     R_CURLY_BRACKET reduce using rule 118 (update_jump_cycle -> .)
 
-    update_jump_cycle              shift and go to state 253
+    update_jump_cycle              shift and go to state 255
 
-state 250
+state 251
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign . HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
 
-    HASTA           shift and go to state 254
+    HASTA           shift and go to state 256
 
 
-state 251
+state 252
+
+    (92) llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .
+
+    DETERMINANT     reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    TRANSPOSED      reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    INVERSE         reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    MULTIPLY        reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    DIVIDE          reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    SUM             reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    SUBTRACT        reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    EQUALS          reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    NOT_EQUAL       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    LESS_THAN       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    LESS_THAN_EQUAL reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    GREATER_THAN    reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    GREATER_THAN_EQUAL reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    AND             reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    OR              reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    R_PARENTHESIS   reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    COMMA           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    R_SQUARE_BRACKET reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    SEMICOLON       reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    HASTA           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+    HACER           reduce using rule 92 (llamadaFuncion -> ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen .)
+
+
+state 253
 
     (113) decisionp -> SINO jump_else . bloque update_jump
     (37) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 41
 
-    bloque                         shift and go to state 255
+    bloque                         shift and go to state 257
 
-state 252
+state 254
 
     (114) decisionp -> empty update_jump .
 
@@ -4026,7 +4070,7 @@ state 252
     R_CURLY_BRACKET reduce using rule 114 (decisionp -> empty update_jump .)
 
 
-state 253
+state 255
 
     (116) cicloCondicional -> MIENTRAS jump_cycle L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump_cycle .
 
@@ -4040,7 +4084,7 @@ state 253
     R_CURLY_BRACKET reduce using rule 116 (cicloCondicional -> MIENTRAS jump_cycle L_PARENTHESIS expresion R_PARENTHESIS jump_false HAZ bloque update_jump_cycle .)
 
 
-state 254
+state 256
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA . expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     (55) expresion -> . relacional apply_operation_expresion expresionp
@@ -4055,7 +4099,7 @@ state 254
     (89) cte -> . llamadaFuncion
     (90) cte -> . ID operand_seen dimId
     (91) cte -> . L_PARENTHESIS operation_seen expresion R_PARENTHESIS operation_seen
-    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS
+    (92) llamadaFuncion -> . ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
 
     NOT             shift and go to state 102
     CTE_INT         shift and go to state 107
@@ -4064,7 +4108,7 @@ state 254
     ID              shift and go to state 111
     L_PARENTHESIS   shift and go to state 99
 
-    expresion                      shift and go to state 256
+    expresion                      shift and go to state 258
     relacional                     shift and go to state 101
     aritmetica                     shift and go to state 103
     factor                         shift and go to state 104
@@ -4072,7 +4116,7 @@ state 254
     cte                            shift and go to state 106
     llamadaFuncion                 shift and go to state 110
 
-state 255
+state 257
 
     (113) decisionp -> SINO jump_else bloque . update_jump
     (112) update_jump -> .
@@ -4086,18 +4130,18 @@ state 255
     DESDE           reduce using rule 112 (update_jump -> .)
     R_CURLY_BRACKET reduce using rule 112 (update_jump -> .)
 
-    update_jump                    shift and go to state 257
+    update_jump                    shift and go to state 259
 
-state 256
+state 258
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion . jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     (117) jump_cycle -> .
 
     HACER           reduce using rule 117 (jump_cycle -> .)
 
-    jump_cycle                     shift and go to state 258
+    jump_cycle                     shift and go to state 260
 
-state 257
+state 259
 
     (113) decisionp -> SINO jump_else bloque update_jump .
 
@@ -4111,50 +4155,50 @@ state 257
     R_CURLY_BRACKET reduce using rule 113 (decisionp -> SINO jump_else bloque update_jump .)
 
 
-state 258
+state 260
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle . add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     (120) add_gt -> .
 
     HACER           reduce using rule 120 (add_gt -> .)
 
-    add_gt                         shift and go to state 259
+    add_gt                         shift and go to state 261
 
-state 259
+state 261
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt . apply_operation_relational jump_false HACER bloque add_one update_jump_cycle
     (69) apply_operation_relational -> .
 
     HACER           reduce using rule 69 (apply_operation_relational -> .)
 
-    apply_operation_relational     shift and go to state 260
+    apply_operation_relational     shift and go to state 262
 
-state 260
+state 262
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational . jump_false HACER bloque add_one update_jump_cycle
     (111) jump_false -> .
 
     HACER           reduce using rule 111 (jump_false -> .)
 
-    jump_false                     shift and go to state 261
+    jump_false                     shift and go to state 263
 
-state 261
+state 263
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false . HACER bloque add_one update_jump_cycle
 
-    HACER           shift and go to state 262
+    HACER           shift and go to state 264
 
 
-state 262
+state 264
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER . bloque add_one update_jump_cycle
     (37) bloque -> . L_CURLY_BRACKET bloquep R_CURLY_BRACKET
 
     L_CURLY_BRACKET shift and go to state 41
 
-    bloque                         shift and go to state 263
+    bloque                         shift and go to state 265
 
-state 263
+state 265
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque . add_one update_jump_cycle
     (121) add_one -> .
@@ -4168,9 +4212,9 @@ state 263
     DESDE           reduce using rule 121 (add_one -> .)
     R_CURLY_BRACKET reduce using rule 121 (add_one -> .)
 
-    add_one                        shift and go to state 264
+    add_one                        shift and go to state 266
 
-state 264
+state 266
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one . update_jump_cycle
     (118) update_jump_cycle -> .
@@ -4184,9 +4228,9 @@ state 264
     DESDE           reduce using rule 118 (update_jump_cycle -> .)
     R_CURLY_BRACKET reduce using rule 118 (update_jump_cycle -> .)
 
-    update_jump_cycle              shift and go to state 265
+    update_jump_cycle              shift and go to state 267
 
-state 265
+state 267
 
     (119) cicloNoCondicional -> DESDE ID operand_seen dimId ASSIGN operation_seen expresion apply_operation_assign HASTA expresion jump_cycle add_gt apply_operation_relational jump_false HACER bloque add_one update_jump_cycle .
 

@@ -11,12 +11,12 @@ var int : a, b, c;
 
 }
 
-funcion int func2(int n1)
+funcion int func2(int n1, int n2)
 var int : a, b, c;
 {
     func1(2 + 3, b, 4.0);
     b = c;
-    regresa(3);
+    regresa(3 - 2 * 7);
 }
 
 principal(){
@@ -25,7 +25,7 @@ principal(){
             a = b + c;
         }
         sino {
-            mientras (b > c + d) haz {
+            mientras (b > c + func2(5 + 3 - 9, a)) haz {
                 a = b + c * d;
                 b = a - d;
             }
