@@ -8,7 +8,7 @@ import ply.yacc as yacc
 class VirutalDirectory(object):
     def __init__(self):
 
-        self.genericCounter = 1000
+        self.genericCounter = 50000
 
         self.IntRanges = [3500, 11000, 18500, 26000]
         self.FloatRanges = [6000, 13500, 21000, 28500]
@@ -49,6 +49,16 @@ class VirutalDirectory(object):
             else:
                 self.cteCharsCounter += 1
                 return self.cteCharsCounter - 1
+        elif scope == 'temp':
+            if type == 'int':
+                self.tempIntsCounter += 1
+                return self.tempIntsCounter - 1
+            elif type == 'float':
+                self.tempFloatsCounter += 1
+                return self.tempFloatsCounter - 1
+            else:
+                self.tempBoolsCounter += 1
+                return self.tempBoolsCounter - 1
         else:
             if type == 'int':
                 self.localIntsCounter += 1
@@ -64,6 +74,9 @@ class VirutalDirectory(object):
         self.localIntsCounter = 8500
         self.localFloatsCounter = 11000
         self.localCharsCounter = 13500
+        self.tempIntsCounter = 23500
+        self.tempFloatsCounter = 26000
+        self.tempBoolsCounter = 28500
 
 
 class QuadrupleManager(object):
@@ -124,14 +137,15 @@ class QuadrupleManager(object):
                 raise SyntaxError
             
             if operation in ['=']:
-                self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
+                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
                 logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
                 # self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.genericCounter))
-                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), self.virutalDirectory.genericCounter))
+                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
                 logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
-                self.operandStack.append(self.virutalDirectory.genericCounter)
-                logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.genericCounter}" al operandStack\n')
+                self.operandStack.append(resultAddress)
+                logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
                 self.typeStack.append(resultType)
                 logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.genericCounter += 1

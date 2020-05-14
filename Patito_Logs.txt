@@ -5,234 +5,29 @@ Se agrego la variable "a" al scope de global
 Se elimino "a" como la variable actual
 Se agrego la variable "b" al scope de global
 Se elimino "b" como la variable actual
-Se agrego la variable "c" al scope de global
-Se elimino "c" como la variable actual
-Se agrego la variable "d" al scope de global
-Se elimino "d" como la variable actual
 Se elimino "int" como el tipo actual
-Se asigno float como el tipo de variable actual
-Se agrego la variable "e" al scope de global
-Se elimino "e" como la variable actual
-Se agrego la variable "f" al scope de global
-Se elimino "f" como la variable actual
-Se elimino "float" como el tipo actual
-Se creo la funcion func1 de retorno tipo void en el dirFunc
-func1 se asigno como el scope actual
-Se agrego el parametro "n1" de tipo "int" al scope de func1
-Se agrego el parametro "n2" de tipo "int" al scope de func1
-Se agrego el parametro "n3" de tipo "float" al scope de func1
-Se asigno int como el tipo de variable actual
-Se agrego la variable "a" al scope de func1
-Se elimino "a" como la variable actual
-Se agrego la variable "b" al scope de func1
-Se elimino "b" como la variable actual
-Se agrego la variable "c" al scope de func1
-Se elimino "c" como la variable actual
-Se elimino "int" como el tipo actual
-Se asigno float como el tipo de variable actual
-Se agrego la variable "r1" al scope de func1
-Se elimino "r1" como la variable actual
-Se agrego la variable "s2" al scope de func1
-Se elimino "s2" como la variable actual
-Se elimino "float" como el tipo actual
+Se elimino global como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se realizo a + b y se gurado el resultado en "1000"
-Se agrego el valor temporal "1000" al operandStack
-Se agrego "int" al typeStack
-Se agrego == al operantionStack
-Se agrego "d" al operandStack
-Se agrego "int" al typeStack
-Se realizo 1000 == d y se gurado el resultado en "1001"
-Se agrego el valor temporal "1001" al operandStack
-Se agrego "bool" al typeStack
+Se agrego = al operantionStack
+Se agrego la constante "10" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo a = 10
 Se agrego "b" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego "n2" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo n2 + 1 y se gurado el resultado en "1002"
-Se agrego el valor temporal "1002" al operandStack
-Se agrego "int" al typeStack
-Se realizo b = 1002
-Se creo la funcion func2 de retorno tipo int en el dirFunc
-func2 se asigno como el scope actual
-Se agrego el parametro "n1" de tipo "int" al scope de func1
-Se agrego el parametro "n2" de tipo "int" al scope de func1
-Se asigno int como el tipo de variable actual
-Se agrego la variable "a" al scope de func2
-Se elimino "a" como la variable actual
-Se agrego la variable "b" al scope de func2
-Se elimino "b" como la variable actual
-Se agrego la variable "c" al scope de func2
-Se elimino "c" como la variable actual
-Se elimino "int" como el tipo actual
-Se asigno float como el tipo de variable actual
-Se agrego la variable "f1" al scope de func2
-Se elimino "f1" como la variable actual
-Se agrego la variable "f2" al scope de func2
-Se elimino "f2" como la variable actual
-Se elimino "float" como el tipo actual
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego + al operantionStack
 Se agrego la constante "3" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 2 + 3 y se gurado el resultado en "1003"
-Se agrego el valor temporal "1003" al operandStack
-Se agrego "int" al typeStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego la constante "4.0" al operandStack
-Se agrego "<class 'float'>" al typeStack
-Se agrego "b" al operandStack
+Se realizo b = 3
+Se agrego "a" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se realizo b = c
-Se agrego la constante "3" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego * al operantionStack
-Se agrego la constante "7" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 2 * 7 y se gurado el resultado en "1004"
-Se agrego el valor temporal "1004" al operandStack
-Se agrego "int" al typeStack
-Se realizo 3 - 1004 y se gurado el resultado en "1005"
-Se agrego el valor temporal "1005" al operandStack
-Se agrego "int" al typeStack
-Se elimino func2 como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
 Se agrego + al operantionStack
 Se agrego "b" al operandStack
 Se agrego "int" al typeStack
-Se agrego * al operantionStack
-Se agrego "c" al operandStack
+Se realizo a + b y se gurado el resultado en "50000"
+Se agrego el valor temporal "23500" al operandStack
 Se agrego "int" al typeStack
-Se realizo b * c y se gurado el resultado en "1006"
-Se agrego el valor temporal "1006" al operandStack
-Se agrego "int" al typeStack
-Se realizo a + 1006 y se gurado el resultado en "1007"
-Se agrego el valor temporal "1007" al operandStack
-Se agrego "int" al typeStack
-Se agrego < al operantionStack
-Se agrego "d" al operandStack
-Se agrego "int" al typeStack
-Se realizo 1007 < d y se gurado el resultado en "1008"
-Se agrego el valor temporal "1008" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se realizo a + b y se gurado el resultado en "1009"
-Se agrego el valor temporal "1009" al operandStack
-Se agrego "int" al typeStack
-Se agrego < al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se realizo 1009 < c y se gurado el resultado en "1010"
-Se agrego el valor temporal "1010" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se realizo b + c y se gurado el resultado en "1011"
-Se agrego el valor temporal "1011" al operandStack
-Se agrego "int" al typeStack
-Se realizo a = 1011
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego > al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego ( al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "3" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 5 + 3 y se gurado el resultado en "1012"
-Se agrego el valor temporal "1012" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "9" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 1012 - 9 y se gurado el resultado en "1013"
-Se agrego el valor temporal "1013" al operandStack
-Se agrego "int" al typeStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se termino un parentesis
-Se realizo c + 32 y se gurado el resultado en "1015"
-Se agrego el valor temporal "1015" al operandStack
-Se agrego "int" al typeStack
-Se realizo b > 1015 y se gurado el resultado en "1016"
-Se agrego el valor temporal "1016" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se agrego * al operantionStack
-Se agrego "d" al operandStack
-Se agrego "int" al typeStack
-Se realizo c * d y se gurado el resultado en "1017"
-Se agrego el valor temporal "1017" al operandStack
-Se agrego "int" al typeStack
-Se realizo b + 1017 y se gurado el resultado en "1018"
-Se agrego el valor temporal "1018" al operandStack
-Se agrego "int" al typeStack
-Se realizo a = 1018
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego "d" al operandStack
-Se agrego "int" al typeStack
-Se realizo a - d y se gurado el resultado en "1019"
-Se agrego el valor temporal "1019" al operandStack
-Se agrego "int" al typeStack
-Se realizo b = 1019
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego * al operantionStack
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se realizo b * c y se gurado el resultado en "1020"
-Se agrego el valor temporal "1020" al operandStack
-Se agrego "int" al typeStack
-Se realizo a = 1020
-Se agrego "c" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo c = 0
+Se realizo a = 23500

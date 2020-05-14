@@ -17,15 +17,19 @@ class FunctionDirectory(object):
 
     def getVirtualAddressOfVariable(self, variable):
         try:
-            print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
+            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
         except:
             try:
-                print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
+                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
-                # TODO: add proper logic
-                return variable
+                try: 
+                    print(self.ctesTable[variable]['virtualAddress'])
+                    return self.ctesTable[variable]['virtualAddress']
+                except:
+                    # TODO: add proper logic
+                    return variable
 
     def constantExists(self, constant):
         try:

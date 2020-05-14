@@ -1,0 +1,9 @@
+programa test;
+
+var int : a, b;
+
+principal(){
+    a = 10;
+    b = 3;
+    a = a + b;
+}
