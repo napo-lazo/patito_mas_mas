@@ -127,7 +127,8 @@ class QuadrupleManager(object):
                 self.quadruplesList.append((operation, rightOperand, -1, leftOperand))
                 logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
-                self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.genericCounter))
+                # self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.genericCounter))
+                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), self.virutalDirectory.genericCounter))
                 logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
                 self.operandStack.append(self.virutalDirectory.genericCounter)
                 logs.append(f'Se agrego el valor temporal "{self.virutalDirectory.genericCounter}" al operandStack\n')
@@ -135,6 +136,7 @@ class QuadrupleManager(object):
                 logs.append(f'Se agrego "{resultType}" al typeStack\n')
                 self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
+            
 
     def generateParameter(self, parameter, parameterPosition):
         self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))

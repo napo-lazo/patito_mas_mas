@@ -15,6 +15,18 @@ class FunctionDirectory(object):
         self.localVariableCount = 0
         self.tempVariableCount = 0
 
+    def getVirtualAddressOfVariable(self, variable):
+        try:
+            print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
+            return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
+        except:
+            try:
+                print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
+                return self.variablesTable['global']['variables'][variable]['virtualAddress']
+            except:
+                # TODO: add proper logic
+                return variable
+
     def constantExists(self, constant):
         try:
             self.ctesTable[constant]
@@ -47,13 +59,15 @@ class FunctionDirectory(object):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
 
     def getTypeOfVariable(self, variableName):
-        print(f'{variableName} del scope {self.currentScope}')
-        if self.currentScope is None: 
+        if self.currentScope is None:
+            print(f'{variableName} del scope global') 
             return self.variablesTable['global']['variables'][variableName]['type']
         else:
             try: 
+                print(f'Intento de {variableName} del scope {self.currentScope}')
                 return self.variablesTable[self.currentScope]['variables'][variableName]['type']
             except:
+                print(f'{variableName} del scope global') 
                 return self.variablesTable['global']['variables'][variableName]['type']
 
     def addFunctionStart(self, quadrupleManager):
