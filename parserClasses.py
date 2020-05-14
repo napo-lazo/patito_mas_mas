@@ -1,5 +1,5 @@
 # variablesTable guarda las variables globales y de las funciones
-class VariablesTable(object):
+class FunctionDirectory(object):
 
     def __init__(self):
         #variablesTable tiene el formato de {nombreScope : {returnType : valor, variables : {nombreVar1 : {type : valor, value : valor}, nombreVar2 : {type : valor, value : valor}, etc}}} 
@@ -7,6 +7,12 @@ class VariablesTable(object):
         self.currentScope = None
         self.currentType = None
         self.currentId = None
+        self.functionCalled = None
+        self.parameterCounter = 0
+        self.callFromReturn = 0
+        #########################
+        self.localVariableCount = 0
+        self.tempVariableCount = 0
 
     def scopeExists(self, scopeName):
         return self.variablesTable[scopeName]
@@ -39,33 +45,70 @@ class VariablesTable(object):
             except:
                 return self.variablesTable['global']['variables'][variableName]['type']
 
+    def addFunctionStart(self, quadrupleManager):
+        self.variablesTable[self.currentScope]['startsAt'] = quadrupleManager.quadrupleCounter
+
+    def getFunctionStart(self):
+        return self.variablesTable[self.functionCalled]['startsAt']
+
     def addParameterToList(self, paramName, paramType):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
             self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType}
+
+    def verifyParameter(self, quadrupleManager):
+        #TODO: Throw error if parameters are missing
+        if self.parameterCounter < len(self.variablesTable[self.functionCalled]['parameters']):
+            if quadrupleManager.typeStack.pop() != self.variablesTable[self.functionCalled]['parameters'][self.parameterCounter]:
+                print(f'Error: El tipo del parametro {self.parameterCounter} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+            else:
+                quadrupleManager.generateParameter(quadrupleManager.operandStack.pop(), self.parameterCounter)
+                self.parameterCounter += 1
+        elif self.parameterCounter >= len(self.variablesTable[self.functionCalled]['parameters']):
+            print('Error: Parametros de mas')
     
-    # para ERA activation record hay que crear un espacio en memoria 
-    # se puede leer la funcion, identificar y contar variables para reservar espacios de ese tamano 
-    # con la ayuda de varTable asignandoles direcciones a cada variable
+    def areParametersFinished(self):
+        return self.parameterCounter == len(self.variablesTable[self.functionCalled]['parameters'])
 
-    #def getFunctionSize(self):
-    #   rgresa variableCount(int) + variableCount(float) + ....
+    def verifyFunctionCompatibility(self, quadrupleManager):
 
-    #def variableCount(self, vartype):
-    #   return count number of ints, floats, chars or booleans
+        if self.callFromReturn == 0 and self.variablesTable[self.currentScope]['returnType'] != 'void':
+            print('Falta que la funcion regrese un valor')
+            return
 
-class FunctionDirectory(object):
-    # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}
-    def __init__(self):
-        self.functionDirectory={}
-        self.parameterCount = 0
-        self.localVariableCount = 0
-        self.tempVariableCount = 0
-        # Con este defines en donde empieza la funcion
-        self.quadrupleCounter = 0
+        if self.callFromReturn >= 1 and self.variablesTable[self.currentScope]['returnType'] == 'void':
+            print('Funcion void no puede regresar valores')
+            return
 
-    def createFunction(self, functionName, returnType, parameters):
-        self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': VariablesTable()}
-    
+        if self.callFromReturn >= 1:
+            aux = quadrupleManager.typeStack[-1]
+        else:
+            return
+
+        if aux == self.variablesTable[self.currentScope]['returnType']:
+            print('tipos son validos')
+        else:
+            print('Los tipos no son validos')
+        
+    def isVoid(self):
+        return self.variablesTable[self.functionCalled]['returnType'] == 'void'
+
     def releaseVars(self):
         # release vartable, end function, update temporal var count
         self.functionDirectory['varTable'].clear()
+
+# class FunctionDirectory(object):
+#     # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}
+#     def __init__(self):
+#         self.functionDirectory={}
+#         self.parameterCount = 0
+#         self.localVariableCount = 0
+#         self.tempVariableCount = 0
+#         # Con este defines en donde empieza la funcion
+#         self.quadrupleCounter = 0
+
+#     def createFunction(self, functionName, returnType, parameters):
+#         self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': VariablesTable()}
+    
+#     def releaseVars(self):
+#         # release vartable, end function, update temporal var count
+#         self.functionDirectory['varTable'].clear()

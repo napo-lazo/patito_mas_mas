@@ -1,5 +1,5 @@
 import patitoLexer
-from parserClasses import VariablesTable
+from parserClasses import FunctionDirectory
 #from parserClases import FunctionDirectory
 from patitoLogger import logs
 from patitoLexer import tokens
@@ -11,6 +11,7 @@ class VirutalDirectory(object):
         # Por el momento solo se usa este contador para llevar un conteo de las variables temporales
         self.globalIntsCounter = 1000
         self.globalInts = []
+        #TODO: Change to upper limit
         self.globalFloatsRange = [3000, 4999]
         self.globalCharsRange = [5000, 6999]
         self.globalBoolsRange = [7000, 8999]
@@ -46,6 +47,8 @@ class QuadrupleManager(object):
         self.typeStack = []
         # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
         self.operandStack = []
+        self.returnValuesStack = []
+        self.returnTypeStack = []
         # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
         # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
@@ -97,6 +100,8 @@ class QuadrupleManager(object):
         #TODO: tirar error
         if funcDir.areParametersFinished():
             self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
+            self.quadrupleCounter += 1
+
         else:
             print('Error: faltan parametros')
     
@@ -106,9 +111,17 @@ class QuadrupleManager(object):
 
     def generateReturn(self, returnCounter):
         if returnCounter > 0:
-            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, self.quadrupleCounter))
+            self.quadruplesList.append(('RETURN', -1, -1, self.operandStack[-1]))
+            self.returnValuesStack.append(self.operandStack.pop())
+            self.returnTypeStack.append(self.typeStack.pop())
             self.quadrupleCounter += 1
     
+    def generateReturnAssignment(self):
+        self.quadruplesList.append(('=', self.returnValuesStack.pop(), -1, self.virutalDirectory.globalIntsCounter))
+        self.typeStack.append(self.returnTypeStack.pop())
+        self.quadrupleCounter += 1
+        self.virutalDirectory.globalIntsCounter += 1
+
     def generateERA(self):
         self.quadrupleList.append(('ERA', -1, -1, funcDir.getFunctionSize()))
     
@@ -167,8 +180,7 @@ class QuadrupleManager(object):
         self.quadruplesList.clear()
         self.quadrupleCounter = 0
 
-
-funcDir = VariablesTable()
+funcDir = FunctionDirectory()
 quadrupleManager = QuadrupleManager()
 #functionDirectory = FunctionDirectory()
 
@@ -193,9 +205,15 @@ def p_start(p):
 # el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
-    programa : PROGRAMA ID SEMICOLON var funcion clear_scope PRINCIPAL L_PARENTHESIS R_PARENTHESIS bloque EOF
+    programa : PROGRAMA ID SEMICOLON jump var funcion clear_scope PRINCIPAL update_jump L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
+
+def p_jump(p):
+    '''
+    jump :
+    '''
+    quadrupleManager.generateJump('jump')
 
 def p_clear_scope(p):
     '''
@@ -380,7 +398,7 @@ def p_funcion(p):
 def p_funcionp(p):
     # poner una regla de error aqui permite que el codigo termine de compilar y marca el error
     '''
-    funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque funcion
+    funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque end_func funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
@@ -403,6 +421,34 @@ def p_create_func_scope(p):
     else:
         print(f'Error: {p[-1]} ya existe')
         raise SyntaxError
+
+def p_create_func_scope(p):
+    '''
+    create_func_scope : 
+    '''
+    if p[-1] == 'global':
+        print('Error: global es una palabra reservada')
+        raise SyntaxError
+    try:
+        funcDir.scopeExists(p[-1])
+    except:
+        funcDir.createScope(p[-1], p[-2])
+        logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
+        funcDir.currentScope = p[-1]
+        logs.append(f'{p[-1]} se asigno como el scope actual\n')
+        funcDir.addFunctionStart(quadrupleManager)
+    else:
+        print(f'Error: {p[-1]} ya existe')
+        raise SyntaxError
+
+def p_end_func(p):
+    '''
+    end_func :
+    '''
+    funcDir.verifyFunctionCompatibility(quadrupleManager)
+    quadrupleManager.generateReturn(funcDir.callFromReturn)
+    funcDir.callFromReturn = 0
+    quadrupleManager.generateEndFunc()
 
 def p_parametro(p):
     '''
@@ -684,6 +730,8 @@ def p_cte(p):
         #     raise SyntaxError
 
     #TODO: por el momento solo esta pensado para ctes y no funciones 
+    elif not type(p[1]) is float and not type(p[1]) is int:
+        pass
     else:
         quadrupleManager.operandStack.append(p[1])
         logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
@@ -698,31 +746,81 @@ def p_cte(p):
 
 def p_llamadaFuncion(p):
     '''
-    llamadaFuncion : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS
+    llamadaFuncion : ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
+    if not funcDir.isVoid():
+        print(funcDir.functionCalled)
+        quadrupleManager.generateGoSub(funcDir.functionCalled)
+        funcDir.functionCalled = None
+        funcDir.parameterCounter = 0
+        quadrupleManager.generateReturnAssignment()
+        quadrupleManager.operandStack.append(quadrupleManager.quadrupleCounter-1)
+    else:
+        print('Error: no se puede llamar una funcion con tipo de retorno void en una expresion')
+        raise SyntaxError
+
 def p_llamadaFuncionp(p):
     '''
-    llamadaFuncionp : COMMA expresion
+    llamadaFuncionp : expresion verify_parameter llamadaFuncionpp
                     | empty
     '''
     if len(p) == 3:
+        p[0] = p[1]
+    else: 
+        p[0] = p[1]
+    
+
+def p_llamadaFuncionpp(p):
+    '''
+    llamadaFuncionpp : COMMA llamadaFuncionp
+                    | empty
+    '''
+    if len(p) == 4:
         p[0] = (p[1], p[2])
     else: 
         p[0] = p[1]
 
+def p_verify_parameter(p):
+    '''
+    verify_parameter :
+    '''
+    funcDir.verifyParameter(quadrupleManager)
+
 def p_funcionVacia(p):
     '''
-    funcionVacia : ID L_PARENTHESIS expresion llamadaFuncionp R_PARENTHESIS SEMICOLON
+    funcionVacia : ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS SEMICOLON
     '''
-    p[0] = (p[1], p[2], p[3], p[4], p[5], p[6])
+    p[0] = (p[1], p[3], p[4], p[5], p[6])
+    if funcDir.isVoid():
+        quadrupleManager.generateGoSub(funcDir.functionCalled)
+        funcDir.functionCalled = None
+        funcDir.parameterCounter = 0
+    else:
+        print('Error: no se puede llamar una funcion con tipo de retorno diferente a void afuera de una expresion')
+        raise SyntaxError
+
+def p_set_func_scope(p):
+    '''
+    set_func_scope :
+    '''
+    #TODO: cuadruplo de ERA va aqui
+    try: 
+        funcDir.scopeExists(p[-1])
+    except:
+        print('Error: funcion no existe')
+        raise SyntaxError
+    else:
+        funcDir.functionCalled = p[-1]
 
 def p_regresa(p):
     '''
     regresa : REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
+    funcDir.callFromReturn += 1
+    
 
 def p_lectura(p):
     '''
