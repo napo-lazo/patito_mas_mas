@@ -1,9 +1,10 @@
 programa test;
 
 var int : a, b;
+    float : c;
 
 principal(){
     a = 10;
     b = 3;
-    a = a + b;
+    c = b / 4 + 10;
 }

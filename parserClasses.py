@@ -124,6 +124,27 @@ class FunctionDirectory(object):
     def releaseVars(self):
         # release vartable, end function, update temporal var count
         self.functionDirectory['varTable'].clear()
+    
+    #TODO: count parameters and give parameters virutal addresses
+    def createEra(self, virtualDirectory):
+        # [ints, floats, chars]
+        locales = [virtualDirectory.localIntsCounter - virtualDirectory.CharRanges[0], virtualDirectory.localFloatsCounter - virtualDirectory.IntRanges[1], virtualDirectory.localCharsCounter - virtualDirectory.FloatRanges[1]]
+        # [ints, floats, bools]
+        temporales = [virtualDirectory.tempIntsCounter - virtualDirectory.CharRanges[2], virtualDirectory.tempFloatsCounter - virtualDirectory.IntRanges[3], virtualDirectory.tempBoolsCounter - virtualDirectory.FloatRanges[3]]
+        self.variablesTable[self.currentScope]['era'] = [locales, temporales]
+    
+    def getEra(self):
+        return self.variablesTable[self.functionCalled]['era']
+
+    def turnCtesIntoList(self):
+        aux = self.ctesTable.items()
+        ctes = []
+        addresses = []
+        for x in aux:
+            ctes.append(x[0])
+            addresses.append(x[1]['virtualAddress'])
+        return  sorted(list(zip(ctes, addresses)), key=lambda tup: tup[1])
+
 
 # class FunctionDirectory(object):
 #     # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}

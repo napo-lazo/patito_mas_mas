@@ -6,6 +6,10 @@ Se elimino "a" como la variable actual
 Se agrego la variable "b" al scope de global
 Se elimino "b" como la variable actual
 Se elimino "int" como el tipo actual
+Se asigno float como el tipo de variable actual
+Se agrego la variable "c" al scope de global
+Se elimino "c" como la variable actual
+Se elimino "float" como el tipo actual
 Se elimino global como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
@@ -19,15 +23,21 @@ Se agrego = al operantionStack
 Se agrego la constante "3" al operandStack
 Se agrego "<class 'int'>" al typeStack
 Se realizo b = 3
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
+Se agrego "c" al operandStack
+Se agrego "float" al typeStack
 Se agrego = al operantionStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
 Se agrego "b" al operandStack
 Se agrego "int" al typeStack
-Se realizo a + b y se gurado el resultado en "50000"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se realizo a = 23500
+Se agrego / al operantionStack
+Se agrego la constante "4" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo b / 4 y se gurado el resultado en "50000"
+Se agrego el valor temporal "26000" al operandStack
+Se agrego "float" al typeStack
+Se agrego + al operantionStack
+Se agrego la constante "10" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 26000 + 10 y se gurado el resultado en "50001"
+Se agrego el valor temporal "26001" al operandStack
+Se agrego "float" al typeStack
+Se realizo c = 26001

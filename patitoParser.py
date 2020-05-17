@@ -4,12 +4,14 @@ from parserClasses import FunctionDirectory
 from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
+from virutalMachine import VirtualMachine
 
 class VirutalDirectory(object):
     def __init__(self):
 
         self.genericCounter = 50000
 
+        # [globales, locales, constantes, temporales]
         self.IntRanges = [3500, 11000, 18500, 26000]
         self.FloatRanges = [6000, 13500, 21000, 28500]
         self.CharRanges = [8500, 16000, 23500, -1]
@@ -27,6 +29,22 @@ class VirutalDirectory(object):
         self.tempIntsCounter = 23500
         self.tempFloatsCounter = 26000
         self.tempBoolsCounter = 28500
+
+    def exportCounters(self):
+        return [
+                [self.globalIntsCounter - 1000, 
+                self.globalFloatsCounter - self.IntRanges[0], 
+                self.globalCharsCounter - self.FloatRanges[0]],
+                [self.localIntsCounter - self.CharRanges[0], 
+                self.localFloatsCounter - self.IntRanges[1], 
+                self.localCharsCounter - self.FloatRanges[1]],
+                [self.cteIntsCounter - self.CharRanges[1],
+                self.cteFloatsCounter - self.IntRanges[2],
+                self.cteCharsCounter - self.FloatRanges[2]],
+                [self.tempIntsCounter - self.CharRanges[2], 
+                self.tempFloatsCounter - self.IntRanges[3], 
+                self.tempBoolsCounter - self.FloatRanges[3]]
+               ]
 
     def generateAddressForVariable(self, scope, type):
         if scope == 'global':
@@ -87,7 +105,7 @@ class QuadrupleManager(object):
                              '+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '-':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '*':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
-                             '/':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'},
+                             '/':{('int', 'int'): 'float', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'},
                              '>':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
                              '>=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
                              '<':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
@@ -182,8 +200,8 @@ class QuadrupleManager(object):
         self.quadrupleCounter += 1
         self.virutalDirectory.genericCounter += 1
 
-    def generateERA(self):
-        self.quadrupleList.append(('ERA', -1, -1, funcDir.getFunctionSize()))
+    def generateERA(self, funcDir):
+        self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
     
     def generateEndProg(self):
         if funcDir.areFunctionsFinished():
@@ -230,6 +248,9 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
             self.updateJump('normal')
 
+    def exportData(self):
+        return [self.quadruplesList, self.virutalDirectory.exportCounters()]
+
     # metodo publico para limpiar los stacks y reiniciar los contadores
     def clearData(self):
         self.virutalDirectory.genericCounter = 1000
@@ -260,6 +281,15 @@ def p_start(p):
     print(quadrupleManager.operandStack)
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
+    myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList())
+    print(myMachine.initialEra)
+
+    myMachine.executeProgram()
+    print(myMachine.Globals)
+    print(myMachine.Locals)
+    print(myMachine.Ctes)
+    print(myMachine.Temps)
+
 
     #limpia toda la informacion para poder volver a compilar sin problemas
     quadrupleManager.clearData()
@@ -492,6 +522,7 @@ def p_end_func(p):
     funcDir.verifyFunctionCompatibility(quadrupleManager)
     quadrupleManager.generateReturn(funcDir.callFromReturn)
     funcDir.callFromReturn = 0
+    funcDir.createEra(quadrupleManager.virutalDirectory)
     quadrupleManager.virutalDirectory.resetLocalAddresses()
     quadrupleManager.generateEndFunc()
 
@@ -801,6 +832,7 @@ def p_llamadaFuncion(p):
 
     if not funcDir.isVoid():
         print(funcDir.functionCalled)
+        quadrupleManager.generateERA(funcDir)
         quadrupleManager.generateGoSub(funcDir.functionCalled)
         funcDir.functionCalled = None
         funcDir.parameterCounter = 0
@@ -843,6 +875,7 @@ def p_funcionVacia(p):
     '''
     p[0] = (p[1], p[3], p[4], p[5], p[6])
     if funcDir.isVoid():
+        quadrupleManager.generateERA(funcDir)
         quadrupleManager.generateGoSub(funcDir.functionCalled)
         funcDir.functionCalled = None
         funcDir.parameterCounter = 0
@@ -854,7 +887,6 @@ def p_set_func_scope(p):
     '''
     set_func_scope :
     '''
-    #TODO: cuadruplo de ERA va aqui
     try: 
         funcDir.scopeExists(p[-1])
     except:
