@@ -1,26 +1,12 @@
-# import ply.lex as lex
+import re
 
-# tokens = [
-#     'TEST'
-# ]
+char = 'c'
+entero = 12
+flotante = 37.877
 
-# t_TEST = r'test'
-    
-
-# class ProxyLexer:
-
-#     def __init__(self, originalLex):
-#         self.lexer = originalLex
-
-  
-
-# originalLex = lex.lex()
-# lexer = ProxyLexer(originalLex)
-
-# lexer.lexer.curlyBalance = 0
-# lexer.lexer.curlyBalance = 2
-# print(lexer.lexer.curlyBalance)
-
-
-stack = [1,2,3]
-print(stack[-1])
+if re.search(r'\-?[0-9]+\.[0-9]+', str(char)):
+    print('float')
+elif re.search(r'\-?[0-9]+', str(char)):
+    print('int')
+else:
+    print('char')

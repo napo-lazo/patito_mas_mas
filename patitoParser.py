@@ -190,11 +190,13 @@ class QuadrupleManager(object):
     def generatePrint(self, string):
         if string:
             self.quadruplesList.append(('ESCRIBE', string, -1, -1))
-            print(string)
         else:
-            print(string)
             self.quadruplesList.append(('ESCRIBE', self.operandStack.pop(), -1, -1))
             self.typeStack.pop()
+        self.quadrupleCounter += 1
+
+    def generateInput(self, variable):
+        self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(variable)))
         self.quadrupleCounter += 1
 
     def generateReturn(self, returnCounter):
@@ -816,7 +818,7 @@ def p_cte(p):
         #     raise SyntaxError
 
     #TODO: por el momento solo esta pensado para ctes y no funciones 
-    elif not type(p[1]) is float and not type(p[1]) is int:
+    elif not type(p[1]) is float and not type(p[1]) is int and not type(p[1]) is str:
         pass
     else:
         quadrupleManager.operandStack.append(p[1])
@@ -830,6 +832,10 @@ def p_cte(p):
             if not funcDir.constantExists(p[1]):
                 funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'float') ,'float')
             quadrupleManager.typeStack.append('float')
+        else:
+            if not funcDir.constantExists(p[1]):
+                funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'char') ,'char')
+            quadrupleManager.typeStack.append('char')
         logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 
         p[0] = p[1]
@@ -919,21 +925,18 @@ def p_lectura(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
-    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[3]))
-    quadrupleManager.applyOperation(['lee', p[3]])
-    result = quadrupleManager.operationStack.pop()
-    quadrupleManager.applyOperation(['lee', result])
-
 def p_lecturap(p):
     '''
-    lecturap : ID dimId lecturapp
+    lecturap : ID dimId gen_input lecturapp
     '''
     p[0] = (p[1], p[2], p[3])
 
-    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[3]))
-    quadrupleManager.applyOperation(['lee', p[3]])
-    result = quadrupleManager.operationStack.pop()
-    quadrupleManager.applyOperation(['lee', result])
+def p_gen_input(p):
+    '''
+    gen_input :
+    '''
+    #TODO: add array compatibility
+    quadrupleManager.generateInput(p[-2])
 
 def p_lecturapp(p):
     '''

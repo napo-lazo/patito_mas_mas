@@ -2,11 +2,16 @@ programa test;
 
 var int : a, b;
     float : c;
+    char : d;
 
 principal(){
     a = 10;
     b = 3;
     c = b / 4 + 10;
-    escribe(a * 4, b - 6, c);
+    d = 'T'; 
+    escribe(a * 4, 15 - 6, c);
     escribe("test");
+    escribe(d);
+    lee(d);
+    escribe(d);
 }

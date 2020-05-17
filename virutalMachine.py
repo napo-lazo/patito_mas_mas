@@ -1,3 +1,4 @@
+from re import search
 class VirtualMachine(object):
     def __init__(self, data, ctes):
         self.quadruplesList = data[0]
@@ -40,7 +41,31 @@ class VirtualMachine(object):
         self.Ctes = [x[0] for x in ctes] 
         self.Temps = [TempAux]
         print(ctes)
-    
+
+    def getTypeOfInput(self, value):
+        if search(r'\-?[0-9]+\.[0-9]+', value):
+            return 'float'
+        elif search(r'\-?[0-9]+', value):
+            return 'int'
+        else:
+            #TODO: add size verification
+            return 'char'
+
+    def verifyInputCompatibility(self, address, typeOfValue):
+        if address >= 1000 and address < 3500 and typeOfValue == 'int':
+            return True
+        elif address >= 3500 and address < 6000 and typeOfValue == 'float':
+            return True
+        elif address >= 6000 and address < 8500 and typeOfValue == 'char':
+            return True
+        elif address >= 8500 and address < 11000 and typeOfValue == 'int':
+            return True
+        elif address >= 11000 and address < 13500 and typeOfValue == 'float':
+            return True
+        elif address >= 13500 and address < 16000 and typeOfValue == 'char':
+            return True
+        return False
+
     def getValueFromAddress(self, address):
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
@@ -59,7 +84,7 @@ class VirtualMachine(object):
                 aux = address - self.cteFloats
                 aux += self.CteIntsSize
             else:
-                aux = address - self.cteFloats
+                aux = address - self.cteChars
                 aux += self.CteIntsSize + self.CteFloatsSize
             return self.Ctes[aux]
         elif address < 31000 and address >= self.tempInts:
@@ -123,5 +148,11 @@ class VirtualMachine(object):
                     print(current[1])
                 else:
                     print(self.getValueFromAddress(current[1]))
+            elif(current[0] == 'LEE'):
+                aux = input(f'Escribe el valor que desea guardar: ')
+                if self.verifyInputCompatibility(current[3], self.getTypeOfInput(aux)):
+                    self.setAddressToValue(current[3], aux)
+                else:
+                    print('Types are not compatible')
             
             i += 1
