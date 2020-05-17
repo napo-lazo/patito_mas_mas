@@ -118,7 +118,10 @@ class VirtualMachine(object):
                 rightOperand = self.getValueFromAddress(current[2])
                 result = eval(f'{leftOperand} / {rightOperand}')
                 self.setAddressToValue(current[3], result)
+            elif(current[0] == 'ESCRIBE'):
+                if type(current[1]) is str:
+                    print(current[1])
+                else:
+                    print(self.getValueFromAddress(current[1]))
             
-
-            print(self.quadruplesList[i])
             i += 1

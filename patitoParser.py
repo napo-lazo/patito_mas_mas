@@ -187,6 +187,16 @@ class QuadrupleManager(object):
         self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
         self.quadrupleCounter += 1
 
+    def generatePrint(self, string):
+        if string:
+            self.quadruplesList.append(('ESCRIBE', string, -1, -1))
+            print(string)
+        else:
+            print(string)
+            self.quadruplesList.append(('ESCRIBE', self.operandStack.pop(), -1, -1))
+            self.typeStack.pop()
+        self.quadrupleCounter += 1
+
     def generateReturn(self, returnCounter):
         if returnCounter > 0:
             self.quadruplesList.append(('RETURN', -1, -1, self.operandStack[-1]))
@@ -285,10 +295,10 @@ def p_start(p):
     print(myMachine.initialEra)
 
     myMachine.executeProgram()
-    print(myMachine.Globals)
-    print(myMachine.Locals)
-    print(myMachine.Ctes)
-    print(myMachine.Temps)
+    # print(myMachine.Globals)
+    # print(myMachine.Locals)
+    # print(myMachine.Ctes)
+    # print(myMachine.Temps)
 
 
     #limpia toda la informacion para poder volver a compilar sin problemas
@@ -599,7 +609,7 @@ def p_operand_seen(p):
     '''
     operand_seen :
     '''
-    quadrupleManager.operandStack.append(p[-1])
+    quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[-1]))
     logs.append(f'Se agrego "{p[-1]}" al operandStack\n')
     try:
         quadrupleManager.typeStack.append(funcDir.getTypeOfVariable(p[-1]))
@@ -941,23 +951,22 @@ def p_escritura(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
-    # generatecuad (write, escriturap, null, null)
-    # res = pilaop.pop()
-    # genera write, res, null, null
-    quadrupleManager.quadruplesList.append(('escribe', -1, -1, p[3]))
-    result = quadrupleManager.operationStack.pop()
-    quadrupleManager.applyOperation(['escribe', result])
 
 def p_escriturap(p):
     '''
-    escriturap : LETRERO escriturapp
-               | expresion escriturapp
+    escriturap : LETRERO gen_print escriturapp
+               | expresion gen_print escriturapp
     '''
     p[0] = (p[1], p[2])
-    quadrupleManager.quadruplesList.append(('lee', -1, -1, p[2]))
-    result = quadrupleManager.operationStack.pop()
-    quadrupleManager.applyOperation(['escribe', result])
 
+def p_gen_print(p):
+    '''
+    gen_print :
+    '''
+    if type(p[-1]) is str :
+        quadrupleManager.generatePrint(p[-1])
+    else:
+        quadrupleManager.generatePrint(False)
 
 def p_escriturapp(p):
     '''

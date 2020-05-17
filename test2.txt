@@ -7,4 +7,6 @@ principal(){
     a = 10;
     b = 3;
     c = b / 4 + 10;
+    escribe(a * 4, b - 6, c);
+    escribe("test");
 }
