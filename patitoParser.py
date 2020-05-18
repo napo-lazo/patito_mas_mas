@@ -88,6 +88,28 @@ class VirutalDirectory(object):
                 self.localCharsCounter += 1
                 return self.localCharsCounter - 1
     
+    def setSpaceForArray(self, scope, type, size):
+        if scope == 'global':
+            if type == 'int':
+                self.globalIntsCounter += size
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.globalFloatsCounter += size
+                return self.globalFloatsCounter - 1
+            else:
+                self.globalCharsCounter += size
+                return self.globalCharsCounter - 1
+        else:
+            if type == 'int':
+                self.localIntsCounter += size
+                return self.localIntsCounter - 1
+            elif type == 'float':
+                self.localFloatsCounter += size
+                return self.localFloatsCounter - 1
+            else:
+                self.localCharsCounter += size
+                return self.localCharsCounter - 1
+
     def resetLocalAddresses(self):
         self.localIntsCounter = 8500
         self.localFloatsCounter = 11000
@@ -363,7 +385,6 @@ def p_variablesp(p):
          | tipo tipo_seen COLON ID error varppp varpp delete_type SEMICOLON varpppp
     '''
     p[0] = (p[1], p[3], p[4], p[6], p[7], p[9], p[10])
-    #functionDirectory[p[5]] = {'returnType':p[4], 'varTable': {}}
 
 # regla intermedia para asignar el tipo actual de las variables que se estan declarando
 def p_tipo_seen(p):
@@ -430,8 +451,10 @@ def p_variablesppp(p):
     else:
         p[0] = p[1]
 
-    # despues de declarar las dimensiones se elimina el id actual
+    # despues de declarar las dimensiones y actualizar el contador de memoria virtual se elimina el id actual
     temp = funcDir.currentId
+    if funcDir.isVariableArray():
+        quadrupleManager.virutalDirectory.setSpaceForArray(funcDir.currentScope, funcDir.currentType, funcDir.getArrayDimensionsSize() - 1)
     funcDir.currentId = None
     logs.append(f'Se elimino "{temp}" como la variable actual\n')
     del(temp)
@@ -460,25 +483,11 @@ def p_dimDeclare(p):
     else:
         p[0] = (p[1], p[2], p[3])
     
-    # revisa si ya hay un valor asignado a la variable
-    try: 
-        funcDir.currentVariableValue()
-
-    # si no lo hay entonces crea una lista llena de Nones del taman;o declarado
-    except:
-        funcDir.assignValueToCurrentVariable([None] * int(p[2]))
-        logs.append(f'Se le asigno a {funcDir.currentId} una lista vacia de tama;o {p[2]}\n')
-
-    # de lo contrario itera cada elemento de la lista y lo reemplaza por una lista llena de Nones del tama;o asignado
-    else:
-        tempList = []
-
-        for cell in funcDir.currentVariableValue():
-            tempList.append([None] * int(p[2]))
-
-        # lo asigna como una copia, de lo contrario todas las listas estarian apuntando al mismo espacio de memoria ocasionando que al cambiar una se cambien todas
-        funcDir.assignValueToCurrentVariable(tempList.copy())
-        logs.append(f'Se le asigno a cada casilla de la lista de {funcDir.currentId} una lista vacia de tama;o {p[2]}')
+    if not funcDir.isVariableArray():
+        funcDir.setVariableAsArray()
+           
+    funcDir.addArrayDimensionSize(p[2])
+    logs.append(f'Se le asigno a {funcDir.currentId} una dimension de tama;o {p[2]}\n')
 
 def p_tipo(p):
     '''

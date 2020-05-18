@@ -3,6 +3,7 @@ programa test;
 var int : a, b;
     float : c;
     char : d;
+    int : iArr[3], iMat[4][5], n1;
 
 principal(){
     a = 10;
@@ -11,7 +12,5 @@ principal(){
     d = 'T'; 
     escribe(a * 4, 15 - 6, c);
     escribe("test");
-    escribe(d);
-    lee(d);
     escribe(d);
 }

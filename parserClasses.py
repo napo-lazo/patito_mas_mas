@@ -51,16 +51,26 @@ class FunctionDirectory(object):
             self.variablesTable[scopeName] = {'returnType': returnType, 'parameters' : [], 'variables' : {}}
 
     def createVariable(self, variableName, virtualAddress):
-        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress}
+        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress, 'isArray' : False}
     
     def variableExists(self, variableName):
         return self.variablesTable[self.currentScope]['variables'][variableName]
     
-    def currentVariableValue(self):
-        return self.variablesTable[self.currentScope]['variables'][self.currentId]['value']
+    def isVariableArray(self):
+        return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
     
-    def assignValueToCurrentVariable(self, value):
-        self.variablesTable[self.currentScope]['variables'][self.currentId]['value'] = value
+    def setVariableAsArray(self):
+        self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray'] = True
+        self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'] = []
+
+    def addArrayDimensionSize(self, size):
+        self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'].append(size)
+
+    def getArrayDimensionsSize(self):
+        if len(self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions']) == 2:
+            return self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'][0] * self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'][1]
+        else:
+            return self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'][0]
 
     def getTypeOfVariable(self, variableName):
         if self.currentScope is None:

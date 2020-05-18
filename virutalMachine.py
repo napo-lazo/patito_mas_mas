@@ -153,6 +153,7 @@ class VirtualMachine(object):
                 if self.verifyInputCompatibility(current[3], self.getTypeOfInput(aux)):
                     self.setAddressToValue(current[3], aux)
                 else:
+                    #TODO: end program on error
                     print('Types are not compatible')
             
             i += 1

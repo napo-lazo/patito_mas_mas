@@ -14,6 +14,17 @@ Se asigno char como el tipo de variable actual
 Se agrego la variable "d" al scope de global
 Se elimino "d" como la variable actual
 Se elimino "char" como el tipo actual
+Se asigno int como el tipo de variable actual
+Se agrego la variable "iArr" al scope de global
+Se le asigno a iArr una dimension de tama;o 3
+Se elimino "iArr" como la variable actual
+Se agrego la variable "iMat" al scope de global
+Se le asigno a iMat una dimension de tama;o 4
+Se le asigno a iMat una dimension de tama;o 5
+Se elimino "iMat" como la variable actual
+Se agrego la variable "n1" al scope de global
+Se elimino "n1" como la variable actual
+Se elimino "int" como el tipo actual
 Se elimino global como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
@@ -69,7 +80,5 @@ Se agrego el valor temporal "23501" al operandStack
 Se agrego "int" al typeStack
 Se agrego "c" al operandStack
 Se agrego "float" al typeStack
-Se agrego "d" al operandStack
-Se agrego "char" al typeStack
 Se agrego "d" al operandStack
 Se agrego "char" al typeStack
