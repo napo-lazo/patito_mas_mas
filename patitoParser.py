@@ -123,7 +123,7 @@ class QuadrupleManager(object):
         self.virutalDirectory.globalIntsCounter += 1
 
     def generateERA(self):
-        self.quadrupleList.append(('ERA', -1, -1, funcDir.getFunctionSize()))
+        self.quadruplesList.append(('ERA', -1, -1, funcDir.getFunctionERA()))
     
     def generateEndProg(self):
         if funcDir.areFunctionsFinished():
@@ -403,6 +403,9 @@ def p_funcionp(p):
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
     #functionDirectory[p[2]].localVariableCount = p[5].length()
+    # aqui calcular ERA
+    # return es una variable, count and type of parameters, count and types of var
+    ERA = funcDir.getFunctionERA(p[7])
 
 def p_create_func_scope(p):
     '''
