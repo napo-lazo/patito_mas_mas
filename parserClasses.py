@@ -50,6 +50,14 @@ class FunctionDirectory(object):
 
     def getFunctionStart(self):
         return self.variablesTable[self.functionCalled]['startsAt']
+    
+    def getFunctionERA(self):
+        return self.variablesTable['self.currentScope']['variables'].count()+1
+
+    #def areFunctionsFinished():
+        # varias formas:
+        # se busca el final del main que es la ultima funcion
+        # se consigue el numero de funciones o nombre de la ultima funcion y se compara con el current
 
     def addParameterToList(self, paramName, paramType):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
