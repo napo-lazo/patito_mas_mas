@@ -57,7 +57,10 @@ class FunctionDirectory(object):
         return self.variablesTable[self.currentScope]['variables'][variableName]
     
     def isVariableArray(self):
-        return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+        if self.currentScope == None:
+            return self.variablesTable['global']['variables'][self.currentId]['isArray']
+        else:
+            return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
     
     def setVariableAsArray(self):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray'] = True
@@ -65,6 +68,12 @@ class FunctionDirectory(object):
 
     def addArrayDimensionSize(self, size):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'].append(size)
+
+    def getArrayDimensions(self, variable):
+        if self.currentScope == None:
+            return self.variablesTable['global']['variables'][variable]['arrayDimensions']
+        else:
+            return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions']
 
     def getArrayDimensionsSize(self):
         if len(self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions']) == 2:

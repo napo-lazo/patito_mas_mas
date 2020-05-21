@@ -5,6 +5,7 @@ from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
 from virutalMachine import VirtualMachine
+from sys import exit
 
 class VirutalDirectory(object):
     def __init__(self):
@@ -146,6 +147,7 @@ class QuadrupleManager(object):
         self.operandStack = []
         self.returnValuesStack = []
         self.returnTypeStack = []
+        self.dimStack = []
         # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
         # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
@@ -315,6 +317,7 @@ def p_start(p):
     print(quadrupleManager.operandStack)
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
+    print(quadrupleManager.dimStack)
     myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList())
     print(myMachine.initialEra)
 
@@ -620,6 +623,7 @@ def p_operand_seen(p):
     '''
     operand_seen :
     '''
+    funcDir.currentId = p[-1]
     quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[-1]))
     logs.append(f'Se agrego "{p[-1]}" al operandStack\n')
     try:
@@ -628,6 +632,79 @@ def p_operand_seen(p):
     except:
         print(f'ERROR: la variable {p[-1]} no ha sido declarada')
         raise SyntaxError
+
+def p_dimId(p):
+    '''
+    dimId : is_array create_dim dim
+          | is_array create_dim dim dim
+          | empty
+    '''
+    if len(p) >= 4:
+        aux = quadrupleManager.dimStack.pop()
+        print(quadrupleManager.operandStack)
+        print(quadrupleManager.typeStack)
+        print(quadrupleManager.quadruplesList)
+        if aux[1] == 1:
+            offset = quadrupleManager.operandStack.pop()
+            baseAddress = quadrupleManager.operandStack.pop()
+            typeOf = quadrupleManager.typeStack.pop()
+            if typeOf != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            temp = quadrupleManager.virutalDirectory.tempIntsCounter
+            quadrupleManager.virutalDirectory.tempIntsCounter += 1
+            quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
+            quadrupleManager.operandStack.append(temp)
+            quadrupleManager.quadrupleCounter += 1
+        else:
+            offset = quadrupleManager.operandStack.pop()
+            baseAddress = quadrupleManager.operandStack.pop()
+            typeOf = quadrupleManager.typeStack.pop()
+            if typeOf != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            temp = quadrupleManager.virutalDirectory.tempIntsCounter
+            quadrupleManager.virutalDirectory.tempIntsCounter += 1
+            quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
+            quadrupleManager.operandStack.append(temp)
+            quadrupleManager.quadrupleCounter += 1
+    
+    funcDir.currentId = None
+
+def p_is_array(p):
+    '''
+    is_array :  
+    '''
+    if not funcDir.isVariableArray():
+        print(f'Error: variable "{funcDir.currentId}" no es un arreglo')
+        exit()
+
+def p_dim(p):
+    '''
+    dim : L_SQUARE_BRACKET bracket_seen expresion R_SQUARE_BRACKET bracket_seen
+    '''
+    p[0] = (p[1], p[2], p[3])
+
+def p_create_dim(p):
+    '''
+    create_dim :
+    '''
+    quadrupleManager.dimStack.append((funcDir.currentId, 0))
+
+def p_bracket_seen(p):
+    '''
+    bracket_seen :
+    '''
+    if p[-1] == ']':
+        print(quadrupleManager.dimStack)
+        quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getArrayDimensions(quadrupleManager.dimStack[-1][0])[quadrupleManager.dimStack[-1][1] - 1]))
+        quadrupleManager.quadrupleCounter += 1
+        quadrupleManager.operationStack.pop()
+    else:
+        aux = quadrupleManager.dimStack.pop()[1]
+        quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
+
+        quadrupleManager.operationStack.append('(')
 
 # regla intermedia que se encarga de realizar los quadruplos de operiones logicas
 def p_apply_operation_assign(p):
@@ -638,23 +715,6 @@ def p_apply_operation_assign(p):
         quadrupleManager.applyOperation(['='])
     except:
         raise SyntaxError
-
-def p_dimId(p):
-    '''
-    dimId : dim
-                | dim dim
-                | empty
-    '''
-    if len(p) == 3:
-        p[0] = (p[1], p[2])
-    else:
-        p[0] = p[1]
-
-def p_dim(p):
-    '''
-    dim : L_SQUARE_BRACKET expresion R_SQUARE_BRACKET
-    '''
-    p[0] = (p[1], p[2], p[3])
 
 # falta ver que rollo con el not
 def p_expresion(p):
@@ -830,8 +890,6 @@ def p_cte(p):
     elif not type(p[1]) is float and not type(p[1]) is int and not type(p[1]) is str:
         pass
     else:
-        quadrupleManager.operandStack.append(p[1])
-        logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
         #TODO: add verification of char constants
         if type(p[1]) is int:
             if not funcDir.constantExists(p[1]):
@@ -845,6 +903,10 @@ def p_cte(p):
             if not funcDir.constantExists(p[1]):
                 funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'char') ,'char')
             quadrupleManager.typeStack.append('char')
+        
+        quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[1]))
+        print(quadrupleManager.operandStack)
+        logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
         logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 
         p[0] = p[1]

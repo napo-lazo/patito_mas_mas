@@ -1,4 +1,6 @@
 from re import search
+from sys import exit
+
 class VirtualMachine(object):
     def __init__(self, data, ctes):
         self.quadruplesList = data[0]
@@ -123,31 +125,23 @@ class VirtualMachine(object):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
                 self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
-            elif(current[0] == '+'):
+            elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=']):
                 leftOperand = self.getValueFromAddress(current[1])
                 rightOperand = self.getValueFromAddress(current[2])
-                result = eval(f'{leftOperand} + {rightOperand}')
+                result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                 self.setAddressToValue(current[3], result)
-            elif(current[0] == '-'):
-                leftOperand = self.getValueFromAddress(current[1])
-                rightOperand = self.getValueFromAddress(current[2])
-                result = eval(f'{leftOperand} - {rightOperand}')
-                self.setAddressToValue(current[3], result)
-            elif(current[0] == '*'):
-                leftOperand = self.getValueFromAddress(current[1])
-                rightOperand = self.getValueFromAddress(current[2])
-                result = eval(f'{leftOperand} * {rightOperand}')
-                self.setAddressToValue(current[3], result)
-            elif(current[0] == '/'):
-                leftOperand = self.getValueFromAddress(current[1])
-                rightOperand = self.getValueFromAddress(current[2])
-                result = eval(f'{leftOperand} / {rightOperand}')
-                self.setAddressToValue(current[3], result)
+            elif(current[0] == 'GOTOF'):
+                if not self.getValueFromAddress(current[1]):
+                    i = int(current[3]) - 1
             elif(current[0] == 'ESCRIBE'):
                 if type(current[1]) is str:
                     print(current[1])
                 else:
-                    print(self.getValueFromAddress(current[1]))
+                    aux = self.getValueFromAddress(current[1])
+                    if type(aux) is str:
+                        print(aux[1])
+                    else:
+                        print(aux)
             elif(current[0] == 'LEE'):
                 aux = input(f'Escribe el valor que desea guardar: ')
                 if self.verifyInputCompatibility(current[3], self.getTypeOfInput(aux)):
@@ -155,5 +149,30 @@ class VirtualMachine(object):
                 else:
                     #TODO: end program on error
                     print('Types are not compatible')
-            
+            elif(current[0] == 'VERIFY'):
+                index = self.getValueFromAddress(current[1])
+                if index >= current[3]:
+                    print('Error: indice es mayor que el tama;o del arreglo')
+                    exit()
+            # elif(current[0] == 'DISPLACE'):
+            #     leftOperand = current[1]
+            #     rightOperand = self.getValueFromAddress(current[2]) 
+            #     self.setAddressToValue(current[3], leftOperand + rightOperand)
+            #     tempIndex = 1
+            #     while True:
+            #         try:
+            #             temp = list(self.quadruplesList[i + tempIndex])
+            #             indexToReplace = temp.index(current[3])
+            #             temp[indexToReplace] = self.getValueFromAddress(current[3])
+            #             self.quadruplesList[i + tempIndex] = temp
+            #             break
+            #         except:
+            #             tempIndex += 1
+            # elif(current[0] == 'DISPLACEMAT'):
+            #     leftOperand = self.getValueFromAddress(current[1])
+            #     rightOperand = self.getValueFromAddress(current[2]) 
+            #     self.setAddressToValue(current[3], leftOperand + rightOperand)
+            #     print(leftOperand * rightOperand + 1)
+
+
             i += 1

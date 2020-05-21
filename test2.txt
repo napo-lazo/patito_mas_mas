@@ -6,11 +6,14 @@ var int : a, b;
     int : iArr[3], iMat[4][5], n1;
 
 principal(){
-    a = 10;
-    b = 3;
-    c = b / 4 + 10;
-    d = 'T'; 
-    escribe(a * 4, 15 - 6, c);
-    escribe("test");
-    escribe(d);
+    si(2 < 1)haz{
+        a = 3;
+        escribe(a * 3);
+    }
+    sino{
+        a = 47;
+        b = 73;
+        escribe(a - b);
+    }
+
 }

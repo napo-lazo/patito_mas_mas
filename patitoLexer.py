@@ -99,7 +99,6 @@ def t_CTE_INT(t):
 
 def t_CTE_CHAR(t):
     r'\'.\''
-    t.value = t.value[1]
     return t
 
 def t_LETRERO(t):
