@@ -10,35 +10,33 @@ Se elimino global como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
+Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
 Se realizo 1000 = 16000
+Se agrego "a" al operandStack
+Se agrego "int" al typeStack
+Se agrego <= al operantionStack
 Se agrego la constante "10" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 16001 > a y se gurado el resultado en "50000"
+Se realizo 1000 <= 16001 y se gurado el resultado en "50000"
 Se agrego el valor temporal "28500" al operandStack
 Se agrego "bool" al typeStack
 Se agrego "b" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 1001 = 16000
-Se agrego la constante "10" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 16001 > b y se gurado el resultado en "50001"
-Se agrego el valor temporal "28501" al operandStack
-Se agrego "bool" al typeStack
-Se agrego ( al operantionStack
-Se agrego "b" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
 Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 1001 + 16002 y se gurado el resultado en "50002"
-Se agrego el valor temporal "23500" al operandStack
+Se realizo 1001 = 16000
+Se agrego "b" al operandStack
 Se agrego "int" al typeStack
-Se termino un parentesis
+Se agrego <= al operantionStack
+Se agrego la constante "10" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 1001 <= 16001 y se gurado el resultado en "50001"
+Se agrego el valor temporal "28501" al operandStack
+Se agrego "bool" al typeStack
+Se agrego "b" al operandStack
+Se agrego "int" al typeStack
 Se agrego + al operantionStack
 Se agrego la constante "10" al operandStack
 Se agrego "<class 'int'>" al typeStack
@@ -46,24 +44,40 @@ Se agrego * al operantionStack
 Se agrego ( al operantionStack
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "0" al operandStack
+Se agrego - al operantionStack
+Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 1000 + 16000 y se gurado el resultado en "50003"
-Se agrego el valor temporal "23501" al operandStack
+Se realizo 1000 - 16000 y se gurado el resultado en "50002"
+Se agrego el valor temporal "23500" al operandStack
 Se agrego "int" al typeStack
 Se termino un parentesis
-Se realizo 16001 * 23501 y se gurado el resultado en "50004"
+Se realizo 16001 * 23500 y se gurado el resultado en "50003"
+Se agrego el valor temporal "23501" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1001 + 23501 y se gurado el resultado en "50004"
 Se agrego el valor temporal "23502" al operandStack
 Se agrego "int" al typeStack
-Se realizo 23500 + 23502 y se gurado el resultado en "50005"
+Se agrego "b" al operandStack
+Se agrego "int" al typeStack
+Se agrego = al operantionStack
+Se agrego "b" al operandStack
+Se agrego "int" al typeStack
+Se agrego + al operantionStack
+Se agrego la constante "1" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 1001 + 16000 y se gurado el resultado en "50005"
 Se agrego el valor temporal "23503" al operandStack
 Se agrego "int" al typeStack
-Se realizo 1001 + 1 y se gurado el resultado en "50006"
+Se realizo 1001 = 23503
+Se agrego "a" al operandStack
+Se agrego "int" al typeStack
+Se agrego = al operantionStack
+Se agrego "a" al operandStack
+Se agrego "int" al typeStack
+Se agrego + al operantionStack
+Se agrego la constante "1" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 1000 + 16000 y se gurado el resultado en "50006"
 Se agrego el valor temporal "23504" al operandStack
 Se agrego "int" al typeStack
-Se realizo 1001 = 23504
-Se realizo 1000 + 1 y se gurado el resultado en "50007"
-Se agrego el valor temporal "23505" al operandStack
-Se agrego "int" al typeStack
-Se realizo 1000 = 23505
+Se realizo 1000 = 23504

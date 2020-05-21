@@ -4,9 +4,14 @@ var int : a, b;
 
 principal(){
 
-    desde a = 0 hasta 10 hacer {
-        desde b = 0 hasta 10 hacer {
-            escribe((b + 1) + 10 * (a + 0));
+    a = 1;
+
+    mientras(a <= 10) haz {
+        b = 1;
+        mientras(b <= 10) haz {
+            escribe(b + 10 * (a - 1));
+            b = b + 1;
         }
+        a = a + 1;
     }
 }
