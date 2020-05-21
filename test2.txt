@@ -6,14 +6,11 @@ var int : a, b;
     int : iArr[3], iMat[4][5], n1;
 
 principal(){
-    si(2 < 1)haz{
-        a = 3;
-        escribe(a * 3);
-    }
-    sino{
-        a = 47;
-        b = 73;
-        escribe(a - b);
-    }
 
+    a = 1;
+    mientras(a <= 10) haz{
+        escribe(a);
+        a = a + 1;
+    }
+    escribe("Pinche compilador puto");
 }
