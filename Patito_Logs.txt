@@ -6,51 +6,64 @@ Se elimino "a" como la variable actual
 Se agrego la variable "b" al scope de global
 Se elimino "b" como la variable actual
 Se elimino "int" como el tipo actual
-Se asigno float como el tipo de variable actual
-Se agrego la variable "c" al scope de global
-Se elimino "c" como la variable actual
-Se elimino "float" como el tipo actual
-Se asigno char como el tipo de variable actual
-Se agrego la variable "d" al scope de global
-Se elimino "d" como la variable actual
-Se elimino "char" como el tipo actual
-Se asigno int como el tipo de variable actual
-Se agrego la variable "iArr" al scope de global
-Se le asigno a iArr una dimension de tama;o 3
-Se elimino "iArr" como la variable actual
-Se agrego la variable "iMat" al scope de global
-Se le asigno a iMat una dimension de tama;o 4
-Se le asigno a iMat una dimension de tama;o 5
-Se elimino "iMat" como la variable actual
-Se agrego la variable "n1" al scope de global
-Se elimino "n1" como la variable actual
-Se elimino "int" como el tipo actual
 Se elimino global como el scope actual
 Se agrego "a" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego la constante "1" al operandStack
+Se agrego la constante "0" al operandStack
 Se agrego "<class 'int'>" al typeStack
 Se realizo 1000 = 16000
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego <= al operantionStack
 Se agrego la constante "10" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 1000 <= 16001 y se gurado el resultado en "50000"
+Se realizo 16001 > a y se gurado el resultado en "50000"
 Se agrego el valor temporal "28500" al operandStack
 Se agrego "bool" al typeStack
-Se agrego "a" al operandStack
-Se agrego "int" al typeStack
-Se agrego "a" al operandStack
+Se agrego "b" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego "a" al operandStack
+Se agrego la constante "0" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 1001 = 16000
+Se agrego la constante "10" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 16001 > b y se gurado el resultado en "50001"
+Se agrego el valor temporal "28501" al operandStack
+Se agrego "bool" al typeStack
+Se agrego ( al operantionStack
+Se agrego "b" al operandStack
 Se agrego "int" al typeStack
 Se agrego + al operantionStack
 Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 1000 + 16000 y se gurado el resultado en "50001"
+Se realizo 1001 + 16002 y se gurado el resultado en "50002"
 Se agrego el valor temporal "23500" al operandStack
 Se agrego "int" al typeStack
-Se realizo 1000 = 23500
+Se termino un parentesis
+Se agrego + al operantionStack
+Se agrego la constante "10" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se agrego * al operantionStack
+Se agrego ( al operantionStack
+Se agrego "a" al operandStack
+Se agrego "int" al typeStack
+Se agrego + al operantionStack
+Se agrego la constante "0" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 1000 + 16000 y se gurado el resultado en "50003"
+Se agrego el valor temporal "23501" al operandStack
+Se agrego "int" al typeStack
+Se termino un parentesis
+Se realizo 16001 * 23501 y se gurado el resultado en "50004"
+Se agrego el valor temporal "23502" al operandStack
+Se agrego "int" al typeStack
+Se realizo 23500 + 23502 y se gurado el resultado en "50005"
+Se agrego el valor temporal "23503" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1001 + 1 y se gurado el resultado en "50006"
+Se agrego el valor temporal "23504" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1001 = 23504
+Se realizo 1000 + 1 y se gurado el resultado en "50007"
+Se agrego el valor temporal "23505" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1000 = 23505

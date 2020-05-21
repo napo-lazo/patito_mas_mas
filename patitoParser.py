@@ -1125,7 +1125,7 @@ def p_add_one(p):
     add_one : 
     '''
     aux = quadrupleManager.jumpStack[-2]
-    temp = quadrupleManager.quadruplesList[aux][1]
+    temp = quadrupleManager.quadruplesList[aux][2]
     quadrupleManager.operandStack.append(temp)
     quadrupleManager.typeStack.append('int')
     quadrupleManager.operandStack.append(1)
@@ -1137,7 +1137,6 @@ def p_add_one(p):
     quadrupleManager.operandStack.append(aux)
     quadrupleManager.operationStack.append('=')
     quadrupleManager.applyOperation(['='])
-    print(quadrupleManager.quadruplesList)
 
 def p_empty(p):
     '''

@@ -1,16 +1,12 @@
 programa test;
 
 var int : a, b;
-    float : c;
-    char : d;
-    int : iArr[3], iMat[4][5], n1;
 
 principal(){
 
-    a = 1;
-    mientras(a <= 10) haz{
-        escribe(a);
-        a = a + 1;
+    desde a = 0 hasta 10 hacer {
+        desde b = 0 hasta 10 hacer {
+            escribe((b + 1) + 10 * (a + 0));
+        }
     }
-    escribe("Pinche compilador puto");
 }
