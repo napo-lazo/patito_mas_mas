@@ -1,6 +1,5 @@
 import patitoLexer
 from parserClasses import FunctionDirectory
-#from parserClases import FunctionDirectory
 from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
@@ -93,6 +92,29 @@ class VirutalDirectory(object):
         if scope == 'global':
             if type == 'int':
                 self.globalIntsCounter += size
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.globalFloatsCounter += size
+                return self.globalFloatsCounter - 1
+            else:
+                self.globalCharsCounter += size
+                return self.globalCharsCounter - 1
+        else:
+            if type == 'int':
+                self.localIntsCounter += size
+                return self.localIntsCounter - 1
+            elif type == 'float':
+                self.localFloatsCounter += size
+                return self.localFloatsCounter - 1
+            else:
+                self.localCharsCounter += size
+                return self.localCharsCounter - 1
+
+    def setSpaceForMatrix(self, scope, type, sizeOne, sizeTwo):
+        size = sizeOne+sizeTwo
+        if scope == 'global':
+            if type == 'int':
+                self.globalIntsCounter + size
                 return self.globalIntsCounter - 1
             elif type == 'float':
                 self.globalFloatsCounter += size
