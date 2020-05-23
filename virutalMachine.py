@@ -22,17 +22,20 @@ class VirtualMachine(object):
         self.GlobalIntsSize = data[1][0][0]
         self.GlobalFloatsSize = data[1][0][1]
         self.GlobalCharsSize = data[1][0][2]
+        self.LocalIntsSize = [data[1][1][0]]
+        self.LocalFloatsSize = [data[1][1][1]]
+        self.LocalCharsSize = [data[1][1][2]]
         self.CteIntsSize = data[1][2][0]
         self.CteFloatsSize = data[1][2][1]
         self.CteCharsSize = data[1][2][2]
-        self.TempIntsSize = data[1][3][0]
-        self.TempFloatsSize = data[1][3][1]
-        self.TempBoolsSize = data[1][3][2]
+        self.TempIntsSize = [data[1][3][0]]
+        self.TempFloatsSize = [data[1][3][1]]
+        self.TempBoolsSize = [data[1][3][2]]
 
         GlobalSize = self.GlobalIntsSize + self.GlobalFloatsSize + self.GlobalCharsSize
-        LocalSize = data[1][1][0] + data[1][1][1] + data[1][1][2]
+        LocalSize = self.LocalIntsSize[-1] + self.LocalFloatsSize[-1] + self.LocalCharsSize[-1]
         CteSize = self.CteIntsSize + self.CteFloatsSize + self.CteCharsSize
-        TempSize = self.TempIntsSize + self.TempFloatsSize + self.TempBoolsSize
+        TempSize = self.TempIntsSize[-1] + self.TempFloatsSize[-1] + self.TempBoolsSize[-1]
 
 
         LocalAux = [None] * LocalSize
@@ -43,6 +46,27 @@ class VirtualMachine(object):
         self.Ctes = [x[0] for x in ctes] 
         self.Temps = [TempAux]
         print(ctes)
+
+    def allocateMemoryForFunction(self, era):
+        LocalIntsSize = era[0][0]
+        self.LocalIntsSize.append(LocalIntsSize)
+        LocalFloatsSize = era[0][1]
+        self.LocalFloatsSize.append(LocalFloatsSize)
+        LocalCharsSize = era[0][2]
+        self.LocalCharsSize.append(LocalCharsSize)
+        LocalSize = LocalIntsSize + LocalFloatsSize + LocalCharsSize
+        LocalAux = [None] * LocalSize
+        self.Locals.append(LocalAux)
+
+        TempIntsSize = era[1][0]
+        self.TempIntsSize.append(TempIntsSize)
+        TempFloatsSize = era[1][1]
+        self.TempFloatsSize.append(TempFloatsSize)
+        TempBoolsSize = era[1][2]
+        self.TempFloatsSize.append(TempFloatsSize)
+        TempSize = TempIntsSize + TempFloatsSize + TempBoolsSize
+        TempAux = [None] * TempSize
+        self.Temps.append((TempAux))
 
     def getTypeOfInput(self, value):
         if search(r'\-?[0-9]+\.[0-9]+', value):
@@ -79,6 +103,16 @@ class VirtualMachine(object):
                 aux = address - self.globalChars
                 aux += self.GlobalIntsSize + self.GlobalFloatsSize
             return self.Globals[aux]
+        elif address < self.cteInts and address >= self.localInts:
+            if address < self.localFloats:
+                aux = address - self.localInts
+            elif address < self.localChars:
+                aux = address - self.localFloats
+                aux += self.LocalIntsSize[-1]
+            else:
+                aux = address - self.localChars
+                aux += self.LocalIntsSize[-1] + self.LocalFloatsSize[-1]
+            return self.Locals[-1][aux]
         elif address < self.tempInts and address >= self.cteInts:
             if address < self.cteFloats:
                 aux = address - self.cteInts
@@ -93,9 +127,9 @@ class VirtualMachine(object):
             if address < self.tempFloats:
                 aux = address - self.tempInts
             elif address < self.tempBools:
-                aux = address - self.tempFloats + self.TempIntsSize
+                aux = address - self.tempFloats + self.TempIntsSize[-1]
             else:
-                aux = address - self.tempBools + self.TempIntsSize + self.TempFloatsSize
+                aux = address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]
             return self.Temps[-1][aux]
 
 
@@ -107,16 +141,23 @@ class VirtualMachine(object):
                 self.Globals[address - self.globalFloats + self.GlobalIntsSize] = value
             else:
                 self.Globals[address - self.globalChars + self.GlobalIntsSize + self.GlobalFloatsSize] = value
-                
+        elif address < self.cteInts and address >= self.localInts:
+            if address < self.localFloats:
+                self.Locals[-1][address - self.localInts] = value
+            elif address < self.localChars:
+                self.Locals[-1][address - self.localFloats + self.LocalIntsSize[-1]] = value
+            else:
+                self.Locals[-1][address - self.localChars + self.LocalIntsSize[-1] + self.LocalFloatsSize[-1]] = value
         elif address < 31000 and address >= self.tempInts:
             if address < self.tempFloats:
                 self.Temps[-1][address - self.tempInts] = value
             elif address < self.tempBools:
-                self.Temps[-1][address - self.tempFloats + self.TempIntsSize] = value
+                self.Temps[-1][address - self.tempFloats + self.TempIntsSize[-1]] = value
             else:
-                self.Temps[-1][address - self.tempBools + self.TempIntsSize + self.TempFloatsSize] = value
+                self.Temps[-1][address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]] = value
 
     def executeProgram(self):
+        indexStack = []
         i = 0
         n = len(self.quadruplesList)
         while i < n:
@@ -154,6 +195,13 @@ class VirtualMachine(object):
                 if index >= current[3]:
                     print('Error: indice es mayor que el tama;o del arreglo')
                     exit()
+            elif(current[0] == 'GOSUB'):
+                indexStack.append(i)
+                i = current[3] - 1
+            elif(current[0] == 'ENDFUNC'):
+                i = indexStack.pop()
+            elif(current[0] == 'ERA'):
+                self.allocateMemoryForFunction(current[3])
             # elif(current[0] == 'DISPLACE'):
             #     leftOperand = current[1]
             #     rightOperand = self.getValueFromAddress(current[2]) 

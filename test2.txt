@@ -1,17 +1,19 @@
 programa test;
 
-var int : a, b;
+var int: a, b;
+
+funcion void imprimeValor(){
+    si (1 == 1 && 1 == 1) haz {
+        escribe("Verdadero");
+    }
+    sino{
+        escribe("Falso");
+    }
+}
 
 principal(){
-
-    a = 1;
-
-    mientras(a <= 10) haz {
-        b = 1;
-        mientras(b <= 10) haz {
-            escribe(b + 10 * (a - 1));
-            b = b + 1;
-        }
-        a = a + 1;
-    }
+    a = 2;
+    b = 6;
+    escribe(a + b);
+    imprimeValor();
 }

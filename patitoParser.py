@@ -48,6 +48,7 @@ class VirutalDirectory(object):
                ]
 
     def generateAddressForVariable(self, scope, type):
+        print(scope)
         if scope == 'global':
             if type == 'int':
                 self.globalIntsCounter += 1
@@ -412,6 +413,7 @@ def p_variable_seen(p):
 
     # si no la hay se crea una de manera normal
     except:
+        print('crea variable')
         funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable(funcDir.currentScope, funcDir.currentType))
         logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
