@@ -3,7 +3,7 @@ programa test;
 var int: a, b;
 
 funcion void imprimeValor(){
-    si (1 == 1 && 1 == 1) haz {
+    si (1 == 1 || 1 != 1) haz {
         escribe("Verdadero");
     }
     sino{
@@ -12,8 +12,5 @@ funcion void imprimeValor(){
 }
 
 principal(){
-    a = 2;
-    b = 6;
-    escribe(a + b);
     imprimeValor();
 }

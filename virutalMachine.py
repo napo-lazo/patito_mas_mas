@@ -166,10 +166,15 @@ class VirtualMachine(object):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
                 self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
-            elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=']):
+            elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=', '&&', '||']):
                 leftOperand = self.getValueFromAddress(current[1])
                 rightOperand = self.getValueFromAddress(current[2])
-                result = eval(f'{leftOperand} {current[0]} {rightOperand}')
+                if current[0] == '&&':
+                    result = eval(f'{leftOperand} and {rightOperand}')
+                elif current[0] == '||':
+                    result = eval(f'{leftOperand} or {rightOperand}')
+                else:
+                    result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                 self.setAddressToValue(current[3], result)
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
