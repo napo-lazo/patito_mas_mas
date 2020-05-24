@@ -25,7 +25,7 @@ class FunctionDirectory(object):
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
                 try: 
-                    print(self.ctesTable[variable]['virtualAddress'])
+                    # print(self.ctesTable[variable]['virtualAddress'])
                     return self.ctesTable[variable]['virtualAddress']
                 except:
                     # TODO: add proper logic
@@ -51,7 +51,10 @@ class FunctionDirectory(object):
             self.variablesTable[scopeName] = {'returnType': returnType, 'parameters' : [], 'variables' : {}}
 
     def createVariable(self, variableName, virtualAddress):
-        self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress, 'isArray' : False}
+        if self.currentScope:
+            self.variablesTable[self.currentScope]['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress, 'isArray' : False}
+        else:
+            self.variablesTable['global']['variables'][variableName] = {'type' : self.currentType, 'virtualAddress' : virtualAddress, 'isArray' : False}
     
     def variableExists(self, variableName):
         return self.variablesTable[self.currentScope]['variables'][variableName]
@@ -139,6 +142,9 @@ class FunctionDirectory(object):
         
     def isVoid(self):
         return self.variablesTable[self.functionCalled]['returnType'] == 'void'
+
+    def getReturnType(self, functionName):
+        return self.variablesTable[functionName]['returnType']
 
     def releaseVars(self):
         # release vartable, end function, update temporal var count

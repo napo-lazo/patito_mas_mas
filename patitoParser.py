@@ -226,16 +226,18 @@ class QuadrupleManager(object):
 
     def generateReturn(self, returnCounter):
         if returnCounter > 0:
-            self.quadruplesList.append(('RETURN', -1, -1, self.operandStack[-1]))
-            self.returnValuesStack.append(self.operandStack.pop())
+            returnAddress = funcDir.getVirtualAddressOfVariable(funcDir.currentScope)
+            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, returnAddress))
+            self.returnValuesStack.append(returnAddress)
             self.returnTypeStack.append(self.typeStack.pop())
             self.quadrupleCounter += 1
     
     def generateReturnAssignment(self):
-        self.quadruplesList.append(('=', self.returnValuesStack.pop(), -1, self.virutalDirectory.genericCounter))
-        self.typeStack.append(self.returnTypeStack.pop())
+        resultAddress = self.virutalDirectory.generateAddressForVariable('temp', funcDir.getReturnType(funcDir.functionCalled))
+        self.quadruplesList.append(('=', funcDir.getVirtualAddressOfVariable(funcDir.functionCalled), -1, resultAddress))
+        self.operandStack.append(resultAddress)
+        self.typeStack.append(funcDir.getReturnType(funcDir.functionCalled))
         self.quadrupleCounter += 1
-        self.virutalDirectory.genericCounter += 1
 
     def generateERA(self, funcDir):
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
@@ -528,10 +530,16 @@ def p_create_func_scope(p):
     '''
     if p[-1] == 'global':
         print('Error: global es una palabra reservada')
-        raise SyntaxError
+        exit()
     try:
         funcDir.scopeExists(p[-1])
     except:
+        if p[-2] != 'void':
+            #TODO: verificar que el usuario no declare variables con el nombre de alguna funcion
+            funcDir.currentType = p[-2]
+            funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+            funcDir.currentType = None
+        
         funcDir.createScope(p[-1], p[-2])
         logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
         funcDir.currentScope = p[-1]
@@ -539,7 +547,7 @@ def p_create_func_scope(p):
         funcDir.addFunctionStart(quadrupleManager)
     else:
         print(f'Error: {p[-1]} ya existe')
-        raise SyntaxError
+        exit()
 
 def p_end_func(p):
     '''
@@ -920,13 +928,12 @@ def p_llamadaFuncion(p):
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
     if not funcDir.isVoid():
-        print(funcDir.functionCalled)
+        # print(funcDir.functionCalled)
         quadrupleManager.generateERA(funcDir)
         quadrupleManager.generateGoSub(funcDir.functionCalled)
+        quadrupleManager.generateReturnAssignment()
         funcDir.functionCalled = None
         funcDir.parameterCounter = 0
-        quadrupleManager.generateReturnAssignment()
-        quadrupleManager.operandStack.append(quadrupleManager.quadrupleCounter-1)
     else:
         print('Error: no se puede llamar una funcion con tipo de retorno void en una expresion')
         raise SyntaxError
@@ -970,7 +977,7 @@ def p_funcionVacia(p):
         funcDir.parameterCounter = 0
     else:
         print('Error: no se puede llamar una funcion con tipo de retorno diferente a void afuera de una expresion')
-        raise SyntaxError
+        exit()
 
 def p_set_func_scope(p):
     '''
@@ -980,9 +987,11 @@ def p_set_func_scope(p):
         funcDir.scopeExists(p[-1])
     except:
         print('Error: funcion no existe')
-        raise SyntaxError
+        exit()
     else:
         funcDir.functionCalled = p[-1]
+
+
 
 def p_regresa(p):
     '''

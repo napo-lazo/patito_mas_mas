@@ -2,15 +2,10 @@ programa test;
 
 var int: a, b;
 
-funcion void imprimeValor(){
-    si (1 == 1 || 1 != 1) haz {
-        escribe("Verdadero");
-    }
-    sino{
-        escribe("Falso");
-    }
+funcion int imprimeValor(){
+    regresa(2 + 3 - 1);
 }
 
 principal(){
-    imprimeValor();
+    escribe(imprimeValor() + imprimeValor());
 }

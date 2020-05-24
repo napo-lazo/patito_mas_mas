@@ -6,26 +6,28 @@ Se elimino "a" como la variable actual
 Se agrego la variable "b" al scope de global
 Se elimino "b" como la variable actual
 Se elimino "int" como el tipo actual
-Se creo la funcion imprimeValor de retorno tipo void en el dirFunc
+Se creo la funcion imprimeValor de retorno tipo int en el dirFunc
 imprimeValor se asigno como el scope actual
+Se agrego la constante "2" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se agrego + al operantionStack
+Se agrego la constante "3" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 16000 + 16001 y se gurado el resultado en "50000"
+Se agrego el valor temporal "23500" al operandStack
+Se agrego "int" al typeStack
+Se agrego - al operantionStack
 Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se agrego == al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 16000 == 16000 y se gurado el resultado en "50000"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego || al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego != al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 16000 != 16000 y se gurado el resultado en "50001"
-Se agrego el valor temporal "28501" al operandStack
-Se agrego "bool" al typeStack
-Se realizo 28500 || 28501 y se gurado el resultado en "50002"
-Se agrego el valor temporal "28502" al operandStack
-Se agrego "bool" al typeStack
+Se realizo 23500 - 16002 y se gurado el resultado en "50001"
+Se agrego el valor temporal "23501" al operandStack
+Se agrego "int" al typeStack
 Se elimino imprimeValor como el scope actual
+Se agrego ( al operantionStack
+Se termino un parentesis
+Se agrego + al operantionStack
+Se agrego ( al operantionStack
+Se termino un parentesis
+Se realizo 23500 + 23501 y se gurado el resultado en "50002"
+Se agrego el valor temporal "23502" al operandStack
+Se agrego "int" al typeStack

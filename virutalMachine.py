@@ -63,7 +63,7 @@ class VirtualMachine(object):
         TempFloatsSize = era[1][1]
         self.TempFloatsSize.append(TempFloatsSize)
         TempBoolsSize = era[1][2]
-        self.TempFloatsSize.append(TempFloatsSize)
+        self.TempBoolsSize.append(TempBoolsSize)
         TempSize = TempIntsSize + TempFloatsSize + TempBoolsSize
         TempAux = [None] * TempSize
         self.Temps.append((TempAux))
@@ -205,8 +205,28 @@ class VirtualMachine(object):
                 i = current[3] - 1
             elif(current[0] == 'ENDFUNC'):
                 i = indexStack.pop()
+                self.Locals.pop()
+                self.Temps.pop()
+                self.LocalIntsSize.pop()
+                self.LocalFloatsSize.pop()
+                self.LocalCharsSize.pop()
+                self.TempIntsSize.pop()
+                self.TempFloatsSize.pop()
+                self.TempBoolsSize.pop()
             elif(current[0] == 'ERA'):
                 self.allocateMemoryForFunction(current[3])
+            elif(current[0] == 'RETURN'):
+                self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
+                i = indexStack.pop()
+                self.Locals.pop()
+                self.Temps.pop()
+                self.LocalIntsSize.pop()
+                self.LocalFloatsSize.pop()
+                self.LocalCharsSize.pop()
+                self.TempIntsSize.pop()
+                self.TempFloatsSize.pop()
+                self.TempBoolsSize.pop()
+
             # elif(current[0] == 'DISPLACE'):
             #     leftOperand = current[1]
             #     rightOperand = self.getValueFromAddress(current[2]) 
