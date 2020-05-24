@@ -5,6 +5,7 @@ class FunctionDirectory(object):
         #variablesTable tiene el formato de {nombreScope : {returnType : valor, parameters: [type1, type2, etc] variables : {nombreVar1 : {type : valor, value : valor}}}} 
         self.variablesTable = {}
         self.ctesTable = {}
+        self.eras = {}
         self.currentScope = None
         self.currentType = None
         self.currentId = None
@@ -48,7 +49,8 @@ class FunctionDirectory(object):
         if scopeName == 'global':
             self.variablesTable[scopeName] = {'returnType': returnType, 'variables' : {}}
         else:
-            self.variablesTable[scopeName] = {'returnType': returnType, 'parameters' : [], 'variables' : {}}
+            self.eras[scopeName] = []
+            self.variablesTable[scopeName] = {'returnType': returnType, 'parameters' : [], 'variables' : {}, 'era' : scopeName}
 
     def createVariable(self, variableName, virtualAddress):
         if self.currentScope:
@@ -156,7 +158,7 @@ class FunctionDirectory(object):
         locales = [virtualDirectory.localIntsCounter - virtualDirectory.CharRanges[0], virtualDirectory.localFloatsCounter - virtualDirectory.IntRanges[1], virtualDirectory.localCharsCounter - virtualDirectory.FloatRanges[1]]
         # [ints, floats, bools]
         temporales = [virtualDirectory.tempIntsCounter - virtualDirectory.CharRanges[2], virtualDirectory.tempFloatsCounter - virtualDirectory.IntRanges[3], virtualDirectory.tempBoolsCounter - virtualDirectory.FloatRanges[3]]
-        self.variablesTable[self.currentScope]['era'] = [locales, temporales]
+        self.eras[self.currentScope] = [locales, temporales]
     
     def getEra(self):
         return self.variablesTable[self.functionCalled]['era']

@@ -5,7 +5,7 @@ funcion int recursion(int n){
         regresa(n);
     }
     sino{
-        regresa(4);
+        regresa(n + recursion(n + 1));
     }
 
 }

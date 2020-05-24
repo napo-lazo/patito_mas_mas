@@ -2,9 +2,10 @@ from re import search
 from sys import exit
 
 class VirtualMachine(object):
-    def __init__(self, data, ctes):
+    def __init__(self, data, ctes, eras):
         self.quadruplesList = data[0]
         self.initialEra = data[1]
+        self.eras = eras
         
         self.globalInts = 1000
         self.globalFloats = 3500
@@ -48,22 +49,23 @@ class VirtualMachine(object):
         print(ctes)
 
     def allocateMemoryForFunction(self, era, parameterList):
-        LocalIntsSize = era[0][0]
+        eraValues = self.eras[era]
+        LocalIntsSize = eraValues[0][0]
         self.LocalIntsSize.append(LocalIntsSize)
-        LocalFloatsSize = era[0][1]
+        LocalFloatsSize = eraValues[0][1]
         self.LocalFloatsSize.append(LocalFloatsSize)
-        LocalCharsSize = era[0][2]
+        LocalCharsSize = eraValues[0][2]
         self.LocalCharsSize.append(LocalCharsSize)
         LocalSize = LocalIntsSize + LocalFloatsSize + LocalCharsSize
         LocalAux = [None] * LocalSize
         for i in range(0, len(parameterList)):
             LocalAux[i] = parameterList[i]
 
-        TempIntsSize = era[1][0]
+        TempIntsSize = eraValues[1][0]
         self.TempIntsSize.append(TempIntsSize)
-        TempFloatsSize = era[1][1]
+        TempFloatsSize = eraValues[1][1]
         self.TempFloatsSize.append(TempFloatsSize)
-        TempBoolsSize = era[1][2]
+        TempBoolsSize = eraValues[1][2]
         self.TempBoolsSize.append(TempBoolsSize)
         TempSize = TempIntsSize + TempFloatsSize + TempBoolsSize
         TempAux = [None] * TempSize
@@ -166,6 +168,7 @@ class VirtualMachine(object):
         n = len(self.quadruplesList)
         while i < n:
             current = self.quadruplesList[i]
+            print(current[0])
             if(current[0] == 'GOTO'):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
@@ -207,6 +210,7 @@ class VirtualMachine(object):
             elif(current[0] == 'GOSUB'):
                 indexStack.append(i)
                 i = current[3] - 1
+                print(f'index stack: {indexStack}')
             elif(current[0] == 'ENDFUNC'):
                 i = indexStack.pop()
                 self.Locals.pop()
@@ -253,6 +257,5 @@ class VirtualMachine(object):
             #     rightOperand = self.getValueFromAddress(current[2]) 
             #     self.setAddressToValue(current[3], leftOperand + rightOperand)
             #     print(leftOperand * rightOperand + 1)
-
 
             i += 1

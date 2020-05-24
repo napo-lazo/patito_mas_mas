@@ -242,6 +242,7 @@ class QuadrupleManager(object):
     def generateERA(self, funcDir):
         print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
+        self.quadrupleCounter += 1
     
     def generateEndProg(self):
         if funcDir.areFunctionsFinished():
@@ -310,7 +311,7 @@ def p_start(p):
     '''
     start : programa
     '''
-    print(p[1])
+    print(funcDir.eras)
     print()
     print(funcDir.variablesTable)
     print()
@@ -322,7 +323,7 @@ def p_start(p):
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
     print(quadrupleManager.dimStack)
-    myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList())
+    myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList(), funcDir.eras)
     print(myMachine.initialEra)
 
     myMachine.executeProgram()
