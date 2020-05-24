@@ -1,9 +1,15 @@
 programa test;
 
-funcion float calcularPerimetro(float largo, float ancho){
-    regresa(largo * ancho);
+funcion int recursion(int n){
+    si (n == 5) haz{
+        regresa(n);
+    }
+    sino{
+        regresa(4);
+    }
+
 }
 
 principal(){
-
+    escribe(recursion(1));
 }

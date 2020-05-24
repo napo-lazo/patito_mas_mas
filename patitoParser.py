@@ -240,6 +240,7 @@ class QuadrupleManager(object):
         self.quadrupleCounter += 1
 
     def generateERA(self, funcDir):
+        print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
     
     def generateEndProg(self):
@@ -557,8 +558,6 @@ def p_end_func(p):
     '''
     end_func :
     '''
-    funcDir.verifyFunctionCompatibility(quadrupleManager)
-    quadrupleManager.generateReturn(funcDir.callFromReturn)
     funcDir.callFromReturn = 0
     funcDir.createEra(quadrupleManager.virutalDirectory)
     quadrupleManager.virutalDirectory.resetLocalAddresses()
@@ -578,7 +577,7 @@ def p_save_param(p):
     '''
     save_param :
     '''
-    funcDir.addParameterToList(p[-1], p[-2])
+    funcDir.addParameterToList(p[-1], p[-2], quadrupleManager.virutalDirectory.generateAddressForVariable(p[-1], p[-2]))
     logs.append(f'Se agrego el parametro "{p[-1]}" de tipo "{p[-2]}" al scope de func1\n')
 
 def p_parametrop(p):
@@ -1003,6 +1002,8 @@ def p_regresa(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
     funcDir.callFromReturn += 1
+    funcDir.verifyFunctionCompatibility(quadrupleManager)
+    quadrupleManager.generateReturn(funcDir.callFromReturn)
     
 
 def p_lectura(p):

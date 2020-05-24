@@ -1,13 +1,20 @@
-Se creo la funcion calcularPerimetro de retorno tipo float en el dirFunc
-calcularPerimetro se asigno como el scope actual
-Se agrego el parametro "largo" de tipo "float" al scope de func1
-Se agrego el parametro "ancho" de tipo "float" al scope de func1
-Se agrego "largo" al operandStack
-Se agrego "float" al typeStack
-Se agrego * al operantionStack
-Se agrego "ancho" al operandStack
-Se agrego "float" al typeStack
-Se realizo largo * ancho y se gurado el resultado en "50000"
-Se agrego el valor temporal "26000" al operandStack
-Se agrego "float" al typeStack
-Se elimino calcularPerimetro como el scope actual
+Se creo la funcion recursion de retorno tipo int en el dirFunc
+recursion se asigno como el scope actual
+Se agrego el parametro "n" de tipo "int" al scope de func1
+Se agrego "n" al operandStack
+Se agrego "int" al typeStack
+Se agrego == al operantionStack
+Se agrego la constante "5" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 8500 == 16000 y se gurado el resultado en "50000"
+Se agrego el valor temporal "28500" al operandStack
+Se agrego "bool" al typeStack
+Se agrego "n" al operandStack
+Se agrego "int" al typeStack
+Se agrego la constante "4" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se elimino recursion como el scope actual
+Se agrego ( al operantionStack
+Se agrego la constante "1" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se termino un parentesis

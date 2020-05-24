@@ -102,9 +102,9 @@ class FunctionDirectory(object):
     def getFunctionStart(self):
         return self.variablesTable[self.functionCalled]['startsAt']
 
-    def addParameterToList(self, paramName, paramType):
+    def addParameterToList(self, paramName, paramType, virtualAddress):
             self.variablesTable[self.currentScope]['parameters'].append(paramType)
-            self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType}
+            self.variablesTable[self.currentScope]['variables'][paramName] = {'type' : paramType, 'virtualAddress' : virtualAddress}
 
     def verifyParameter(self, quadrupleManager):
         #TODO: Throw error if parameters are missing

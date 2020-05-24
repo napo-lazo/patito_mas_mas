@@ -47,7 +47,7 @@ class VirtualMachine(object):
         self.Temps = [TempAux]
         print(ctes)
 
-    def allocateMemoryForFunction(self, era):
+    def allocateMemoryForFunction(self, era, parameterList):
         LocalIntsSize = era[0][0]
         self.LocalIntsSize.append(LocalIntsSize)
         LocalFloatsSize = era[0][1]
@@ -56,7 +56,8 @@ class VirtualMachine(object):
         self.LocalCharsSize.append(LocalCharsSize)
         LocalSize = LocalIntsSize + LocalFloatsSize + LocalCharsSize
         LocalAux = [None] * LocalSize
-        self.Locals.append(LocalAux)
+        for i in range(0, len(parameterList)):
+            LocalAux[i] = parameterList[i]
 
         TempIntsSize = era[1][0]
         self.TempIntsSize.append(TempIntsSize)
@@ -66,6 +67,8 @@ class VirtualMachine(object):
         self.TempBoolsSize.append(TempBoolsSize)
         TempSize = TempIntsSize + TempFloatsSize + TempBoolsSize
         TempAux = [None] * TempSize
+
+        self.Locals.append(LocalAux)
         self.Temps.append((TempAux))
 
     def getTypeOfInput(self, value):
@@ -157,6 +160,7 @@ class VirtualMachine(object):
                 self.Temps[-1][address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]] = value
 
     def executeProgram(self):
+        parameterList = []
         indexStack = []
         i = 0
         n = len(self.quadruplesList)
@@ -214,7 +218,8 @@ class VirtualMachine(object):
                 self.TempFloatsSize.pop()
                 self.TempBoolsSize.pop()
             elif(current[0] == 'ERA'):
-                self.allocateMemoryForFunction(current[3])
+                self.allocateMemoryForFunction(current[3], parameterList)
+                parameterList.clear()
             elif(current[0] == 'RETURN'):
                 self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
                 i = indexStack.pop()
@@ -226,6 +231,8 @@ class VirtualMachine(object):
                 self.TempIntsSize.pop()
                 self.TempFloatsSize.pop()
                 self.TempBoolsSize.pop()
+            elif(current[0] == 'PARAMETER'):
+                parameterList.append(self.getValueFromAddress(current[1]))
 
             # elif(current[0] == 'DISPLACE'):
             #     leftOperand = current[1]
