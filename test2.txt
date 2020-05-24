@@ -1,11 +1,9 @@
 programa test;
 
-var int: a, b;
-
-funcion int imprimeValor(){
-    regresa(2 + 3 - 1);
+funcion float calcularPerimetro(float largo, float ancho){
+    regresa(largo * ancho);
 }
 
 principal(){
-    escribe(imprimeValor() + imprimeValor());
+
 }

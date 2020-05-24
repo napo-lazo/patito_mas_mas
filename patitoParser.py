@@ -537,7 +537,11 @@ def p_create_func_scope(p):
         if p[-2] != 'void':
             #TODO: verificar que el usuario no declare variables con el nombre de alguna funcion
             funcDir.currentType = p[-2]
-            funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+            try:
+                funcDir.scopeExists('global')
+            except:
+                funcDir.createScope('global', 'void')
+                funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])

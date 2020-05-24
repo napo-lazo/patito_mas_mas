@@ -1,33 +1,13 @@
-Se creo la funcion global de retorno tipo void en el dirFunc
-global se asigno como el scope actual
-Se asigno int como el tipo de variable actual
-Se agrego la variable "a" al scope de global
-Se elimino "a" como la variable actual
-Se agrego la variable "b" al scope de global
-Se elimino "b" como la variable actual
-Se elimino "int" como el tipo actual
-Se creo la funcion imprimeValor de retorno tipo int en el dirFunc
-imprimeValor se asigno como el scope actual
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "3" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 16000 + 16001 y se gurado el resultado en "50000"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 23500 - 16002 y se gurado el resultado en "50001"
-Se agrego el valor temporal "23501" al operandStack
-Se agrego "int" al typeStack
-Se elimino imprimeValor como el scope actual
-Se agrego ( al operantionStack
-Se termino un parentesis
-Se agrego + al operantionStack
-Se agrego ( al operantionStack
-Se termino un parentesis
-Se realizo 23500 + 23501 y se gurado el resultado en "50002"
-Se agrego el valor temporal "23502" al operandStack
-Se agrego "int" al typeStack
+Se creo la funcion calcularPerimetro de retorno tipo float en el dirFunc
+calcularPerimetro se asigno como el scope actual
+Se agrego el parametro "largo" de tipo "float" al scope de func1
+Se agrego el parametro "ancho" de tipo "float" al scope de func1
+Se agrego "largo" al operandStack
+Se agrego "float" al typeStack
+Se agrego * al operantionStack
+Se agrego "ancho" al operandStack
+Se agrego "float" al typeStack
+Se realizo largo * ancho y se gurado el resultado en "50000"
+Se agrego el valor temporal "26000" al operandStack
+Se agrego "float" al typeStack
+Se elimino calcularPerimetro como el scope actual
