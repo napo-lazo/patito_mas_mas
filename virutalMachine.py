@@ -168,7 +168,7 @@ class VirtualMachine(object):
         n = len(self.quadruplesList)
         while i < n:
             current = self.quadruplesList[i]
-            print(current[0])
+            # print(current[0])
             if(current[0] == 'GOTO'):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
@@ -210,7 +210,6 @@ class VirtualMachine(object):
             elif(current[0] == 'GOSUB'):
                 indexStack.append(i)
                 i = current[3] - 1
-                print(f'index stack: {indexStack}')
             elif(current[0] == 'ENDFUNC'):
                 i = indexStack.pop()
                 self.Locals.pop()

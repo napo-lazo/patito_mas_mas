@@ -544,6 +544,9 @@ def p_create_func_scope(p):
             except:
                 funcDir.createScope('global', 'void')
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+            else:
+                funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+                print(f'scope: {funcDir.currentScope}')
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])
@@ -563,6 +566,7 @@ def p_end_func(p):
     funcDir.createEra(quadrupleManager.virutalDirectory)
     quadrupleManager.virutalDirectory.resetLocalAddresses()
     quadrupleManager.generateEndFunc()
+    funcDir.currentScope = None
 
 def p_parametro(p):
     '''
