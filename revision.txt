@@ -44,6 +44,33 @@ var int: i, aux; {
     regresa(aux);
 }
 
+funcion void Sort()
+var int: A[5], size, i, j, k, min, temp;
+{
+	A[0] = 5; A[1] = 4; A[2] = 1; A[3] = 2; A[4] = 3;
+	size = 5; i = 0;
+    desde k = 0 hasta size hacer{
+        escribe(A[k], " ");
+    }
+	mientras (i < (size -1)) haz {
+		min = i;
+        j = i + 1;
+        mientras (j < size) haz {
+            si (A[j] < A[min]) entonces {
+                min = j;
+            }
+            j = j + 1;
+        }
+        temp = A[i];
+        A[i] = A[min];
+        A[min] = temp;
+        i = i + 1;
+	}
+     desde k = 0 hasta size hacer{
+        escribe(A[k], " ");
+    }
+}
+
 principal(){
     escribe(FibonacciRec(9));
     escribe(FibonacciIt(9));
