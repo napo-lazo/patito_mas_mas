@@ -690,6 +690,7 @@ def p_dimId(p):
         #     quadrupleManager.operandStack.append(temp)
         #     quadrupleManager.quadrupleCounter += 1
     
+    quadrupleManager.dimStack.pop()
     funcDir.currentId = None
 
 def p_is_array(p):
@@ -719,7 +720,7 @@ def p_bracket_seen(p):
     '''
     if p[-1] == ']':
         print(quadrupleManager.dimStack)
-        dim = quadrupleManager.dimStack[-1][1][-1]
+        dim = quadrupleManager.dimStack[-1][1][0]
         #TODO: convert to constant
         if not funcDir.constantExists(dim):
             funcDir.addConstant(dim, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
@@ -731,8 +732,10 @@ def p_bracket_seen(p):
             if quadrupleManager.typeStack[-1] != 'int':
                 print('Error: solo se puede indexar un arreglo con valores enteros')
                 exit()
-            #TODO: convert to constant
-            quadrupleManager.operandStack.append(quadrupleManager.dimStack[-1][1].pop())
+            if not funcDir.constantExists(quadrupleManager.dimStack[-1][1][-1]):
+                funcDir.addConstant(quadrupleManager.dimStack[-1][1][-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            quadrupleManager.operandStack.append(quadrupleManager.dimStack[-1][1][-1])
+            quadrupleManager.dimStack[-1][1].pop(0)
             quadrupleManager.typeStack.append('int')
             quadrupleManager.operationStack.append('*')
             quadrupleManager.applyOperation('*')

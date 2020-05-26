@@ -213,8 +213,7 @@ class VirtualMachine(object):
                     #TODO: end program on error
                     print('Types are not compatible')
             elif(current[0] == 'VERIFY'):
-                index = self.getValueFromAddress(current[1])
-                if index >= current[3]:
+                if self.getValueFromAddress(current[1]) >= self.getValueFromAddress(current[3]):
                     print('Error: indice es mayor que el tama;o del arreglo')
                     exit()
             elif(current[0] == 'GOSUB'):
