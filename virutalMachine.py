@@ -101,7 +101,7 @@ class VirtualMachine(object):
 
     def getValueFromAddress(self, address):
         if address >= self.pointers:
-            return self.Pointers[address - self.pointers]
+            return self.getValueFromAddress(self.Pointers[address - self.pointers])
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 aux = address - self.globalInts
@@ -144,8 +144,11 @@ class VirtualMachine(object):
 
     def setAddressToValue(self, address, value):
         if address >= self.pointers:
-            self.Pointers[address - self.pointers] = value
-            print(self.Pointers)
+            if self.Pointers[address - self.pointers] == None:
+                self.Pointers[address - self.pointers] = value
+                # print(self.Pointers)
+            else:
+                self.setAddressToValue(self.Pointers[address - self.pointers], value)
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 self.Globals[address - self.globalInts] = value
@@ -179,11 +182,7 @@ class VirtualMachine(object):
             if(current[0] == 'GOTO'):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
-                if current[3] >= self.pointers:
-                    self.setAddressToValue(self.getValueFromAddress(current[3]), self.getValueFromAddress(current[1]))
-                    print(self.Pointers)
-                else:
-                    self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
+                self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
             elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=', '&&', '||']):
                 leftOperand = self.getValueFromAddress(current[1])
                 rightOperand = self.getValueFromAddress(current[2])
@@ -247,26 +246,6 @@ class VirtualMachine(object):
                 self.TempBoolsSize.pop()
             elif(current[0] == 'PARAMETER'):
                 parameterList.append(self.getValueFromAddress(current[1]))
-
-            # elif(current[0] == 'DISPLACE'):
-            #     leftOperand = current[1]
-            #     rightOperand = self.getValueFromAddress(current[2]) 
-            #     self.setAddressToValue(current[3], leftOperand + rightOperand)
-            #     tempIndex = 1
-            #     while True:
-            #         try:
-            #             temp = list(self.quadruplesList[i + tempIndex])
-            #             indexToReplace = temp.index(current[3])
-            #             temp[indexToReplace] = self.getValueFromAddress(current[3])
-            #             self.quadruplesList[i + tempIndex] = temp
-            #             break
-            #         except:
-            #             tempIndex += 1
-            # elif(current[0] == 'DISPLACEMAT'):
-            #     leftOperand = self.getValueFromAddress(current[1])
-            #     rightOperand = self.getValueFromAddress(current[2]) 
-            #     self.setAddressToValue(current[3], leftOperand + rightOperand)
-            #     print(leftOperand * rightOperand + 1)
             
             i += 1
         print(self.Globals)

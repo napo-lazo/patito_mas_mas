@@ -3,5 +3,6 @@ var int : A[5], B[3][5];
 
 principal(){
     A[2] = 3;
-    escribe(A[2]);
+    A[A[2] - 2] = 1;
+   
 }

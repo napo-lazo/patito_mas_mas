@@ -23,8 +23,23 @@ Se agrego "<class 'int'>" al typeStack
 Se realizo 31000 = 16003
 Se agrego "A" al operandStack
 Se agrego "int" al typeStack
+Se agrego "A" al operandStack
+Se agrego "int" al typeStack
 Se agrego la constante "2" al operandStack
 Se agrego "<class 'int'>" al typeStack
 Se realizo 1000 + 16000 y se gurado el resultado en "50001"
 Se agrego el valor temporal "23501" al operandStack
 Se agrego "int" al typeStack
+Se agrego - al operantionStack
+Se agrego la constante "2" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 31001 - 16000 y se gurado el resultado en "50002"
+Se agrego el valor temporal "23502" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1000 + 23502 y se gurado el resultado en "50003"
+Se agrego el valor temporal "23503" al operandStack
+Se agrego "int" al typeStack
+Se agrego = al operantionStack
+Se agrego la constante "1" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 31002 = 16004
