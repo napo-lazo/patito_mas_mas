@@ -1,15 +1,7 @@
 programa test;
-
-funcion int recursion(int n){
-    si (n == 5) haz{
-        regresa(n);
-    }
-    sino{
-        regresa(n + recursion(n + 1));
-    }
-
-}
+var int : A[5], B[3][5];
 
 principal(){
-    escribe(recursion(1));
+    A[2] = 3;
+    escribe(A[2]);
 }

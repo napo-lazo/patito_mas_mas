@@ -19,6 +19,7 @@ class VirtualMachine(object):
         self.tempInts = 23500
         self.tempFloats = 26000
         self.tempBools = 28500
+        self.pointers = 31000
 
         self.GlobalIntsSize = data[1][0][0]
         self.GlobalFloatsSize = data[1][0][1]
@@ -46,6 +47,7 @@ class VirtualMachine(object):
         self.Locals = [LocalAux]
         self.Ctes = [x[0] for x in ctes] 
         self.Temps = [TempAux]
+        self.Pointers = [None] * data[1][4][0]
         print(ctes)
 
     def allocateMemoryForFunction(self, era, parameterList):
@@ -98,6 +100,8 @@ class VirtualMachine(object):
         return False
 
     def getValueFromAddress(self, address):
+        if address >= self.pointers:
+            return self.Pointers[address - self.pointers]
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 aux = address - self.globalInts
@@ -139,6 +143,9 @@ class VirtualMachine(object):
 
 
     def setAddressToValue(self, address, value):
+        if address >= self.pointers:
+            self.Pointers[address - self.pointers] = value
+            print(self.Pointers)
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 self.Globals[address - self.globalInts] = value
@@ -172,7 +179,11 @@ class VirtualMachine(object):
             if(current[0] == 'GOTO'):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
-                self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
+                if current[3] >= self.pointers:
+                    self.setAddressToValue(self.getValueFromAddress(current[3]), self.getValueFromAddress(current[1]))
+                    print(self.Pointers)
+                else:
+                    self.setAddressToValue(current[3], self.getValueFromAddress(current[1]))
             elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=', '&&', '||']):
                 leftOperand = self.getValueFromAddress(current[1])
                 rightOperand = self.getValueFromAddress(current[2])
@@ -256,5 +267,6 @@ class VirtualMachine(object):
             #     rightOperand = self.getValueFromAddress(current[2]) 
             #     self.setAddressToValue(current[3], leftOperand + rightOperand)
             #     print(leftOperand * rightOperand + 1)
-
+            
             i += 1
+        print(self.Globals)

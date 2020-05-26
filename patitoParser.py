@@ -30,6 +30,7 @@ class VirutalDirectory(object):
         self.tempIntsCounter = 23500
         self.tempFloatsCounter = 26000
         self.tempBoolsCounter = 28500
+        self.pointersCounter = 31000
 
     def exportCounters(self):
         return [
@@ -44,7 +45,8 @@ class VirutalDirectory(object):
                 self.cteCharsCounter - self.FloatRanges[2]],
                 [self.tempIntsCounter - self.CharRanges[2], 
                 self.tempFloatsCounter - self.IntRanges[3], 
-                self.tempBoolsCounter - self.FloatRanges[3]]
+                self.tempBoolsCounter - self.FloatRanges[3]],
+                [self.pointersCounter - 31000]
                ]
 
     def generateAddressForVariable(self, scope, type):
@@ -79,6 +81,9 @@ class VirutalDirectory(object):
             else:
                 self.tempBoolsCounter += 1
                 return self.tempBoolsCounter - 1
+        elif scope == 'pointer':
+            self.pointersCounter += 1
+            return self.pointersCounter - 1
         else:
             if type == 'int':
                 self.localIntsCounter += 1
@@ -657,35 +662,33 @@ def p_dimId(p):
           | is_array create_dim dim dim
           | empty
     '''
-    if len(p) >= 4:
-        aux = quadrupleManager.dimStack.pop()
-        print(quadrupleManager.operandStack)
-        print(quadrupleManager.typeStack)
-        print(quadrupleManager.quadruplesList)
-        if aux[1] == 1:
-            offset = quadrupleManager.operandStack.pop()
-            baseAddress = quadrupleManager.operandStack.pop()
-            typeOf = quadrupleManager.typeStack.pop()
-            if typeOf != 'int':
-                print('Error: solo se puede indexar un arreglo con valores enteros')
-                exit()
-            temp = quadrupleManager.virutalDirectory.tempIntsCounter
-            quadrupleManager.virutalDirectory.tempIntsCounter += 1
-            quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
-            quadrupleManager.operandStack.append(temp)
-            quadrupleManager.quadrupleCounter += 1
-        else:
-            offset = quadrupleManager.operandStack.pop()
-            baseAddress = quadrupleManager.operandStack.pop()
-            typeOf = quadrupleManager.typeStack.pop()
-            if typeOf != 'int':
-                print('Error: solo se puede indexar un arreglo con valores enteros')
-                exit()
-            temp = quadrupleManager.virutalDirectory.tempIntsCounter
-            quadrupleManager.virutalDirectory.tempIntsCounter += 1
-            quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
-            quadrupleManager.operandStack.append(temp)
-            quadrupleManager.quadrupleCounter += 1
+    # if len(p) >= 4:
+        # aux = quadrupleManager.dimStack.pop()
+        # print(quadrupleManager.operandStack)
+        # print(quadrupleManager.typeStack)
+        # print(quadrupleManager.quadruplesList)
+        # if aux[1] == 1:
+        #     offset = quadrupleManager.operandStack.pop()
+        #     baseAddress = quadrupleManager.operandStack.pop()
+        #     typeOf = quadrupleManager.typeStack.pop()
+
+        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
+        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
+        #     quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
+        #     quadrupleManager.operandStack.append(temp)
+        #     quadrupleManager.quadrupleCounter += 1
+        # else:
+        #     offset = quadrupleManager.operandStack.pop()
+        #     baseAddress = quadrupleManager.operandStack.pop()
+        #     typeOf = quadrupleManager.typeStack.pop()
+        #     if typeOf != 'int':
+        #         print('Error: solo se puede indexar un arreglo con valores enteros')
+        #         exit()
+        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
+        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
+        #     quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
+        #     quadrupleManager.operandStack.append(temp)
+        #     quadrupleManager.quadrupleCounter += 1
     
     funcDir.currentId = None
 
@@ -707,7 +710,8 @@ def p_create_dim(p):
     '''
     create_dim :
     '''
-    quadrupleManager.dimStack.append((funcDir.currentId, 0))
+    dim = funcDir.getArrayDimensions(funcDir.currentId)
+    quadrupleManager.dimStack.append((funcDir.currentId, dim, len(dim)))
 
 def p_bracket_seen(p):
     '''
@@ -715,12 +719,53 @@ def p_bracket_seen(p):
     '''
     if p[-1] == ']':
         print(quadrupleManager.dimStack)
-        quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getArrayDimensions(quadrupleManager.dimStack[-1][0])[quadrupleManager.dimStack[-1][1] - 1]))
+        dim = quadrupleManager.dimStack[-1][1][-1]
+        #TODO: convert to constant
+        if not funcDir.constantExists(dim):
+            funcDir.addConstant(dim, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+        
+        quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getVirtualAddressOfVariable(dim)))
         quadrupleManager.quadrupleCounter += 1
+
+        if len(quadrupleManager.dimStack[-1][1]) > 1:
+            if quadrupleManager.typeStack[-1] != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            #TODO: convert to constant
+            quadrupleManager.operandStack.append(quadrupleManager.dimStack[-1][1].pop())
+            quadrupleManager.typeStack.append('int')
+            quadrupleManager.operationStack.append('*')
+            quadrupleManager.applyOperation('*')
+            print(f'Primer valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+        else:
+            if quadrupleManager.typeStack[-1] != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            if len(quadrupleManager.dimStack[-1][1]) != quadrupleManager.dimStack[-1][2]:
+                # if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
+                #     funcDir.addConstant(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+                quadrupleManager.operationStack.append('+')
+                quadrupleManager.applyOperation('+')
+                print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+
+            if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
+                funcDir.addConstant(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            quadrupleManager.operationStack.append('+')
+            quadrupleManager.applyOperation('+')
+            pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
+            aux = quadrupleManager.quadruplesList.pop()
+            quadrupleManager.quadruplesList.append((aux[0], aux[1], aux[2], pointerAddress))
+            quadrupleManager.operandStack.pop()
+            quadrupleManager.operandStack.append(pointerAddress)
+            # quadrupleManager.quadruplesList.append(('OFFSET', quadrupleManager.operandStack[-1], -1, quadrupleManager.virutalDirectory.tempIntsCounter))
+            # quadrupleManager.operandStack.append(quadrupleManager.virutalDirectory.tempIntsCounter)
+            # quadrupleManager.virutalDirectory.tempIntsCounter += 1
+            # quadrupleManager.quadrupleCounter += 1
+
         quadrupleManager.operationStack.pop()
     else:
-        aux = quadrupleManager.dimStack.pop()[1]
-        quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
+        # aux = quadrupleManager.dimStack.pop()[1]
+        # quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
 
         quadrupleManager.operationStack.append('(')
 
