@@ -1,9 +1,12 @@
 programa test;
-var int : A[5], i;
+var int : A[5], B[4][5], i, j;
 
 principal(){
-    desde i = 0 hasta 5 hacer{
-        A[i] = i + 1;
+    A[1] = 4;
+    desde i = 0 hasta 4 hacer {
+        desde j = 0 hasta 5 hacer {
+            B[i][j] = i + j;
+        }
     }
-
+    escribe(B[2][A[1] - 2]);
 }

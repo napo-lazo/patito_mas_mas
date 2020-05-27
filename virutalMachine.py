@@ -101,7 +101,6 @@ class VirtualMachine(object):
 
     def getValueFromAddress(self, address):
         if address >= self.pointers:
-            # print(self.Locals[-1])
             # print(f'dir: {self.Pointers[address - self.pointers]}')
             return self.getValueFromAddress(self.Pointers[address - self.pointers])
         if address < self.localInts and address >= self.globalInts:

@@ -1,462 +1,108 @@
-Se creo la funcion FibonacciRec de retorno tipo int en el dirFunc
-FibonacciRec se asigno como el scope actual
-Se agrego el parametro "n" de tipo "int" al scope de func1
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego <= al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 <= 16000 y se gurado el resultado en "50000"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego ( al operantionStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 - 16000 y se gurado el resultado en "50001"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se termino un parentesis
-Se agrego + al operantionStack
-Se agrego ( al operantionStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 - 16001 y se gurado el resultado en "50002"
-Se agrego el valor temporal "23502" al operandStack
-Se agrego "int" al typeStack
-Se termino un parentesis
-Se realizo 23501 + 23503 y se gurado el resultado en "50003"
-Se agrego el valor temporal "23504" al operandStack
-Se agrego "int" al typeStack
-Se creo la funcion FibonacciIt de retorno tipo int en el dirFunc
-FibonacciIt se asigno como el scope actual
-Se agrego el parametro "n" de tipo "int" al scope de func1
+Se creo la funcion global de retorno tipo void en el dirFunc
+global se asigno como el scope actual
 Se asigno int como el tipo de variable actual
-Se agrego la variable "antepenultimoValor" al scope de FibonacciIt
-Se elimino "antepenultimoValor" como la variable actual
-Se agrego la variable "penultimoValor" al scope de FibonacciIt
-Se elimino "penultimoValor" como la variable actual
-Se agrego la variable "valor" al scope de FibonacciIt
-Se elimino "valor" como la variable actual
-Se agrego la variable "i" al scope de FibonacciIt
-Se elimino "i" como la variable actual
-Se elimino "int" como el tipo actual
-Se agrego "penultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8502 = 16002
-Se agrego "valor" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8503 = 16000
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8504 = 16000
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 > i y se gurado el resultado en "50004"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "antepenultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "penultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8501 = 8502
-Se agrego "penultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "valor" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8502 = 8503
-Se agrego "valor" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "antepenultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "penultimoValor" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8501 + 8502 y se gurado el resultado en "50005"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8503 = 23500
-Se realizo 8504 + 1 y se gurado el resultado en "50006"
-Se agrego el valor temporal "23501" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8504 = 23501
-Se agrego "valor" al operandStack
-Se agrego "int" al typeStack
-Se creo la funcion FactorialRec de retorno tipo int en el dirFunc
-FactorialRec se asigno como el scope actual
-Se agrego el parametro "n" de tipo "int" al scope de func1
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego <= al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 <= 16000 y se gurado el resultado en "50007"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego ( al operantionStack
-Se agrego "n" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 - 16000 y se gurado el resultado en "50008"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se termino un parentesis
-Se realizo 8500 + 23501 y se gurado el resultado en "50009"
-Se agrego el valor temporal "23502" al operandStack
-Se agrego "int" al typeStack
-Se creo la funcion FactorialIt de retorno tipo int en el dirFunc
-FactorialIt se asigno como el scope actual
-Se agrego el parametro "n" de tipo "int" al scope de func1
-Se asigno int como el tipo de variable actual
-Se agrego la variable "i" al scope de FactorialIt
-Se elimino "i" como la variable actual
-Se agrego la variable "aux" al scope de FactorialIt
-Se elimino "aux" como la variable actual
-Se elimino "int" como el tipo actual
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8501 = 16000
-Se agrego "aux" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8502 = 16002
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego <= al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8501 <= 16003 y se gurado el resultado en "50010"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "aux" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "aux" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8502 + 8501 y se gurado el resultado en "50011"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8502 = 23500
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8501 + 16000 y se gurado el resultado en "50012"
-Se agrego el valor temporal "23501" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8501 = 23501
-Se agrego "aux" al operandStack
-Se agrego "int" al typeStack
-Se creo la funcion Sort de retorno tipo void en el dirFunc
-Sort se asigno como el scope actual
-Se asigno int como el tipo de variable actual
-Se agrego la variable "A" al scope de Sort
+Se agrego la variable "A" al scope de global
 Se le asigno a A una dimension de tama;o 5
 Se elimino "A" como la variable actual
-Se agrego la variable "size" al scope de Sort
-Se elimino "size" como la variable actual
-Se agrego la variable "i" al scope de Sort
+Se agrego la variable "B" al scope de global
+Se le asigno a B una dimension de tama;o 4
+Se le asigno a B una dimension de tama;o 5
+Se elimino "B" como la variable actual
+Se agrego la variable "i" al scope de global
 Se elimino "i" como la variable actual
-Se agrego la variable "j" al scope de Sort
+Se agrego la variable "j" al scope de global
 Se elimino "j" como la variable actual
-Se agrego la variable "k" al scope de Sort
-Se elimino "k" como la variable actual
-Se agrego la variable "min" al scope de Sort
-Se elimino "min" como la variable actual
-Se agrego la variable "temp" al scope de Sort
-Se elimino "temp" como la variable actual
 Se elimino "int" como el tipo actual
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 + 16002 y se gurado el resultado en "50013"
-Se agrego el valor temporal "23500" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 31000 = 16003
+Se elimino global como el scope actual
 Se agrego "A" al operandStack
 Se agrego "int" al typeStack
 Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 + 16000 y se gurado el resultado en "50014"
-Se agrego el valor temporal "23501" al operandStack
+Se realizo 1000 + 16000 y se gurado el resultado en "50000"
+Se agrego el valor temporal "23500" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
 Se agrego la constante "4" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 31001 = 16005
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 + 16001 y se gurado el resultado en "50015"
-Se agrego el valor temporal "23502" al operandStack
+Se realizo 31000 = 16003
+Se agrego "i" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego la constante "1" al operandStack
+Se agrego la constante "0" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 31002 = 16000
-Se agrego "A" al operandStack
+Se realizo 1025 = 16004
+Se agrego la constante "4" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 16003 > i y se gurado el resultado en "50001"
+Se agrego el valor temporal "28500" al operandStack
+Se agrego "bool" al typeStack
+Se agrego "j" al operandStack
 Se agrego "int" al typeStack
-Se agrego la constante "3" al operandStack
+Se agrego = al operantionStack
+Se agrego la constante "0" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 + 16006 y se gurado el resultado en "50016"
+Se realizo 1026 = 16004
+Se agrego la constante "5" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 16001 > j y se gurado el resultado en "50002"
+Se agrego el valor temporal "28501" al operandStack
+Se agrego "bool" al typeStack
+Se agrego "B" al operandStack
+Se agrego "int" al typeStack
+Se agrego "i" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1025 * 5 y se gurado el resultado en "50003"
+Se agrego el valor temporal "23501" al operandStack
+Se agrego "int" al typeStack
+Se agrego "j" al operandStack
+Se agrego "int" al typeStack
+Se realizo 23501 + 1026 y se gurado el resultado en "50004"
+Se agrego el valor temporal "23502" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1005 + 23502 y se gurado el resultado en "50005"
 Se agrego el valor temporal "23503" al operandStack
 Se agrego "int" al typeStack
 Se agrego = al operantionStack
-Se agrego la constante "2" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 31003 = 16001
-Se agrego "A" al operandStack
+Se agrego "i" al operandStack
 Se agrego "int" al typeStack
-Se agrego la constante "4" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8500 + 16005 y se gurado el resultado en "50017"
+Se agrego + al operantionStack
+Se agrego "j" al operandStack
+Se agrego "int" al typeStack
+Se realizo 1025 + 1026 y se gurado el resultado en "50006"
 Se agrego el valor temporal "23504" al operandStack
 Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "3" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 31004 = 16006
-Se agrego "size" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8505 = 16003
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8506 = 16002
-Se agrego "k" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8508 = 16002
-Se agrego "size" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8505 > k y se gurado el resultado en "50018"
-Se agrego el valor temporal "28500" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "k" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8508 y se gurado el resultado en "50019"
+Se realizo 31001 = 23504
+Se realizo 1026 + 1 y se gurado el resultado en "50007"
 Se agrego el valor temporal "23505" al operandStack
 Se agrego "int" al typeStack
-Se realizo 8508 + 1 y se gurado el resultado en "50020"
+Se realizo 1026 = 23505
+Se realizo 1025 + 1 y se gurado el resultado en "50008"
 Se agrego el valor temporal "23506" al operandStack
 Se agrego "int" al typeStack
-Se realizo 8508 = 23506
-Se agrego "i" al operandStack
+Se realizo 1025 = 23506
+Se agrego "B" al operandStack
 Se agrego "int" al typeStack
-Se agrego < al operantionStack
-Se agrego ( al operantionStack
-Se agrego "size" al operandStack
-Se agrego "int" al typeStack
-Se agrego - al operantionStack
-Se agrego la constante "1" al operandStack
+Se agrego la constante "2" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 8505 - 16000 y se gurado el resultado en "50021"
+Se realizo 16006 * 5 y se gurado el resultado en "50009"
 Se agrego el valor temporal "23507" al operandStack
 Se agrego "int" al typeStack
-Se termino un parentesis
-Se realizo 8506 < 23507 y se gurado el resultado en "50022"
-Se agrego el valor temporal "28501" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "min" al operandStack
+Se agrego "A" al operandStack
 Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8509 = 8506
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
 Se agrego la constante "1" al operandStack
 Se agrego "<class 'int'>" al typeStack
-Se realizo 8506 + 16000 y se gurado el resultado en "50023"
+Se realizo 1000 + 16000 y se gurado el resultado en "50010"
 Se agrego el valor temporal "23508" al operandStack
 Se agrego "int" al typeStack
-Se realizo 8507 = 23508
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se agrego < al operantionStack
-Se agrego "size" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8507 < 8505 y se gurado el resultado en "50024"
-Se agrego el valor temporal "28502" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8507 y se gurado el resultado en "50025"
+Se agrego - al operantionStack
+Se agrego la constante "2" al operandStack
+Se agrego "<class 'int'>" al typeStack
+Se realizo 31002 - 16006 y se gurado el resultado en "50011"
 Se agrego el valor temporal "23509" al operandStack
 Se agrego "int" al typeStack
-Se agrego < al operantionStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "min" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8509 y se gurado el resultado en "50026"
+Se realizo 23507 + 23509 y se gurado el resultado en "50012"
 Se agrego el valor temporal "23510" al operandStack
 Se agrego "int" al typeStack
-Se realizo 31006 < 31007 y se gurado el resultado en "50027"
-Se agrego el valor temporal "28503" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "min" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8509 = 8507
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "j" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8507 + 16000 y se gurado el resultado en "50028"
+Se realizo 1005 + 23510 y se gurado el resultado en "50013"
 Se agrego el valor temporal "23511" al operandStack
 Se agrego "int" al typeStack
-Se realizo 8507 = 23511
-Se agrego "temp" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8506 y se gurado el resultado en "50029"
-Se agrego el valor temporal "23512" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8510 = 31008
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8506 y se gurado el resultado en "50030"
-Se agrego el valor temporal "23513" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "min" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8509 y se gurado el resultado en "50031"
-Se agrego el valor temporal "23514" al operandStack
-Se agrego "int" al typeStack
-Se realizo 31009 = 31010
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "min" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8509 y se gurado el resultado en "50032"
-Se agrego el valor temporal "23515" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "temp" al operandStack
-Se agrego "int" al typeStack
-Se realizo 31011 = 8510
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego "i" al operandStack
-Se agrego "int" al typeStack
-Se agrego + al operantionStack
-Se agrego la constante "1" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8506 + 16000 y se gurado el resultado en "50033"
-Se agrego el valor temporal "23516" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8506 = 23516
-Se agrego "k" al operandStack
-Se agrego "int" al typeStack
-Se agrego = al operantionStack
-Se agrego la constante "0" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se realizo 8508 = 16002
-Se agrego "size" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8505 > k y se gurado el resultado en "50034"
-Se agrego el valor temporal "28504" al operandStack
-Se agrego "bool" al typeStack
-Se agrego "A" al operandStack
-Se agrego "int" al typeStack
-Se agrego "k" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8500 + 8508 y se gurado el resultado en "50035"
-Se agrego el valor temporal "23517" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8508 + 1 y se gurado el resultado en "50036"
-Se agrego el valor temporal "23518" al operandStack
-Se agrego "int" al typeStack
-Se realizo 8508 = 23518
-Se elimino None como el scope actual
-Se agrego ( al operantionStack
-Se agrego la constante "9" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se termino un parentesis
-Se agrego ( al operantionStack
-Se agrego la constante "9" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se termino un parentesis
-Se agrego ( al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se termino un parentesis
-Se agrego ( al operantionStack
-Se agrego la constante "5" al operandStack
-Se agrego "<class 'int'>" al typeStack
-Se termino un parentesis

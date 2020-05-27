@@ -76,9 +76,9 @@ class FunctionDirectory(object):
 
     def getArrayDimensions(self, variable):
         if self.currentScope == None:
-            return self.variablesTable['global']['variables'][variable]['arrayDimensions']
+            return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
         else:
-            return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions']
+            return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions'].copy()
 
     def getArrayDimensionsSize(self):
         if len(self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions']) == 2:

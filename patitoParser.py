@@ -731,7 +731,6 @@ def p_bracket_seen(p):
         
         quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getVirtualAddressOfVariable(dim)))
         quadrupleManager.quadrupleCounter += 1
-
         if len(quadrupleManager.dimStack[-1][1]) > 1:
             if quadrupleManager.typeStack[-1] != 'int':
                 print('Error: solo se puede indexar un arreglo con valores enteros')
@@ -1201,6 +1200,8 @@ def p_add_one(p):
     temp = quadrupleManager.quadruplesList[aux][2]
     quadrupleManager.operandStack.append(temp)
     quadrupleManager.typeStack.append('int')
+    if not funcDir.constantExists(1):
+        funcDir.addConstant(1, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
     quadrupleManager.operandStack.append(1)
     quadrupleManager.operationStack.append('+')
     quadrupleManager.applyOperation(['+'])
