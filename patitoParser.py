@@ -10,13 +10,13 @@ class VirutalDirectory(object):
     def __init__(self):
 
         self.genericCounter = 50000
-
+        # Lista de las direcciones de memoria de cada tipo de variable 
         # [globales, locales, constantes, temporales]
         self.IntRanges = [3500, 11000, 18500, 26000]
         self.FloatRanges = [6000, 13500, 21000, 28500]
         self.CharRanges = [8500, 16000, 23500, -1]
         self.BoolRanges = [-1, -1, -1, 31000]
-
+        # Contadores que apuntan a cada inicio de los rangos 
         self.globalIntsCounter = 1000
         self.globalFloatsCounter = 3500
         self.globalCharsCounter = 6000
@@ -29,7 +29,10 @@ class VirutalDirectory(object):
         self.tempIntsCounter = 23500
         self.tempFloatsCounter = 26000
         self.tempBoolsCounter = 28500
+        self.pointersCounter = 31000
 
+    # Regresa todos los contadores 
+    # help
     def exportCounters(self):
         return [
                 [self.globalIntsCounter - 1000, 
@@ -43,10 +46,14 @@ class VirutalDirectory(object):
                 self.cteCharsCounter - self.FloatRanges[2]],
                 [self.tempIntsCounter - self.CharRanges[2], 
                 self.tempFloatsCounter - self.IntRanges[3], 
-                self.tempBoolsCounter - self.FloatRanges[3]]
+                self.tempBoolsCounter - self.FloatRanges[3]],
+                [self.pointersCounter - 31000]
                ]
 
+    # Cuando se llama a crear una variable se utiliza esta funcion para crear su direccion virtual
+    # Recibe su scope y tipo, mueve el contador de variables en el scope y regresa su direccion virtual 
     def generateAddressForVariable(self, scope, type):
+        print(scope)
         if scope == 'global':
             if type == 'int':
                 self.globalIntsCounter += 1
@@ -77,6 +84,9 @@ class VirutalDirectory(object):
             else:
                 self.tempBoolsCounter += 1
                 return self.tempBoolsCounter - 1
+        elif scope == 'pointer':
+            self.pointersCounter += 1
+            return self.pointersCounter - 1
         else:
             if type == 'int':
                 self.localIntsCounter += 1
@@ -88,6 +98,8 @@ class VirutalDirectory(object):
                 self.localCharsCounter += 1
                 return self.localCharsCounter - 1
     
+    # Genera el espacio necesario para un arreglo 
+    # Regresa el contador en la direccion del ultimo elemento del arreglo
     def setSpaceForArray(self, scope, type, size):
         if scope == 'global':
             if type == 'int':
@@ -110,29 +122,8 @@ class VirutalDirectory(object):
                 self.localCharsCounter += size
                 return self.localCharsCounter - 1
 
-    def setSpaceForMatrix(self, scope, type, sizeOne, sizeTwo):
-        size = sizeOne+sizeTwo
-        if scope == 'global':
-            if type == 'int':
-                self.globalIntsCounter + size
-                return self.globalIntsCounter - 1
-            elif type == 'float':
-                self.globalFloatsCounter += size
-                return self.globalFloatsCounter - 1
-            else:
-                self.globalCharsCounter += size
-                return self.globalCharsCounter - 1
-        else:
-            if type == 'int':
-                self.localIntsCounter += size
-                return self.localIntsCounter - 1
-            elif type == 'float':
-                self.localFloatsCounter += size
-                return self.localFloatsCounter - 1
-            else:
-                self.localCharsCounter += size
-                return self.localCharsCounter - 1
-
+    # Regresa los contadores locales a su posicion original
+    # Se llama cada vez que se acabe una funcion 
     def resetLocalAddresses(self):
         self.localIntsCounter = 8500
         self.localFloatsCounter = 11000
@@ -215,11 +206,12 @@ class QuadrupleManager(object):
                 self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
-
+    # Agrega el parametro PARAM a la lista de cuadruplos
     def generateParameter(self, parameter, parameterPosition):
         self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
         self.quadrupleCounter += 1
 
+    # Agrega el GOSUB a la lista de cuadruplos
     def generateGoSub(self, funcName):
         #TODO: tirar error
         if funcDir.areParametersFinished():
@@ -229,10 +221,12 @@ class QuadrupleManager(object):
         else:
             print('Error: faltan parametros')
     
+    # Agrega el ENDFUNC a la lista de cuadruplos
     def generateEndFunc(self):
         self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
         self.quadrupleCounter += 1
 
+    # Agrega un ESCRIBE a la lista de cuadruplos, puede recibir una string o un operando 
     def generatePrint(self, string):
         if string:
             self.quadruplesList.append(('ESCRIBE', string, -1, -1))
@@ -241,39 +235,41 @@ class QuadrupleManager(object):
             self.typeStack.pop()
         self.quadrupleCounter += 1
 
+    # Agrega un LEE a la lista de cuadruplos
     def generateInput(self, variable):
         self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(variable)))
         self.quadrupleCounter += 1
 
+    # Agrega un RETURN a la lista de cuadruplos 
     def generateReturn(self, returnCounter):
         if returnCounter > 0:
-            self.quadruplesList.append(('RETURN', -1, -1, self.operandStack[-1]))
-            self.returnValuesStack.append(self.operandStack.pop())
+            returnAddress = funcDir.getVirtualAddressOfVariable(funcDir.currentScope)
+            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, returnAddress))
+            self.returnValuesStack.append(returnAddress)
             self.returnTypeStack.append(self.typeStack.pop())
             self.quadrupleCounter += 1
     
+    # Agrega un RETURN a la lista de cuadruplos
+    # Ademas almacena en el stack de operandos el valor de retorno de la funcion y agrega su dir como cuadruplo 
     def generateReturnAssignment(self):
-        self.quadruplesList.append(('=', self.returnValuesStack.pop(), -1, self.virutalDirectory.genericCounter))
-        self.typeStack.append(self.returnTypeStack.pop())
+        resultAddress = self.virutalDirectory.generateAddressForVariable('temp', funcDir.getReturnType(funcDir.functionCalled))
+        self.quadruplesList.append(('=', funcDir.getVirtualAddressOfVariable(funcDir.functionCalled), -1, resultAddress))
+        self.operandStack.append(resultAddress)
+        self.typeStack.append(funcDir.getReturnType(funcDir.functionCalled))
         self.quadrupleCounter += 1
-        self.virutalDirectory.genericCounter += 1
 
+    # Agrega un ERA  a la lista de cuadruplos
     def generateERA(self, funcDir):
+        print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
+        self.quadrupleCounter += 1
     
-    def generateVER(self,funcDir):
-        # donde index es el indice del arreglo que se quiere accesar 
-        # el lower y upper limit se encuentran en la lista de ctes 
-        self.quadruplesList.append('VER', 'index','lowerlimit', 'upperlimit')
-        # k + dir(B)
-        self.quadruplesList.append('+', 'index', '', 'tempdir')
-        self.quadruplesList.append('+', 'tempdir o self.tempStack.pop()', 'cte', 'pointerDir')
-    
+    # Agrega un ENDPROG a la lista de cuadruplos
     def generateEndProg(self):
         if funcDir.areFunctionsFinished():
             self.quadruplesList.append(('ENDPROG', -1, -1, -1))
 
-    # metodo publico que se encarga de generar un salto inicial
+    # Metodo publico que se encarga de generar un salto inicial
     #TODO: Refactorizar funcion
     def generateJump(self, jumpType):
         if jumpType == 'false':
@@ -301,7 +297,7 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
 
     
-    # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
+    # Metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
     def updateJump(self, jumpType):
         if jumpType == 'normal':
             i = self.jumpStack.pop()
@@ -329,14 +325,14 @@ class QuadrupleManager(object):
 
 funcDir = FunctionDirectory()
 quadrupleManager = QuadrupleManager()
-#functionDirectory = FunctionDirectory()
 
-# gramatica para el parser
+# Gramatica para el parser
+
 def p_start(p):
     '''
     start : programa
     '''
-    print(p[1])
+    print(funcDir.eras)
     print()
     print(funcDir.variablesTable)
     print()
@@ -348,7 +344,7 @@ def p_start(p):
     print(quadrupleManager.typeStack)
     print(quadrupleManager.quadruplesList)
     print(quadrupleManager.dimStack)
-    myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList())
+    myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList(), funcDir.eras)
     print(myMachine.initialEra)
 
     myMachine.executeProgram()
@@ -361,19 +357,22 @@ def p_start(p):
     #limpia toda la informacion para poder volver a compilar sin problemas
     quadrupleManager.clearData()
 
-# el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
+# Definicion de programa
+# El programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
     programa : PROGRAMA ID SEMICOLON jump var funcion clear_scope PRINCIPAL update_jump L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
+# Crea un salto
 def p_jump(p):
     '''
     jump :
     '''
     quadrupleManager.generateJump('jump')
 
+# Elimina un scope
 def p_clear_scope(p):
     '''
     clear_scope :
@@ -383,6 +382,7 @@ def p_clear_scope(p):
     logs.append(f'Se elimino {temp} como el scope actual\n')
     del(temp)
 
+# Regla de variables
 def p_variables(p):
     '''
     var : VAR var_seen varp
@@ -400,7 +400,7 @@ def p_variables(p):
     else:
         p[0] = p[1]
 
-# regla intermedia para asignar el scope actual como global
+# Regla intermedia para asignar el scope actual como global
 def p_var_seen(p):
     ''' 
     var_seen :
@@ -442,6 +442,7 @@ def p_variable_seen(p):
 
     # si no la hay se crea una de manera normal
     except:
+        print('crea variable')
         funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable(funcDir.currentScope, funcDir.currentType))
         logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
@@ -550,16 +551,31 @@ def p_funcionp(p):
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
     #functionDirectory[p[2]].localVariableCount = p[5].length()
 
+
+# Agrega una funcion al directorio de funciones
 def p_create_func_scope(p):
     '''
     create_func_scope : 
     '''
     if p[-1] == 'global':
         print('Error: global es una palabra reservada')
-        raise SyntaxError
+        exit()
     try:
         funcDir.scopeExists(p[-1])
     except:
+        if p[-2] != 'void':
+            #TODO: verificar que el usuario no declare variables con el nombre de alguna funcion
+            funcDir.currentType = p[-2]
+            try:
+                funcDir.scopeExists('global')
+            except:
+                funcDir.createScope('global', 'void')
+                funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+            else:
+                funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
+                print(f'scope: {funcDir.currentScope}')
+            funcDir.currentType = None
+        
         funcDir.createScope(p[-1], p[-2])
         logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
         funcDir.currentScope = p[-1]
@@ -567,18 +583,18 @@ def p_create_func_scope(p):
         funcDir.addFunctionStart(quadrupleManager)
     else:
         print(f'Error: {p[-1]} ya existe')
-        raise SyntaxError
+        exit()
 
+# Borra las temporales y acaba la funcion 
 def p_end_func(p):
     '''
     end_func :
     '''
-    funcDir.verifyFunctionCompatibility(quadrupleManager)
-    quadrupleManager.generateReturn(funcDir.callFromReturn)
     funcDir.callFromReturn = 0
     funcDir.createEra(quadrupleManager.virutalDirectory)
     quadrupleManager.virutalDirectory.resetLocalAddresses()
     quadrupleManager.generateEndFunc()
+    funcDir.currentScope = None
 
 def p_parametro(p):
     '''
@@ -594,7 +610,7 @@ def p_save_param(p):
     '''
     save_param :
     '''
-    funcDir.addParameterToList(p[-1], p[-2])
+    funcDir.addParameterToList(p[-1], p[-2], quadrupleManager.virutalDirectory.generateAddressForVariable(p[-1], p[-2]))
     logs.append(f'Se agrego el parametro "{p[-1]}" de tipo "{p[-2]}" al scope de func1\n')
 
 def p_parametrop(p):
@@ -649,6 +665,7 @@ def p_asignacion(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
+# Agrega un operando al stack, verifica si este ya esta declarado
 def p_operand_seen(p):
     '''
     operand_seen :
@@ -665,41 +682,45 @@ def p_operand_seen(p):
 
 def p_dimId(p):
     '''
-    dimId : is_array create_dim dim
-          | is_array create_dim dim dim
+    dimId : is_array create_dim dim pop_array
+          | is_array create_dim dim dim pop_array
           | empty
     '''
-    if len(p) >= 4:
-        aux = quadrupleManager.dimStack.pop()
-        print(quadrupleManager.operandStack)
-        print(quadrupleManager.typeStack)
-        print(quadrupleManager.quadruplesList)
-        if aux[1] == 1:
-            offset = quadrupleManager.operandStack.pop()
-            baseAddress = quadrupleManager.operandStack.pop()
-            typeOf = quadrupleManager.typeStack.pop()
-            if typeOf != 'int':
-                print('Error: solo se puede indexar un arreglo con valores enteros')
-                exit()
-            temp = quadrupleManager.virutalDirectory.tempIntsCounter
-            quadrupleManager.virutalDirectory.tempIntsCounter += 1
-            quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
-            quadrupleManager.operandStack.append(temp)
-            quadrupleManager.quadrupleCounter += 1
-        else:
-            offset = quadrupleManager.operandStack.pop()
-            baseAddress = quadrupleManager.operandStack.pop()
-            typeOf = quadrupleManager.typeStack.pop()
-            if typeOf != 'int':
-                print('Error: solo se puede indexar un arreglo con valores enteros')
-                exit()
-            temp = quadrupleManager.virutalDirectory.tempIntsCounter
-            quadrupleManager.virutalDirectory.tempIntsCounter += 1
-            quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
-            quadrupleManager.operandStack.append(temp)
-            quadrupleManager.quadrupleCounter += 1
+    # if len(p) >= 4:
+        # aux = quadrupleManager.dimStack.pop()
+        # print(quadrupleManager.operandStack)
+        # print(quadrupleManager.typeStack)
+        # print(quadrupleManager.quadruplesList)
+        # if aux[1] == 1:
+        #     offset = quadrupleManager.operandStack.pop()
+        #     baseAddress = quadrupleManager.operandStack.pop()
+        #     typeOf = quadrupleManager.typeStack.pop()
+
+        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
+        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
+        #     quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
+        #     quadrupleManager.operandStack.append(temp)
+        #     quadrupleManager.quadrupleCounter += 1
+        # else:
+        #     offset = quadrupleManager.operandStack.pop()
+        #     baseAddress = quadrupleManager.operandStack.pop()
+        #     typeOf = quadrupleManager.typeStack.pop()
+        #     if typeOf != 'int':
+        #         print('Error: solo se puede indexar un arreglo con valores enteros')
+        #         exit()
+        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
+        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
+        #     quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
+        #     quadrupleManager.operandStack.append(temp)
+        #     quadrupleManager.quadrupleCounter += 1
     
     funcDir.currentId = None
+
+def p_pop_array(p):
+    '''
+    pop_array :
+    '''
+    quadrupleManager.dimStack.pop()
 
 def p_is_array(p):
     '''
@@ -719,20 +740,63 @@ def p_create_dim(p):
     '''
     create_dim :
     '''
-    quadrupleManager.dimStack.append((funcDir.currentId, 0))
+    dim = funcDir.getArrayDimensions(funcDir.currentId)
+    quadrupleManager.dimStack.append((funcDir.currentId, dim, len(dim)))
 
+# Genera todo los cuadruplos de arreglos
 def p_bracket_seen(p):
     '''
     bracket_seen :
     '''
     if p[-1] == ']':
-        print(quadrupleManager.dimStack)
-        quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getArrayDimensions(quadrupleManager.dimStack[-1][0])[quadrupleManager.dimStack[-1][1] - 1]))
+        dim = quadrupleManager.dimStack[-1][1][0]
+        #TODO: convert to constant
+        if not funcDir.constantExists(dim):
+            funcDir.addConstant(dim, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+        
+        quadrupleManager.quadruplesList.append(('VERIFY', quadrupleManager.operandStack[-1], -1, funcDir.getVirtualAddressOfVariable(dim)))
         quadrupleManager.quadrupleCounter += 1
+        if len(quadrupleManager.dimStack[-1][1]) > 1:
+            if quadrupleManager.typeStack[-1] != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            if not funcDir.constantExists(quadrupleManager.dimStack[-1][1][-1]):
+                funcDir.addConstant(quadrupleManager.dimStack[-1][1][-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            quadrupleManager.operandStack.append(quadrupleManager.dimStack[-1][1][-1])
+            quadrupleManager.dimStack[-1][1].pop(0)
+            quadrupleManager.typeStack.append('int')
+            quadrupleManager.operationStack.append('*')
+            quadrupleManager.applyOperation('*')
+            print(f'Primer valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+        else:
+            if quadrupleManager.typeStack[-1] != 'int':
+                print('Error: solo se puede indexar un arreglo con valores enteros')
+                exit()
+            if len(quadrupleManager.dimStack[-1][1]) != quadrupleManager.dimStack[-1][2]:
+                # if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
+                #     funcDir.addConstant(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+                quadrupleManager.operationStack.append('+')
+                quadrupleManager.applyOperation('+')
+                print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+
+            if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
+                funcDir.addConstant(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            quadrupleManager.operationStack.append('+')
+            quadrupleManager.applyOperation('+')
+            pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
+            aux = quadrupleManager.quadruplesList.pop()
+            quadrupleManager.quadruplesList.append((aux[0], aux[1], aux[2], pointerAddress))
+            quadrupleManager.operandStack.pop()
+            quadrupleManager.operandStack.append(pointerAddress)
+            # quadrupleManager.quadruplesList.append(('OFFSET', quadrupleManager.operandStack[-1], -1, quadrupleManager.virutalDirectory.tempIntsCounter))
+            # quadrupleManager.operandStack.append(quadrupleManager.virutalDirectory.tempIntsCounter)
+            # quadrupleManager.virutalDirectory.tempIntsCounter += 1
+            # quadrupleManager.quadrupleCounter += 1
+
         quadrupleManager.operationStack.pop()
     else:
-        aux = quadrupleManager.dimStack.pop()[1]
-        quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
+        # aux = quadrupleManager.dimStack.pop()[1]
+        # quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
 
         quadrupleManager.operationStack.append('(')
 
@@ -941,6 +1005,7 @@ def p_cte(p):
 
         p[0] = p[1]
 
+# Indica una llamada a una funcion, agrega los cuadruplos del ERA, GOSUB y RETURN
 def p_llamadaFuncion(p):
     '''
     llamadaFuncion : ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
@@ -948,13 +1013,12 @@ def p_llamadaFuncion(p):
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
     if not funcDir.isVoid():
-        print(funcDir.functionCalled)
+        # print(funcDir.functionCalled)
         quadrupleManager.generateERA(funcDir)
         quadrupleManager.generateGoSub(funcDir.functionCalled)
+        quadrupleManager.generateReturnAssignment()
         funcDir.functionCalled = None
         funcDir.parameterCounter = 0
-        quadrupleManager.generateReturnAssignment()
-        quadrupleManager.operandStack.append(quadrupleManager.quadrupleCounter-1)
     else:
         print('Error: no se puede llamar una funcion con tipo de retorno void en una expresion')
         raise SyntaxError
@@ -980,6 +1044,7 @@ def p_llamadaFuncionpp(p):
     else: 
         p[0] = p[1]
 
+# Verifica si los parametros son los debidos en tipos y cuenta de parametros
 def p_verify_parameter(p):
     '''
     verify_parameter :
@@ -998,7 +1063,7 @@ def p_funcionVacia(p):
         funcDir.parameterCounter = 0
     else:
         print('Error: no se puede llamar una funcion con tipo de retorno diferente a void afuera de una expresion')
-        raise SyntaxError
+        exit()
 
 def p_set_func_scope(p):
     '''
@@ -1008,9 +1073,11 @@ def p_set_func_scope(p):
         funcDir.scopeExists(p[-1])
     except:
         print('Error: funcion no existe')
-        raise SyntaxError
+        exit()
     else:
         funcDir.functionCalled = p[-1]
+
+
 
 def p_regresa(p):
     '''
@@ -1018,6 +1085,8 @@ def p_regresa(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
     funcDir.callFromReturn += 1
+    funcDir.verifyFunctionCompatibility(quadrupleManager)
+    quadrupleManager.generateReturn(funcDir.callFromReturn)
     
 
 def p_lectura(p):
@@ -1158,6 +1227,8 @@ def p_add_one(p):
     temp = quadrupleManager.quadruplesList[aux][2]
     quadrupleManager.operandStack.append(temp)
     quadrupleManager.typeStack.append('int')
+    if not funcDir.constantExists(1):
+        funcDir.addConstant(1, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
     quadrupleManager.operandStack.append(1)
     quadrupleManager.operationStack.append('+')
     quadrupleManager.applyOperation(['+'])
