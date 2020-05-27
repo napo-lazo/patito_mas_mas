@@ -658,8 +658,8 @@ def p_operand_seen(p):
 
 def p_dimId(p):
     '''
-    dimId : is_array create_dim dim
-          | is_array create_dim dim dim
+    dimId : is_array create_dim dim pop_array
+          | is_array create_dim dim dim pop_array
           | empty
     '''
     # if len(p) >= 4:
@@ -690,8 +690,13 @@ def p_dimId(p):
         #     quadrupleManager.operandStack.append(temp)
         #     quadrupleManager.quadrupleCounter += 1
     
-    quadrupleManager.dimStack.pop()
     funcDir.currentId = None
+
+def p_pop_array(p):
+    '''
+    pop_array :
+    '''
+    quadrupleManager.dimStack.pop()
 
 def p_is_array(p):
     '''
@@ -719,7 +724,6 @@ def p_bracket_seen(p):
     bracket_seen :
     '''
     if p[-1] == ']':
-        print(quadrupleManager.dimStack)
         dim = quadrupleManager.dimStack[-1][1][0]
         #TODO: convert to constant
         if not funcDir.constantExists(dim):

@@ -101,6 +101,8 @@ class VirtualMachine(object):
 
     def getValueFromAddress(self, address):
         if address >= self.pointers:
+            # print(self.Locals[-1])
+            # print(f'dir: {self.Pointers[address - self.pointers]}')
             return self.getValueFromAddress(self.Pointers[address - self.pointers])
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
@@ -144,11 +146,7 @@ class VirtualMachine(object):
 
     def setAddressToValue(self, address, value):
         if address >= self.pointers:
-            if self.Pointers[address - self.pointers] == None:
-                self.Pointers[address - self.pointers] = value
-                # print(self.Pointers)
-            else:
-                self.setAddressToValue(self.Pointers[address - self.pointers], value)
+            self.setAddressToValue(self.Pointers[address - self.pointers], value)
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 self.Globals[address - self.globalInts] = value
@@ -186,17 +184,21 @@ class VirtualMachine(object):
             elif(current[0] in ['+', '-', '*', '/', '>', '>=', '<', '<=', '==', '!=', '&&', '||']):
                 leftOperand = self.getValueFromAddress(current[1])
                 rightOperand = self.getValueFromAddress(current[2])
-                if current[0] == '&&':
-                    result = eval(f'{leftOperand} and {rightOperand}')
-                elif current[0] == '||':
-                    result = eval(f'{leftOperand} or {rightOperand}')
+                if current[0] == '+' and current[3] >= self.pointers:
+                    self.Pointers[current[3] - self.pointers] = eval(f'{leftOperand} + {rightOperand}')
                 else:
-                    result = eval(f'{leftOperand} {current[0]} {rightOperand}')
-                self.setAddressToValue(current[3], result)
+                    if current[0] == '&&':
+                        result = eval(f'{leftOperand} and {rightOperand}')
+                    elif current[0] == '||':
+                        result = eval(f'{leftOperand} or {rightOperand}')
+                    else:
+                        result = eval(f'{leftOperand} {current[0]} {rightOperand}')
+                    self.setAddressToValue(current[3], result)
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
             elif(current[0] == 'ESCRIBE'):
+                # print(self.Pointers)
                 if type(current[1]) is str:
                     print(current[1])
                 else:
