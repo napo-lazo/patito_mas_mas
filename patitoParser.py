@@ -1,6 +1,5 @@
 import patitoLexer
 from parserClasses import FunctionDirectory
-#from parserClases import FunctionDirectory
 from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
@@ -11,13 +10,13 @@ class VirutalDirectory(object):
     def __init__(self):
 
         self.genericCounter = 50000
-
+        # Lista de las direcciones de memoria de cada tipo de variable 
         # [globales, locales, constantes, temporales]
         self.IntRanges = [3500, 11000, 18500, 26000]
         self.FloatRanges = [6000, 13500, 21000, 28500]
         self.CharRanges = [8500, 16000, 23500, -1]
         self.BoolRanges = [-1, -1, -1, 31000]
-
+        # Contadores que apuntan a cada inicio de los rangos 
         self.globalIntsCounter = 1000
         self.globalFloatsCounter = 3500
         self.globalCharsCounter = 6000
@@ -32,6 +31,8 @@ class VirutalDirectory(object):
         self.tempBoolsCounter = 28500
         self.pointersCounter = 31000
 
+    # Regresa todos los contadores 
+    # help
     def exportCounters(self):
         return [
                 [self.globalIntsCounter - 1000, 
@@ -49,6 +50,8 @@ class VirutalDirectory(object):
                 [self.pointersCounter - 31000]
                ]
 
+    # Cuando se llama a crear una variable se utiliza esta funcion para crear su direccion virtual
+    # Recibe su scope y tipo, mueve el contador de variables en el scope y regresa su direccion virtual 
     def generateAddressForVariable(self, scope, type):
         print(scope)
         if scope == 'global':
@@ -95,6 +98,8 @@ class VirutalDirectory(object):
                 self.localCharsCounter += 1
                 return self.localCharsCounter - 1
     
+    # Genera el espacio necesario para un arreglo 
+    # Regresa el contador en la direccion del ultimo elemento del arreglo
     def setSpaceForArray(self, scope, type, size):
         if scope == 'global':
             if type == 'int':
@@ -117,6 +122,8 @@ class VirutalDirectory(object):
                 self.localCharsCounter += size
                 return self.localCharsCounter - 1
 
+    # Regresa los contadores locales a su posicion original
+    # Se llama cada vez que se acabe una funcion 
     def resetLocalAddresses(self):
         self.localIntsCounter = 8500
         self.localFloatsCounter = 11000
@@ -199,11 +206,12 @@ class QuadrupleManager(object):
                 self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
-
+    # Agrega el parametro PARAM a la lista de cuadruplos
     def generateParameter(self, parameter, parameterPosition):
         self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
         self.quadrupleCounter += 1
 
+    # Agrega el GOSUB a la lista de cuadruplos
     def generateGoSub(self, funcName):
         #TODO: tirar error
         if funcDir.areParametersFinished():
@@ -213,10 +221,12 @@ class QuadrupleManager(object):
         else:
             print('Error: faltan parametros')
     
+    # Agrega el ENDFUNC a la lista de cuadruplos
     def generateEndFunc(self):
         self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
         self.quadrupleCounter += 1
 
+    # Agrega un ESCRIBE a la lista de cuadruplos, puede recibir una string o un operando 
     def generatePrint(self, string):
         if string:
             self.quadruplesList.append(('ESCRIBE', string, -1, -1))
@@ -225,10 +235,12 @@ class QuadrupleManager(object):
             self.typeStack.pop()
         self.quadrupleCounter += 1
 
+    # Agrega un LEE a la lista de cuadruplos
     def generateInput(self, variable):
         self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(variable)))
         self.quadrupleCounter += 1
 
+    # Agrega un RETURN a la lista de cuadruplos 
     def generateReturn(self, returnCounter):
         if returnCounter > 0:
             returnAddress = funcDir.getVirtualAddressOfVariable(funcDir.currentScope)
@@ -237,6 +249,8 @@ class QuadrupleManager(object):
             self.returnTypeStack.append(self.typeStack.pop())
             self.quadrupleCounter += 1
     
+    # Agrega un RETURN a la lista de cuadruplos
+    # Ademas almacena en el stack de operandos el valor de retorno de la funcion y agrega su dir como cuadruplo 
     def generateReturnAssignment(self):
         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', funcDir.getReturnType(funcDir.functionCalled))
         self.quadruplesList.append(('=', funcDir.getVirtualAddressOfVariable(funcDir.functionCalled), -1, resultAddress))
@@ -244,16 +258,18 @@ class QuadrupleManager(object):
         self.typeStack.append(funcDir.getReturnType(funcDir.functionCalled))
         self.quadrupleCounter += 1
 
+    # Agrega un ERA  a la lista de cuadruplos
     def generateERA(self, funcDir):
         print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
         self.quadrupleCounter += 1
     
+    # Agrega un ENDPROG a la lista de cuadruplos
     def generateEndProg(self):
         if funcDir.areFunctionsFinished():
             self.quadruplesList.append(('ENDPROG', -1, -1, -1))
 
-    # metodo publico que se encarga de generar un salto inicial
+    # Metodo publico que se encarga de generar un salto inicial
     #TODO: Refactorizar funcion
     def generateJump(self, jumpType):
         if jumpType == 'false':
@@ -281,7 +297,7 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
 
     
-    # metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
+    # Metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
     def updateJump(self, jumpType):
         if jumpType == 'normal':
             i = self.jumpStack.pop()
@@ -309,9 +325,9 @@ class QuadrupleManager(object):
 
 funcDir = FunctionDirectory()
 quadrupleManager = QuadrupleManager()
-#functionDirectory = FunctionDirectory()
 
-# gramatica para el parser
+# Gramatica para el parser
+
 def p_start(p):
     '''
     start : programa
@@ -341,19 +357,22 @@ def p_start(p):
     #limpia toda la informacion para poder volver a compilar sin problemas
     quadrupleManager.clearData()
 
-# el programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
+# Definicion de programa
+# El programa termina con una token de EOF para saber poder reportar errores de brackets faltantes
 def p_programa(p):
     '''
     programa : PROGRAMA ID SEMICOLON jump var funcion clear_scope PRINCIPAL update_jump L_PARENTHESIS R_PARENTHESIS bloque EOF
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
+# Crea un salto
 def p_jump(p):
     '''
     jump :
     '''
     quadrupleManager.generateJump('jump')
 
+# Elimina un scope
 def p_clear_scope(p):
     '''
     clear_scope :
@@ -363,6 +382,7 @@ def p_clear_scope(p):
     logs.append(f'Se elimino {temp} como el scope actual\n')
     del(temp)
 
+# Regla de variables
 def p_variables(p):
     '''
     var : VAR var_seen varp
@@ -380,7 +400,7 @@ def p_variables(p):
     else:
         p[0] = p[1]
 
-# regla intermedia para asignar el scope actual como global
+# Regla intermedia para asignar el scope actual como global
 def p_var_seen(p):
     ''' 
     var_seen :
