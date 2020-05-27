@@ -14,3 +14,7 @@ var char: C[6], size, i, flag;
     escribe("Caracter ", c, "no encontrado");
   }
 }
+
+principal(){
+	Find(h);
+}
