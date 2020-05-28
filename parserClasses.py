@@ -33,6 +33,18 @@ class FunctionDirectory(object):
                     # TODO: add proper logic
                     return variable
 
+    def getMatrixStart(self, variable):
+        try:
+            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
+            return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
+        except:
+            try:
+                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
+                return self.variablesTable['global']['variables'][variable]['virtualAddress']
+            except:
+                # TODO: add proper logic
+                return variable
+
     # Esta funcion determina si una constante existe en la tabla de constantes
     def constantExists(self, constant):
         try:

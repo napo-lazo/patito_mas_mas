@@ -1,5 +1,6 @@
 from re import search
 from sys import exit
+from numpy import add, array, subtract
 
 class VirtualMachine(object):
     def __init__(self, data, ctes, eras):
@@ -168,6 +169,26 @@ class VirtualMachine(object):
             else:
                 self.Temps[-1][address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]] = value
 
+    def convertToMatrix(self, initialAddress, dimensions):
+
+        matrixValues = []
+        rowValues = []
+
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+                aux = initialAddress + i * j + j
+                rowValues.append(self.getValueFromAddress(aux))
+            matrixValues.append(rowValues.copy())
+            rowValues.clear()
+
+        return matrixValues
+
+    def setMatrixValuesToAddresses(self, matrixValues, initialAddress, dimensions):
+        
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+                self.setAddressToValue(initialAddress + i * j + j, matrixValues[i][j])
+
     def executeProgram(self):
         parameterList = []
         indexStack = []
@@ -193,6 +214,15 @@ class VirtualMachine(object):
                     else:
                         result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                     self.setAddressToValue(current[3], result)
+            elif(current[0] in ['+Mat', '-Mat']):
+                leftOperand = self.convertToMatrix(current[1][0], current[1][1])
+                rightOperand = self.convertToMatrix(current[2][0], current[2][1])
+                if current[0] == '+Mat':
+                    self.setMatrixValuesToAddresses(add(array(leftOperand), array(rightOperand)), current[3][0], current[3][1])
+                elif current[0] == '-Mat':
+                    self.setMatrixValuesToAddresses(subtract(array(leftOperand), array(rightOperand)), current[3][0], current[3][1])
+            elif(current[0] in ['=Mat']):
+                self.setMatrixValuesToAddresses(self.convertToMatrix(current[1][0], current[1][1]) ,current[3][0], current[3][1])
             elif(current[0] in ['!']):
                 operand = self.getValueFromAddress(current[1])
                 if current[0] == '!':
