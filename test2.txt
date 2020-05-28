@@ -1,12 +1,9 @@
 programa test;
-var int : A[5], B[4][5], i, j;
+var int : a;
 
 principal(){
-    A[1] = 4;
-    desde i = 0 hasta 4 hacer {
-        desde j = 0 hasta 5 hacer {
-            B[i][j] = i + j;
-        }
+    a = 1;
+    si (!(a + 1 > 1)) haz {
+        escribe("verdadero");
     }
-    escribe(B[2][A[1] - 2]);
 }

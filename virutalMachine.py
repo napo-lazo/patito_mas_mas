@@ -193,6 +193,12 @@ class VirtualMachine(object):
                     else:
                         result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                     self.setAddressToValue(current[3], result)
+            elif(current[0] in ['!']):
+                operand = self.getValueFromAddress(current[1])
+                if current[0] == '!':
+                    result = eval(f'not {operand}')
+                self.setAddressToValue(current[3], result)
+                print(self.Temps)
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1

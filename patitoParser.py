@@ -142,7 +142,8 @@ class QuadrupleManager(object):
                              '==':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
                              '!=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
                              '&&':{('bool', 'bool'): 'bool'},
-                             '||':{('bool', 'bool'): 'bool'}}
+                             '||':{('bool', 'bool'): 'bool'},
+                             '!':{('bool'):'bool'}}
         # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
         # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
@@ -161,10 +162,16 @@ class QuadrupleManager(object):
 
     # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
     def __verifyTypeCompatibility(self, operation):
-        try:
-            return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
-        except:
-            return None
+        if operation in ['!']:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop())]
+            except:
+                return None
+        else:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
+            except:
+                return None
     
     # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
     # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
@@ -199,6 +206,28 @@ class QuadrupleManager(object):
                 self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
+    def applyUnary(self, operatorsList):
+        if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
+            if self.operationStack[-1] == '(':
+                logs.append('Se agrego un "(" al operationStack\n')
+                return 
+
+            operation = self.operationStack.pop()
+            operand = self.operandStack.pop()
+            
+            resultType = self.__verifyTypeCompatibility(operation)
+            if not resultType:
+                print(f'El tipo de {operand} no es compatible con esta operacion: {operation}')
+                exit()
+            
+            resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+            self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(operand), -1, resultAddress))
+            # logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
+            self.operandStack.append(resultAddress)
+            # logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
+            self.typeStack.append(resultType)
+            # logs.append(f'Se agrego "{resultType}" al typeStack\n')
+            self.quadrupleCounter += 1
 
     def generateParameter(self, parameter, parameterPosition):
         self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
@@ -789,7 +818,6 @@ def p_apply_operation_assign(p):
 def p_expresion(p):
     '''
     expresion : relacional apply_operation_expresion expresionp
-              | NOT relacional expresionp
     '''
     if len(p) == 4:
         p[0] = (p[1], p[2], p[3])
@@ -918,8 +946,15 @@ def p_operation_seen(p):
 def p_matriz(p):
     '''
     matriz : cte matrizp
+           | NOT operation_seen cte apply_not matrizp
     '''
     p[0] = (p[1], p[2])
+
+def p_apply_not(p):
+    '''
+    apply_not :
+    '''
+    quadrupleManager.applyUnary(['!'])
 
 def p_matrizp(p):
     '''
