@@ -230,14 +230,18 @@ class QuadrupleManager(object):
                         print('Operador derecho es una matriz')
                     if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
                         print('Operador izquierdo es una matriz')
-                    if leftMat[2] == rightMat[2]:
+                    if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or operation == '*' and leftMat[2][1] == rightMat[2][0]:
                         print('Matrices son compatibles')
                         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
                         right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
-                        result = (resultAddress, leftMat[2])
+                        if operation == '*':
+                            result = (resultAddress, [leftMat[2][0], rightMat[2][1]])
+                            self.matDimStack.append((resultAddress, resultAddress, [leftMat[2][0], rightMat[2][1]]))
+                        else:
+                            result = (resultAddress, leftMat[2])
+                            self.matDimStack.append((resultAddress, resultAddress, leftMat[2]))
                         self.virutalDirectory.setSpaceForArray('temp', resultType, leftMat[2][0] * leftMat[2][1] - 1)
-                        self.matDimStack.append((resultAddress, resultAddress, leftMat[2]))
                         self.operandStack.append(resultAddress)
                         self.typeStack.append(resultType)
                         self.quadruplesList.append((operation + 'Mat', left, right, result))

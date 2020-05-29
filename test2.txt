@@ -1,15 +1,24 @@
 programa test;
-var int : A[1][2], B[1][2], i, j;
+var int : A[2][2], B[2][4], C[2][4], i, j;
 
 principal(){
 
-    desde i = 0 hasta 1 hacer {
+    desde i = 0 hasta 2 hacer {
         desde j = 0 hasta 2 hacer {
             A[i][j] = i + j + 1;
+        }
+    }
+
+    desde i = 0 hasta 2 hacer {
+        desde j = 0 hasta 4 hacer {
             B[i][j] = i + j + 1;
         }
     }
 
-    A = A - B;
-    escribe(A[0][0]);
+    C = A * B;
+    desde i = 0 hasta 2 hacer {
+        desde j = 0 hasta 4 hacer {
+            escribe(C[i][j]);
+        }
+    }
 }

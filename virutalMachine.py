@@ -1,6 +1,6 @@
 from re import search
 from sys import exit
-from numpy import add, array, subtract
+from numpy import add, array, subtract, dot
 
 class VirtualMachine(object):
     def __init__(self, data, ctes, eras):
@@ -176,7 +176,7 @@ class VirtualMachine(object):
 
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
-                aux = initialAddress + i * j + j
+                aux = initialAddress + i * dimensions[1] + j
                 rowValues.append(self.getValueFromAddress(aux))
             matrixValues.append(rowValues.copy())
             rowValues.clear()
@@ -187,7 +187,7 @@ class VirtualMachine(object):
         
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
-                self.setAddressToValue(initialAddress + i * j + j, matrixValues[i][j])
+                self.setAddressToValue(initialAddress + i * dimensions[1] + j, matrixValues[i][j])
 
     def executeProgram(self):
         parameterList = []
@@ -214,13 +214,15 @@ class VirtualMachine(object):
                     else:
                         result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                     self.setAddressToValue(current[3], result)
-            elif(current[0] in ['+Mat', '-Mat']):
+            elif(current[0] in ['+Mat', '-Mat', '*Mat']):
                 leftOperand = self.convertToMatrix(current[1][0], current[1][1])
                 rightOperand = self.convertToMatrix(current[2][0], current[2][1])
                 if current[0] == '+Mat':
                     self.setMatrixValuesToAddresses(add(array(leftOperand), array(rightOperand)), current[3][0], current[3][1])
                 elif current[0] == '-Mat':
                     self.setMatrixValuesToAddresses(subtract(array(leftOperand), array(rightOperand)), current[3][0], current[3][1])
+                elif current[0] == '*Mat':
+                    self.setMatrixValuesToAddresses(dot(array(leftOperand), array(rightOperand)), current[3][0], current[3][1])
             elif(current[0] in ['=Mat']):
                 self.setMatrixValuesToAddresses(self.convertToMatrix(current[1][0], current[1][1]) ,current[3][0], current[3][1])
             elif(current[0] in ['!']):
