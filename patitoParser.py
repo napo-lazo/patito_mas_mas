@@ -160,7 +160,7 @@ class QuadrupleManager(object):
                              '!':{('bool'):'bool'},
                              '?':{('int'): 'float', ('float'): 'float'},
                              '$':{('int'): 'int', ('float'): 'float'},
-                             '¡':{('int'): 'int', ('float'): 'float', ('char'): 'char'}}
+                             '¡':{('int'): 'int', ('float'): 'float'}}
         # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
         # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)

@@ -1,13 +1,10 @@
 programa test;
-var int : A[2][4], B[4][2], i, j;
+var float : A[1][2], B[2][1];
 
 principal(){
 
-    desde i = 0 hasta 2 hacer {
-        desde j = 0 hasta 4 hacer {
-            A[i][j] = i + j + 1;
-        }
-    }
+    A[0][0] = 1.90;
+    A[0][1] = 2.3;
 
     B = A¡;
 
