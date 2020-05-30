@@ -286,13 +286,17 @@ class QuadrupleManager(object):
                 
                 resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                 left = (funcDir.getMatrixStart(operand), mat[2])
-                if operation == '¡':
-                    result = (resultAddress, [mat[2][1], mat[2][0]])
-                    self.matDimStack.append((resultAddress, resultAddress, [mat[2][1], mat[2][0]]))
+                if operation == '$':
+                    result = resultAddress
                 else:
-                    result = (resultAddress, mat[2])
-                    self.matDimStack.append((resultAddress, resultAddress, mat[2]))
-                self.virutalDirectory.setSpaceForArray('temp', resultType, mat[2][0] * mat[2][1] - 1)
+                    if operation == '¡':
+                        result = (resultAddress, [mat[2][1], mat[2][0]])
+                        self.matDimStack.append((resultAddress, resultAddress, [mat[2][1], mat[2][0]]))
+                    else:
+                        result = (resultAddress, mat[2])
+                        self.matDimStack.append((resultAddress, resultAddress, mat[2]))
+                    self.virutalDirectory.setSpaceForArray('temp', resultType, mat[2][0] * mat[2][1] - 1)
+                
                 self.operandStack.append(resultAddress)
                 self.typeStack.append(resultType)
                 self.quadruplesList.append((operation, left, -1, result))
