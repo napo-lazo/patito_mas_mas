@@ -1,24 +1,19 @@
 programa test;
-var int : A[2][2], B[2][4], C[2][4], i, j;
+var int : i, j;
+    float : A[2][2];
+    char : C[1][4];
 
 principal(){
 
-    desde i = 0 hasta 2 hacer {
-        desde j = 0 hasta 2 hacer {
-            A[i][j] = i + j + 1;
-        }
-    }
+    j = 0;
 
-    desde i = 0 hasta 2 hacer {
-        desde j = 0 hasta 4 hacer {
-            B[i][j] = i + j + 1;
+        desde i = 0 hasta 2 hacer {
+            A[i][j] = i + j + 1.0;
         }
-    }
+            
+    C[0][0] = 't';
+    C[0][1] = 'e';
+    C[0][2] = 's';
+    C[0][3] = 't';
 
-    C = A * B;
-    desde i = 0 hasta 2 hacer {
-        desde j = 0 hasta 4 hacer {
-            escribe(C[i][j]);
-        }
-    }
 }

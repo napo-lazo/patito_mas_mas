@@ -1,6 +1,6 @@
 from re import search
 from sys import exit
-from numpy import add, array, subtract, dot
+from numpy import add, array, subtract, dot, linalg
 
 class VirtualMachine(object):
     def __init__(self, data, ctes, eras):
@@ -151,9 +151,9 @@ class VirtualMachine(object):
             if address < self.globalFloats:
                 self.Globals[address - self.globalInts] = value
             elif address < self.globalChars:
-                self.Globals[address - self.globalFloats + self.GlobalIntsSize] = value
+                self.Globals[int(address - self.globalFloats + self.GlobalIntsSize) ] = value
             else:
-                self.Globals[address - self.globalChars + self.GlobalIntsSize + self.GlobalFloatsSize] = value
+                self.Globals[int(address - self.globalChars + self.GlobalIntsSize + self.GlobalFloatsSize)] = value
         elif address < self.cteInts and address >= self.localInts:
             if address < self.localFloats:
                 self.Locals[-1][address - self.localInts] = value
@@ -231,6 +231,9 @@ class VirtualMachine(object):
                     result = eval(f'not {operand}')
                 self.setAddressToValue(current[3], result)
                 print(self.Temps)
+            elif(current[0] == '?'):
+                operand = self.convertToMatrix(current[1][0], current[1][1])
+                self.setMatrixValuesToAddresses(linalg.inv(array(operand)), current[3][0], current[3][1])
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
