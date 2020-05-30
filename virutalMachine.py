@@ -52,6 +52,9 @@ class VirtualMachine(object):
         print(ctes)
 
     def allocateMemoryForFunction(self, era, parameterList):
+        intParams = 0
+        floatParams = 0
+        charParams = 0
         eraValues = self.eras[era]
         LocalIntsSize = eraValues[0][0]
         self.LocalIntsSize.append(LocalIntsSize)
@@ -62,7 +65,15 @@ class VirtualMachine(object):
         LocalSize = LocalIntsSize + LocalFloatsSize + LocalCharsSize
         LocalAux = [None] * LocalSize
         for i in range(0, len(parameterList)):
-            LocalAux[i] = parameterList[i]
+            if type(parameterList[i]) is str:
+                LocalAux[LocalIntsSize + LocalFloatsSize + charParams] = parameterList[i]
+                charParams += 1
+            elif type(parameterList[i]) is float:
+                LocalAux[LocalIntsSize + floatParams] = parameterList[i]
+                floatParams += 1
+            else:
+                LocalAux[intParams] = parameterList[i]
+                intParams += 1
 
         TempIntsSize = eraValues[1][0]
         self.TempIntsSize.append(TempIntsSize)
@@ -269,6 +280,7 @@ class VirtualMachine(object):
                 indexStack.append(i)
                 i = current[3] - 1
             elif(current[0] == 'ENDFUNC'):
+                print('Locals: ', self.Locals[-1])
                 i = indexStack.pop()
                 self.Locals.pop()
                 self.Temps.pop()

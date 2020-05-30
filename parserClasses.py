@@ -83,11 +83,13 @@ class FunctionDirectory(object):
     
     # Nos sirve para determinar si una variable es un arreglo a partir del id de la variable
     def isVariableArray(self):
-        if self.currentScope == None:
-            return self.variablesTable['global']['variables'][self.currentId]['isArray']
-        else:
-            return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
-    
+        try: 
+            if self.currentScope == None:
+                return self.variablesTable['global']['variables'][self.currentId]['isArray']
+            else:
+                return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+        except:
+            return False    
     # Ayuda a marcar una variable como arreglo y prepara el espacio para las dimensiones
     def setVariableAsArray(self):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray'] = True
