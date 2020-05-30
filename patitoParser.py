@@ -158,7 +158,9 @@ class QuadrupleManager(object):
                              '&&':{('bool', 'bool'): 'bool'},
                              '||':{('bool', 'bool'): 'bool'},
                              '!':{('bool'):'bool'},
-                             '?':{('int'): 'float', ('float'): 'float'}}
+                             '?':{('int'): 'float', ('float'): 'float'},
+                             '$':{('int'): 'int', ('float'): 'float'},
+                             '¡':{('int'): 'int', ('float'): 'float', ('char'): 'char'}}
         # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
         # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
@@ -179,7 +181,7 @@ class QuadrupleManager(object):
 
     # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
     def __verifyTypeCompatibility(self, operation):
-        if operation in ['!', '?']:
+        if operation in ['!', '?', '¡', '$']:
             try:
                 return self.semanticCube[operation][(self.typeStack.pop())]
             except:
@@ -211,6 +213,7 @@ class QuadrupleManager(object):
             
             if operation in ['=']:
                 if len(self.matDimStack):
+                    print(self.matDimStack)
                     rightMat = self.matDimStack.pop()
                     leftMat = self.matDimStack.pop()
                     if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
@@ -283,8 +286,12 @@ class QuadrupleManager(object):
                 
                 resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                 left = (funcDir.getMatrixStart(operand), mat[2])
-                result = (resultAddress, mat[2])
-                self.matDimStack.append((resultAddress, resultAddress, mat[2]))
+                if operation == '¡':
+                    result = (resultAddress, [mat[2][1], mat[2][0]])
+                    self.matDimStack.append((resultAddress, resultAddress, [mat[2][1], mat[2][0]]))
+                else:
+                    result = (resultAddress, mat[2])
+                    self.matDimStack.append((resultAddress, resultAddress, mat[2]))
                 self.virutalDirectory.setSpaceForArray('temp', resultType, mat[2][0] * mat[2][1] - 1)
                 self.operandStack.append(resultAddress)
                 self.typeStack.append(resultType)
@@ -298,7 +305,7 @@ class QuadrupleManager(object):
                 # logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
                 self.typeStack.append(resultType)
                 # logs.append(f'Se agrego "{resultType}" al typeStack\n')
-                self.quadrupleCounter += 1
+            self.quadrupleCounter += 1
 
     # Agrega el parametro PARAM a la lista de cuadruplos
     def generateParameter(self, parameter, parameterPosition):
@@ -1035,7 +1042,7 @@ def p_apply_mat(p):
     '''
     apply_mat :
     '''
-    quadrupleManager.applyUnary(['?'])
+    quadrupleManager.applyUnary(['?', '¡', '$'])
 
 def p_cte(p): 
     '''

@@ -1,19 +1,14 @@
 programa test;
-var int : i, j;
-    float : A[2][2];
-    char : C[1][4];
+var int : A[2][4], B[4][2], i, j;
 
 principal(){
 
-    j = 0;
-
-        desde i = 0 hasta 2 hacer {
-            A[i][j] = i + j + 1.0;
+    desde i = 0 hasta 2 hacer {
+        desde j = 0 hasta 4 hacer {
+            A[i][j] = i + j + 1;
         }
-            
-    C[0][0] = 't';
-    C[0][1] = 'e';
-    C[0][2] = 's';
-    C[0][3] = 't';
+    }
+
+    B = A¡;
 
 }

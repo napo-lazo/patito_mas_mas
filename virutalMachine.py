@@ -234,6 +234,9 @@ class VirtualMachine(object):
             elif(current[0] == '?'):
                 operand = self.convertToMatrix(current[1][0], current[1][1])
                 self.setMatrixValuesToAddresses(linalg.inv(array(operand)), current[3][0], current[3][1])
+            elif(current[0] == '¡'):
+                operand = self.convertToMatrix(current[1][0], current[1][1])
+                self.setMatrixValuesToAddresses((array(operand)).transpose(), current[3][0], current[3][1])
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
