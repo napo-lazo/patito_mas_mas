@@ -205,7 +205,6 @@ class FunctionDirectory(object):
     def turnCtesIntoList(self):
         aux = self.ctesTable.items()
         virtualAddresses = self.ctesTable['virtualAddresses'].items()
-        print(aux)
         first = True
         ctes = []
         addresses = []
