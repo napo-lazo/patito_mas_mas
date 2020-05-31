@@ -1,9 +1,11 @@
 programa test;
 
 var int : a, b, c, d;
+    float : e, f;
 
 funcion void func1(int n1, int n2, float n3)
 var int : a, b, c; 
+    float : r1, s2;
 {
     si (a + b == d) haz {
         b = n2 + 1;
@@ -13,6 +15,7 @@ var int : a, b, c;
 
 funcion int func2(int n1, int n2)
 var int : a, b, c;
+    float : f1, f2;
 {
     func1(2 + 3, b, 4.0);
     b = c;

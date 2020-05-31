@@ -53,7 +53,6 @@ class VirutalDirectory(object):
     # Cuando se llama a crear una variable se utiliza esta funcion para crear su direccion virtual
     # Recibe su scope y tipo, mueve el contador de variables en el scope y regresa su direccion virtual 
     def generateAddressForVariable(self, scope, type):
-        print(scope)
         if scope == 'global':
             if type == 'int':
                 self.globalIntsCounter += 1
@@ -111,6 +110,13 @@ class VirutalDirectory(object):
             else:
                 self.globalCharsCounter += size
                 return self.globalCharsCounter - 1
+        elif scope == 'temp':
+            if type == 'int':
+                self.tempIntsCounter += size
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.tempFloatsCounter += size
+                return self.globalFloatsCounter - 1
         else:
             if type == 'int':
                 self.localIntsCounter += size
@@ -146,10 +152,14 @@ class QuadrupleManager(object):
                              '>=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
                              '<':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
                              '<=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
-                             '==':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
+                             '==':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'bool', ('bool', 'bool'): 'bool'},
                              '!=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
                              '&&':{('bool', 'bool'): 'bool'},
-                             '||':{('bool', 'bool'): 'bool'}}
+                             '||':{('bool', 'bool'): 'bool'},
+                             '!':{('bool'):'bool'},
+                             '?':{('int'): 'float', ('float'): 'float'},
+                             '$':{('int'): 'int', ('float'): 'float'},
+                             '¡':{('int'): 'int', ('float'): 'float'}}
         # stack para guardar y manejar la logica de los saltos
         self.jumpStack = []
         # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
@@ -161,6 +171,8 @@ class QuadrupleManager(object):
         self.returnValuesStack = []
         self.returnTypeStack = []
         self.dimStack = []
+        self.matDimStack = []
+        self.matTypeStack = []
         # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
         # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
@@ -168,10 +180,16 @@ class QuadrupleManager(object):
 
     # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
     def __verifyTypeCompatibility(self, operation):
-        try:
-            return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
-        except:
-            return None
+        if operation in ['!', '?', '¡', '$']:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop())]
+            except:
+                return None
+        else:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
+            except:
+                return None
     
     # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
     # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
@@ -189,23 +207,107 @@ class QuadrupleManager(object):
             resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
                 print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
-                raise SyntaxError
+                exit()
             
             if operation in ['=']:
-                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
-                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
+                if len(self.matDimStack):
+                    rightMat = self.matDimStack.pop()
+                    leftMat = self.matDimStack.pop()
+                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
+                        print('Operador derecho es una matriz')
+                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
+                        print('Operador izquierdo es una matriz')
+                    if leftMat[2] == rightMat[2]:
+                        print('Matrices son compatibles')
+                        left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
+                        right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
+                        self.quadruplesList.append((operation + 'Mat', right, -1, left))
+                else:
+                    self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
+                    logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
-                # self.quadruplesList.append((operation, leftOperand, rightOperand, self.virutalDirectory.genericCounter))
-                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
-                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
-                logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
-                self.operandStack.append(resultAddress)
-                logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
-                self.typeStack.append(resultType)
-                logs.append(f'Se agrego "{resultType}" al typeStack\n')
-                self.virutalDirectory.genericCounter += 1
+                if len(self.matDimStack):
+                    rightMat = self.matDimStack.pop()
+                    leftMat = self.matDimStack.pop()
+                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
+                        print('Operador derecho es una matriz')
+                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
+                        print('Operador izquierdo es una matriz')
+                    if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or operation == '*' and leftMat[2][1] == rightMat[2][0]:
+                        print('Matrices son compatibles')
+                        resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                        left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
+                        right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
+                        if operation == '*':
+                            result = (resultAddress, [leftMat[2][0], rightMat[2][1]])
+                            self.matDimStack.append((resultAddress, resultAddress, [leftMat[2][0], rightMat[2][1]]))
+                        else:
+                            result = (resultAddress, leftMat[2])
+                            self.matDimStack.append((resultAddress, resultAddress, leftMat[2]))
+                        self.virutalDirectory.setSpaceForArray('temp', resultType, leftMat[2][0] * leftMat[2][1] - 1)
+                        self.operandStack.append(resultAddress)
+                        self.typeStack.append(resultType)
+                        self.quadruplesList.append((operation + 'Mat', left, right, result))
+
+                else:
+                    resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                    # print('index: ', self.quadrupleCounter)
+                    # print('Addres: ', resultAddress, ' ', leftOperand, ' ', operation, ' ', rightOperand)
+                    self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
+                    logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
+                    self.operandStack.append(resultAddress)
+                    logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
+                    self.typeStack.append(resultType)
+                    logs.append(f'Se agrego "{resultType}" al typeStack\n')
+                    self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
+    def applyUnary(self, operatorsList):
+        if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
+            if self.operationStack[-1] == '(':
+                logs.append('Se agrego un "(" al operationStack\n')
+                return 
+
+            operation = self.operationStack.pop()
+            operand = self.operandStack.pop()
+            
+            resultType = self.__verifyTypeCompatibility(operation)
+            if not resultType:
+                print(f'El tipo de {operand} no es compatible con esta operacion: {operation}')
+                exit()
+            
+            if len(self.matDimStack) != 0:
+                mat = self.matDimStack.pop()
+                if operand == mat[0] or operand == mat[1]:
+                    print('Operador es una matriz')
+                
+                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                left = (funcDir.getMatrixStart(operand), mat[2])
+                if operation == '$':
+                    result = resultAddress
+                else:
+                    if operation == '¡':
+                        result = (resultAddress, [mat[2][1], mat[2][0]])
+                        self.matDimStack.append((resultAddress, resultAddress, [mat[2][1], mat[2][0]]))
+                    else:
+                        result = (resultAddress, mat[2])
+                        self.matDimStack.append((resultAddress, resultAddress, mat[2]))
+                    self.virutalDirectory.setSpaceForArray('temp', resultType, mat[2][0] * mat[2][1] - 1)
+                
+                self.operandStack.append(resultAddress)
+                self.typeStack.append(resultType)
+                self.quadruplesList.append((operation, left, -1, result))
+
+            else:
+                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(operand), -1, resultAddress))
+                # logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
+                self.operandStack.append(resultAddress)
+                # logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
+                self.typeStack.append(resultType)
+                # logs.append(f'Se agrego "{resultType}" al typeStack\n')
+            self.quadrupleCounter += 1
+
     # Agrega el parametro PARAM a la lista de cuadruplos
     def generateParameter(self, parameter, parameterPosition):
         self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
@@ -260,7 +362,7 @@ class QuadrupleManager(object):
 
     # Agrega un ERA  a la lista de cuadruplos
     def generateERA(self, funcDir):
-        print(self.quadruplesList)
+        # print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
         self.quadrupleCounter += 1
     
@@ -442,14 +544,13 @@ def p_variable_seen(p):
 
     # si no la hay se crea una de manera normal
     except:
-        print('crea variable')
         funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable(funcDir.currentScope, funcDir.currentType))
         logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
     # de lo contrario se tira un error de variable duplicada
     else:
         print(f'ERROR: Variable "{p[-1]}" already exists')
-        raise SyntaxError
+        exit()
 
     funcDir.currentId = p[-1]
 
@@ -487,6 +588,7 @@ def p_variablesppp(p):
 
     # despues de declarar las dimensiones y actualizar el contador de memoria virtual se elimina el id actual
     temp = funcDir.currentId
+    # print(p[1], ' - p1')
     if funcDir.isVariableArray():
         quadrupleManager.virutalDirectory.setSpaceForArray(funcDir.currentScope, funcDir.currentType, funcDir.getArrayDimensionsSize() - 1)
     funcDir.currentId = None
@@ -573,7 +675,7 @@ def p_create_func_scope(p):
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
             else:
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
-                print(f'scope: {funcDir.currentScope}')
+                # print(f'scope: {funcDir.currentScope}')
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])
@@ -686,34 +788,10 @@ def p_dimId(p):
           | is_array create_dim dim dim pop_array
           | empty
     '''
-    # if len(p) >= 4:
-        # aux = quadrupleManager.dimStack.pop()
-        # print(quadrupleManager.operandStack)
-        # print(quadrupleManager.typeStack)
-        # print(quadrupleManager.quadruplesList)
-        # if aux[1] == 1:
-        #     offset = quadrupleManager.operandStack.pop()
-        #     baseAddress = quadrupleManager.operandStack.pop()
-        #     typeOf = quadrupleManager.typeStack.pop()
-
-        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
-        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
-        #     quadrupleManager.quadruplesList.append(('DISPLACE', baseAddress, offset, temp))
-        #     quadrupleManager.operandStack.append(temp)
-        #     quadrupleManager.quadrupleCounter += 1
-        # else:
-        #     offset = quadrupleManager.operandStack.pop()
-        #     baseAddress = quadrupleManager.operandStack.pop()
-        #     typeOf = quadrupleManager.typeStack.pop()
-        #     if typeOf != 'int':
-        #         print('Error: solo se puede indexar un arreglo con valores enteros')
-        #         exit()
-        #     temp = quadrupleManager.virutalDirectory.tempIntsCounter
-        #     quadrupleManager.virutalDirectory.tempIntsCounter += 1
-        #     quadrupleManager.quadruplesList.append(('DISPLACEMAT', baseAddress, offset, temp))
-        #     quadrupleManager.operandStack.append(temp)
-        #     quadrupleManager.quadrupleCounter += 1
-    
+   
+    if len(p) == 2 and funcDir.isVariableArray():
+        #TODO: add validation for matrix
+        quadrupleManager.matDimStack.append((funcDir.currentId, funcDir.getVirtualAddressOfVariable(funcDir.currentId), funcDir.getArrayDimensions(funcDir.currentId)))
     funcDir.currentId = None
 
 def p_pop_array(p):
@@ -726,6 +804,12 @@ def p_is_array(p):
     '''
     is_array :  
     '''
+    if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-1]):
+        funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+    # quadrupleManager.operandStack.append(quadrupleManager.operandStack[-1])
+    quadrupleManager.matTypeStack.append(quadrupleManager.typeStack[-1])
+    quadrupleManager.typeStack[-1] = 'int'
+    # quadrupleManager.typeStack.append('int')
     if not funcDir.isVariableArray():
         print(f'Error: variable "{funcDir.currentId}" no es un arreglo')
         exit()
@@ -779,25 +863,23 @@ def p_bracket_seen(p):
                 quadrupleManager.applyOperation('+')
                 print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
 
-            if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
-                funcDir.addConstant(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            
+            if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-2]):
+                funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            print(funcDir.ctesTable)
+            #TODO: revisar para bug AQUI
+            print('test')
             quadrupleManager.operationStack.append('+')
             quadrupleManager.applyOperation('+')
             pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
             aux = quadrupleManager.quadruplesList.pop()
-            quadrupleManager.quadruplesList.append((aux[0], aux[1], aux[2], pointerAddress))
+            quadrupleManager.quadruplesList.append((aux[0], funcDir.getCteVirtualAddress(aux[1]), aux[2], pointerAddress))
             quadrupleManager.operandStack.pop()
             quadrupleManager.operandStack.append(pointerAddress)
-            # quadrupleManager.quadruplesList.append(('OFFSET', quadrupleManager.operandStack[-1], -1, quadrupleManager.virutalDirectory.tempIntsCounter))
-            # quadrupleManager.operandStack.append(quadrupleManager.virutalDirectory.tempIntsCounter)
-            # quadrupleManager.virutalDirectory.tempIntsCounter += 1
-            # quadrupleManager.quadrupleCounter += 1
+            quadrupleManager.typeStack[-1] = quadrupleManager.matTypeStack.pop()
 
         quadrupleManager.operationStack.pop()
     else:
-        # aux = quadrupleManager.dimStack.pop()[1]
-        # quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
-
         quadrupleManager.operationStack.append('(')
 
 # regla intermedia que se encarga de realizar los quadruplos de operiones logicas
@@ -814,7 +896,6 @@ def p_apply_operation_assign(p):
 def p_expresion(p):
     '''
     expresion : relacional apply_operation_expresion expresionp
-              | NOT relacional expresionp
     '''
     if len(p) == 4:
         p[0] = (p[1], p[2], p[3])
@@ -942,18 +1023,31 @@ def p_operation_seen(p):
 
 def p_matriz(p):
     '''
-    matriz : cte matrizp
+    matriz : cte matrizp 
+           | NOT operation_seen cte apply_not 
     '''
     p[0] = (p[1], p[2])
 
+def p_apply_not(p):
+    '''
+    apply_not :
+    '''
+    quadrupleManager.applyUnary(['!'])
+
 def p_matrizp(p):
     '''
-    matrizp : DETERMINANT
-            | TRANSPOSED
-            | INVERSE
+    matrizp : DETERMINANT operation_seen apply_mat
+            | TRANSPOSED operation_seen apply_mat
+            | INVERSE operation_seen apply_mat
             | empty
     '''
     p[0] = p[1]
+
+def p_apply_mat(p):
+    '''
+    apply_mat :
+    '''
+    quadrupleManager.applyUnary(['?', '¡', '$'])
 
 def p_cte(p): 
     '''
@@ -999,7 +1093,6 @@ def p_cte(p):
             quadrupleManager.typeStack.append('char')
         
         quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[1]))
-        print(quadrupleManager.operandStack)
         logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
         logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 

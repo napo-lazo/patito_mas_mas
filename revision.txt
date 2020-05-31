@@ -71,27 +71,26 @@ var int: A[5], size, i, j, k, min, temp;{
 }
 
 funcion void Find(char c)
-var char: C[6], size, i, flag;
+var char: C[6];
+    int: size, i, flag;
 {
-	C[0] = "a"; C[1] = "l"; C[2] = "c"; C[3] = "o";
-	C[4] = "h"; C[5] = "o"; C[6] = "l";
+	C[0] = 'a'; C[1] = 'l'; C[2] = 'c'; C[3] = 'o';
+	C[4] = 'h'; C[5] = 'o';
     flag = 0;
+    size = 6;
 	desde i = 0 hasta size hacer{
-		si(C[i] == c) entonces {
-			escribe("Caracter encontrado ");
+		si(C[i] == c) haz {
+			escribe("Caracter encontrado");
+            escribe(i);
             flag = 1;
 		}
 	}
-    si (flag == 0) entonces {
+    si (flag == 0) haz {
         escribe("Caracter no encontrado");
     }
 }
 
 principal(){
-    escribe(FibonacciRec(9));
-    escribe(FibonacciIt(9));
-    escribe(FactorialRec(5));
-    escribe(FactorialIt(5));
     Sort();
-    Find(h);
+    Find('h');
 }

@@ -4,7 +4,7 @@ class FunctionDirectory(object):
     def __init__(self):
         #variablesTable tiene el formato de {nombreScope : {returnType : valor, parameters: [type1, type2, etc] variables : {nombreVar1 : {type : valor, value : valor}}}} 
         self.variablesTable = {}
-        self.ctesTable = {}
+        self.ctesTable = {'virtualAddresses' : {}}
         self.eras = {}
         self.currentScope = None
         self.currentType = None
@@ -32,6 +32,18 @@ class FunctionDirectory(object):
                 except:
                     # TODO: add proper logic
                     return variable
+
+    def getMatrixStart(self, variable):
+        try:
+            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
+            return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
+        except:
+            try:
+                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
+                return self.variablesTable['global']['variables'][variable]['virtualAddress']
+            except:
+                # TODO: add proper logic
+                return variable
 
     # Esta funcion determina si una constante existe en la tabla de constantes
     def constantExists(self, constant):
@@ -71,11 +83,13 @@ class FunctionDirectory(object):
     
     # Nos sirve para determinar si una variable es un arreglo a partir del id de la variable
     def isVariableArray(self):
-        if self.currentScope == None:
-            return self.variablesTable['global']['variables'][self.currentId]['isArray']
-        else:
-            return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
-    
+        try: 
+            if self.currentScope == None:
+                return self.variablesTable['global']['variables'][self.currentId]['isArray']
+            else:
+                return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+        except:
+            return False    
     # Ayuda a marcar una variable como arreglo y prepara el espacio para las dimensiones
     def setVariableAsArray(self):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray'] = True
@@ -187,15 +201,36 @@ class FunctionDirectory(object):
     def getEra(self):
         return self.variablesTable[self.functionCalled]['era']
 
-    # Crea la lista de constantes 
+    # Crea la lista de constantes para la maquina virtual 
     def turnCtesIntoList(self):
         aux = self.ctesTable.items()
+        virtualAddresses = self.ctesTable['virtualAddresses'].items()
+        first = True
         ctes = []
         addresses = []
         for x in aux:
-            ctes.append(x[0])
-            addresses.append(x[1]['virtualAddress'])
+            if first:
+                for y in virtualAddresses:
+                    ctes.append(y[0])
+                    addresses.append(y[1]['virtualAddress'])
+                first = not first
+            else:
+                ctes.append(x[0])
+                addresses.append(x[1]['virtualAddress'])
         return  sorted(list(zip(ctes, addresses)), key=lambda tup: tup[1])
+
+    def addCteVirtualAddress(self, constant, virtualAddress, typeOfConstant):
+        self.ctesTable['virtualAddresses'][constant] = {'virtualAddress': virtualAddress, 'type' : typeOfConstant}
+    
+    def constantVirtualAddressExists(self, constant):
+        try:
+            self.ctesTable['virtualAddresses'][constant]
+            return True
+        except:
+            return False
+
+    def getCteVirtualAddress(self, constant):
+        return self.ctesTable['virtualAddresses'][constant]['virtualAddress']
 
 
 # class FunctionDirectory(object):
