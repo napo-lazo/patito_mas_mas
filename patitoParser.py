@@ -653,6 +653,8 @@ def p_funcionp(p):
     #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
     #functionDirectory[p[2]].localVariableCount = p[5].length()
 
+
+# Agrega una funcion al directorio de funciones
 def p_create_func_scope(p):
     '''
     create_func_scope : 
@@ -685,6 +687,7 @@ def p_create_func_scope(p):
         print(f'Error: {p[-1]} ya existe')
         exit()
 
+# Borra las temporales y acaba la funcion 
 def p_end_func(p):
     '''
     end_func :
@@ -764,6 +767,7 @@ def p_asignacion(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
+# Agrega un operando al stack, verifica si este ya esta declarado
 def p_operand_seen(p):
     '''
     operand_seen :
@@ -823,6 +827,7 @@ def p_create_dim(p):
     dim = funcDir.getArrayDimensions(funcDir.currentId)
     quadrupleManager.dimStack.append((funcDir.currentId, dim, len(dim)))
 
+# Genera todo los cuadruplos de arreglos
 def p_bracket_seen(p):
     '''
     bracket_seen :
@@ -1093,6 +1098,7 @@ def p_cte(p):
 
         p[0] = p[1]
 
+# Indica una llamada a una funcion, agrega los cuadruplos del ERA, GOSUB y RETURN
 def p_llamadaFuncion(p):
     '''
     llamadaFuncion : ID set_func_scope L_PARENTHESIS operation_seen llamadaFuncionp R_PARENTHESIS operation_seen
@@ -1131,6 +1137,7 @@ def p_llamadaFuncionpp(p):
     else: 
         p[0] = p[1]
 
+# Verifica si los parametros son los debidos en tipos y cuenta de parametros
 def p_verify_parameter(p):
     '''
     verify_parameter :

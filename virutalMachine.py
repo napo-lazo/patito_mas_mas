@@ -124,7 +124,7 @@ class VirtualMachine(object):
             else:
                 aux = address - self.globalChars
                 aux += self.GlobalIntsSize + self.GlobalFloatsSize
-            return self.Globals[aux]
+            return self.Globals[int(aux)]
         elif address < self.cteInts and address >= self.localInts:
             if address < self.localFloats:
                 aux = address - self.localInts
