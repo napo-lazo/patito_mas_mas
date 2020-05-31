@@ -79,13 +79,12 @@ var char: C[6];
     flag = 0;
     size = 6;
 	desde i = 0 hasta size hacer{
-        escribe(i);
 		si(C[i] == c) haz {
-			escribe("Caracter encontrado", i);
+			escribe("Caracter encontrado");
+            escribe(i);
             flag = 1;
 		}
 	}
-
     si (flag == 0) haz {
         escribe("Caracter no encontrado");
     }

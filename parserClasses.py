@@ -4,7 +4,7 @@ class FunctionDirectory(object):
     def __init__(self):
         #variablesTable tiene el formato de {nombreScope : {returnType : valor, parameters: [type1, type2, etc] variables : {nombreVar1 : {type : valor, value : valor}}}} 
         self.variablesTable = {}
-        self.ctesTable = {}
+        self.ctesTable = {'virtualAddresses' : {}}
         self.eras = {}
         self.currentScope = None
         self.currentType = None
@@ -201,15 +201,37 @@ class FunctionDirectory(object):
     def getEra(self):
         return self.variablesTable[self.functionCalled]['era']
 
-    # Crea la lista de constantes 
+    # Crea la lista de constantes para la maquina virtual 
     def turnCtesIntoList(self):
         aux = self.ctesTable.items()
+        virtualAddresses = self.ctesTable['virtualAddresses'].items()
+        print(aux)
+        first = True
         ctes = []
         addresses = []
         for x in aux:
-            ctes.append(x[0])
-            addresses.append(x[1]['virtualAddress'])
+            if first:
+                for y in virtualAddresses:
+                    ctes.append(y[0])
+                    addresses.append(y[1]['virtualAddress'])
+                first = not first
+            else:
+                ctes.append(x[0])
+                addresses.append(x[1]['virtualAddress'])
         return  sorted(list(zip(ctes, addresses)), key=lambda tup: tup[1])
+
+    def addCteVirtualAddress(self, constant, virtualAddress, typeOfConstant):
+        self.ctesTable['virtualAddresses'][constant] = {'virtualAddress': virtualAddress, 'type' : typeOfConstant}
+    
+    def constantVirtualAddressExists(self, constant):
+        try:
+            self.ctesTable['virtualAddresses'][constant]
+            return True
+        except:
+            return False
+
+    def getCteVirtualAddress(self, constant):
+        return self.ctesTable['virtualAddresses'][constant]['virtualAddress']
 
 
 # class FunctionDirectory(object):

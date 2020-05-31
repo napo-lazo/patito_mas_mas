@@ -78,7 +78,6 @@ class VirutalDirectory(object):
                 self.tempIntsCounter += 1
                 return self.tempIntsCounter - 1
             elif type == 'float':
-                print(self.tempFloatsCounter)
                 self.tempFloatsCounter += 1
                 return self.tempFloatsCounter - 1
             else:
@@ -205,7 +204,6 @@ class QuadrupleManager(object):
             rightOperand = self.operandStack.pop()
             leftOperand = self.operandStack.pop()
             
-            print(self.typeStack)
             resultType = self.__verifyTypeCompatibility(operation)
             if not resultType:
                 print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
@@ -213,7 +211,6 @@ class QuadrupleManager(object):
             
             if operation in ['=']:
                 if len(self.matDimStack):
-                    print(self.matDimStack)
                     rightMat = self.matDimStack.pop()
                     leftMat = self.matDimStack.pop()
                     if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
@@ -254,8 +251,8 @@ class QuadrupleManager(object):
 
                 else:
                     resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
-                    print('index: ', self.quadrupleCounter)
-                    print('Addres: ', resultAddress, ' ', leftOperand, ' ', operation, ' ', rightOperand)
+                    # print('index: ', self.quadrupleCounter)
+                    # print('Addres: ', resultAddress, ' ', leftOperand, ' ', operation, ' ', rightOperand)
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
                     logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
                     self.operandStack.append(resultAddress)
@@ -365,7 +362,7 @@ class QuadrupleManager(object):
 
     # Agrega un ERA  a la lista de cuadruplos
     def generateERA(self, funcDir):
-        print(self.quadruplesList)
+        # print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
         self.quadrupleCounter += 1
     
@@ -591,7 +588,7 @@ def p_variablesppp(p):
 
     # despues de declarar las dimensiones y actualizar el contador de memoria virtual se elimina el id actual
     temp = funcDir.currentId
-    print(p[1], ' - p1')
+    # print(p[1], ' - p1')
     if funcDir.isVariableArray():
         quadrupleManager.virutalDirectory.setSpaceForArray(funcDir.currentScope, funcDir.currentType, funcDir.getArrayDimensionsSize() - 1)
     funcDir.currentId = None
@@ -676,7 +673,7 @@ def p_create_func_scope(p):
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
             else:
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
-                print(f'scope: {funcDir.currentScope}')
+                # print(f'scope: {funcDir.currentScope}')
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])
@@ -791,7 +788,6 @@ def p_dimId(p):
     if len(p) == 2 and funcDir.isVariableArray():
         #TODO: add validation for matrix
         quadrupleManager.matDimStack.append((funcDir.currentId, funcDir.getVirtualAddressOfVariable(funcDir.currentId), funcDir.getArrayDimensions(funcDir.currentId)))
-        print(quadrupleManager.matDimStack)
     funcDir.currentId = None
 
 def p_pop_array(p):
@@ -804,8 +800,8 @@ def p_is_array(p):
     '''
     is_array :  
     '''
-    if not funcDir.constantExists(quadrupleManager.operandStack[-1]):
-        funcDir.addConstant(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+    if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-1]):
+        funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
     # quadrupleManager.operandStack.append(quadrupleManager.operandStack[-1])
     quadrupleManager.matTypeStack.append(quadrupleManager.typeStack[-1])
     quadrupleManager.typeStack[-1] = 'int'
@@ -862,24 +858,23 @@ def p_bracket_seen(p):
                 quadrupleManager.applyOperation('+')
                 print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
 
-            if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
-                funcDir.addConstant(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            
+            if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-2]):
+                funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
+            print(funcDir.ctesTable)
             #TODO: revisar para bug AQUI
             print('test')
             quadrupleManager.operationStack.append('+')
             quadrupleManager.applyOperation('+')
             pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
             aux = quadrupleManager.quadruplesList.pop()
-            quadrupleManager.quadruplesList.append((aux[0], aux[1], aux[2], pointerAddress))
+            quadrupleManager.quadruplesList.append((aux[0], funcDir.getCteVirtualAddress(aux[1]), aux[2], pointerAddress))
             quadrupleManager.operandStack.pop()
             quadrupleManager.operandStack.append(pointerAddress)
             quadrupleManager.typeStack[-1] = quadrupleManager.matTypeStack.pop()
 
         quadrupleManager.operationStack.pop()
     else:
-        # aux = quadrupleManager.dimStack.pop()[1]
-        # quadrupleManager.dimStack.append((funcDir.currentId, aux + 1))
-
         quadrupleManager.operationStack.append('(')
 
 # regla intermedia que se encarga de realizar los quadruplos de operiones logicas
@@ -1093,7 +1088,6 @@ def p_cte(p):
             quadrupleManager.typeStack.append('char')
         
         quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[1]))
-        print(quadrupleManager.operandStack)
         logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
         logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 
