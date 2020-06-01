@@ -1,20 +1,25 @@
+programa encontrar; 
+
 funcion void Find(char c)
-var char: C[6], size, i, flag;
+var char: C[6];
+    int: size, i, flag;
 {
-	C[0] = a; C[1] = l; C[2] = c; C[3] = o;
-	C[4] = h; C[5] = o; C[6] = l;
-  flag = 0;
+	C[0] = 'a'; C[1] = 'l'; C[2] = 'c'; C[3] = 'o';
+	C[4] = 'h'; C[5] = 'o';
+    flag = 0;
+    size = 6;
 	desde i = 0 hasta size hacer{
-		si(C[i] == c) entonces {
-			escribe("Caracter ", c, " encontrado ");
-      flag = 1;
+		si(C[i] == c) haz {
+			escribe("Caracter encontrado");
+            escribe(i);
+            flag = 1;
 		}
 	}
-  si (flag == 0) entonces {
-    escribe("Caracter ", c, "no encontrado");
-  }
+    si (flag == 0) haz {
+        escribe("Caracter no encontrado");
+    }
 }
 
 principal(){
-	Find(h);
+    Find('h');
 }
