@@ -263,7 +263,6 @@ class VirtualMachine(object):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
             elif(current[0] == 'ESCRIBE'):
-                # print(self.Pointers)
                 if type(current[1]) is str:
                     print(current[1])
                 else:

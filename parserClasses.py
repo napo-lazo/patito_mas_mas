@@ -549,7 +549,7 @@ class QuadrupleManager(object):
     # Agrega un ESCRIBE a la lista de cuadruplos, puede recibir una string o un operando 
     def generatePrint(self, string):
         if string:
-            self.quadruplesList.append(('ESCRIBE', string, -1, -1))
+            self.quadruplesList.append(('ESCRIBE', string , -1, -1))
         else:
             self.quadruplesList.append(('ESCRIBE', self.operandStack.pop(), -1, -1))
             self.typeStack.pop()

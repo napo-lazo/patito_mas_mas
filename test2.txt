@@ -1,16 +1,17 @@
 programa test;
-var int: a, b;
+var int: a;
+    float: b;
     char: c;
 
-funcion int test()
-var float: b;
+funcion void test()
+var float: d;
 {
-    b = 1.0;
-    regresa(4);
-
+    escribe("Los valores son: ", a, b, c, "final de resultados", "#########################");
 }
 
 principal(){
-    a = 2;
-    escribe(a + 2 - test());
+    a = 1;
+    b = 2.0;
+    c = '3';
+    test();
 }

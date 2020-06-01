@@ -103,7 +103,7 @@ def t_CTE_CHAR(t):
     return t
 
 def t_LETRERO(t):
-    r'\".+\"'
+    r'\"([^""]+)\"'
     t.value = t.value[1:-1]
     return t
 
