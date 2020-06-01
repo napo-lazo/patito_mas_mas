@@ -19,19 +19,19 @@ Condicionales: si, entonces, sino
 Ciclos: mientras, haz, desde, hasta, hacer
 
 Ademas utilizamos los operadores:
-+ para sumar
-- para restar
-* para multiplicar
-/ para dividir
-= para igualar
-& AND
-| OR
-< lesser than
-> greater than
-== equal to
-? inversa de una matriz
-$ determinante de una matriz
-¡ traspuesta de una matriz
+'+' para sumar
+'-' para restar
+'*' para multiplicar
+'/' para dividir
+'=' para igualar
+'&' AND
+'|' OR
+'<' lesser than
+'>' greater than
+'==' equal to
+'?' inversa de una matriz
+'$' determinante de una matriz
+'¡' traspuesta de una matriz
 
 # Como utilizar este compilador:
 
@@ -46,4 +46,4 @@ La estructura del compilador está dividida en partes para mantener el proyecto 
 - patitoParser.py contiene las reglas de gramatica, el cubo semántico, el generador de cuadruplos y el directorio de memoria
 - virtualMachine.py como su nombre lo indica es la máquina virtual que ejecuta los cuádruplos  
 - parserClasses.py contiene las definiciones de todas las clases necesarias que se necesitan en patitoParser.py como la tabla de variables, la memoria y directorio de funciones
-- patitoLogger.py es un pequeño programa que guarda en un archivo los cuádruplos para ayudarnos a debuggear
+- patitoLogger.py es un pequeño programa que guarda en un archivo prints e informacion necesaria para debuggear
