@@ -88,13 +88,20 @@ class VirtualMachine(object):
         self.Temps.append((TempAux))
 
     def getTypeOfInput(self, value):
-        if search(r'\-?[0-9]+\.[0-9]+', value):
+        if value[0] == "'" and value[-1] == "'":
+            if len(value) == 3:
+                return 'char'
+            else:
+                print('Error: valor de tipo char tiene que ir entre comillas sencillas y ser un solo caracter')
+                exit()
+        elif search(r'\-?[0-9]+\.[0-9]+', value):
             return 'float'
         elif search(r'\-?[0-9]+', value):
             return 'int'
         else:
-            #TODO: add size verification
-            return 'char'
+            print('Error: valor de tipo char tiene que ir entre comillas sencillas y ser un solo caracter')
+            exit()
+
 
     def verifyInputCompatibility(self, address, typeOfValue):
         if address >= 1000 and address < 3500 and typeOfValue == 'int':
@@ -261,6 +268,9 @@ class VirtualMachine(object):
                     print(current[1])
                 else:
                     aux = self.getValueFromAddress(current[1])
+                    if aux == None:
+                        print('Error: Escribir necesita tener un valor para poder imprimirlo')
+                        exit()
                     if type(aux) is str:
                         print(aux[1])
                     else:
@@ -270,8 +280,8 @@ class VirtualMachine(object):
                 if self.verifyInputCompatibility(current[3], self.getTypeOfInput(aux)):
                     self.setAddressToValue(current[3], aux)
                 else:
-                    #TODO: end program on error
-                    print('Types are not compatible')
+                    print('Error: Los tipos no son compatibles')
+                    exit()
             elif(current[0] == 'VERIFY'):
                 if self.getValueFromAddress(current[1]) >= self.getValueFromAddress(current[3]):
                     print('Error: indice es mayor que el tama;o del arreglo')

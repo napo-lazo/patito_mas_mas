@@ -1,12 +1,16 @@
 programa test;
 var int: a, b;
+    char: c;
 
-funcion void test()
-var int: a;
+funcion int test()
+var float: b;
 {
+    b = 1.0;
+    regresa(4);
 
 }
 
 principal(){
-
+    a = 2;
+    escribe(a + 2 - test());
 }

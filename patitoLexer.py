@@ -1,4 +1,5 @@
 import ply.lex as lex
+from sys import exit
 
 # La clase ProxyLexer recibe la instancia del lexer original y una token de tipo EOF
 # La clase no aporta nada extra a la funcionalidad original del lexer, solo se encarga de agregar
@@ -145,8 +146,8 @@ def t_newline(t):
     t.lexer.lineno += t.value.count("\n")
 
 def t_error(t):
-    print('Illegal characters')
-    t.lexer.skip(1)
+    print(f'Caracters ilegales en la linea {lexer.lineno}')
+    exit()
 
 # se instancia un lexer
 originalLexer = lex.lex()
