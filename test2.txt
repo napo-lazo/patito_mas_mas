@@ -3,15 +3,15 @@ var int: a;
     float: b;
     char: c;
 
-funcion void test()
+funcion void test(int n1, float n2, char n3)
 var float: d;
 {
-    escribe("Los valores son: ", a, b, c, "final de resultados", "#########################");
+    a = n1;
+    b = n2;
+    c = n3;
 }
 
 principal(){
-    a = 1;
-    b = 2.0;
-    c = '3';
-    test();
+    test(1, 2.0, '3', 4);
+    escribe(a, b, c);
 }

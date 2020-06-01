@@ -144,12 +144,14 @@ class FunctionDirectory(object):
         #TODO: Throw error if parameters are missing
         if self.parameterCounter < len(self.variablesTable[self.functionCalled]['parameters']):
             if quadrupleManager.typeStack.pop() != self.variablesTable[self.functionCalled]['parameters'][self.parameterCounter]:
-                print(f'Error: El tipo del parametro {self.parameterCounter} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+                print(f'Error: El tipo del parametro {self.parameterCounter} en la funcion {self.functionCalled} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+                exit()
             else:
                 quadrupleManager.generateParameter(quadrupleManager.operandStack.pop(), self.parameterCounter)
                 self.parameterCounter += 1
         elif self.parameterCounter >= len(self.variablesTable[self.functionCalled]['parameters']):
-            print('Error: Parametros de mas')
+            print(f'Error: Parametros de mas en la funcion {self.functionCalled}')
+            exit()
     
     # Determina si el contador de parametros es igual al numero de parametros de la funcion 
     def areParametersFinished(self):
@@ -539,7 +541,8 @@ class QuadrupleManager(object):
             self.quadrupleCounter += 1
 
         else:
-            print('Error: faltan parametros')
+            print(f'Error: faltan parametros en la funcion {funcDir.functionCalled}')
+            exit()
     
     # Agrega el ENDFUNC a la lista de cuadruplos
     def generateEndFunc(self):
