@@ -1,12 +1,12 @@
 programa test;
-var float : A[2];
+var int: a, b;
+
+funcion void test()
+var int: a;
+{
+
+}
 
 principal(){
-
-    A[0] = 1.0;
-    A[1] = 3.113;
-
-    escribe(A[0]);
-    escribe(A[1]);
 
 }

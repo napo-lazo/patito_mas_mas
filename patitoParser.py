@@ -1,6 +1,5 @@
 import patitoLexer
 from parserClasses import FunctionDirectory
-from patitoLogger import logs
 from patitoLexer import tokens
 import ply.yacc as yacc
 from virutalMachine import VirtualMachine
@@ -197,7 +196,6 @@ class QuadrupleManager(object):
 
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
             if self.operationStack[-1] == '(':
-                logs.append('Se agrego un "(" al operationStack\n')
                 return 
 
             operation = self.operationStack.pop()
@@ -224,7 +222,6 @@ class QuadrupleManager(object):
                         self.quadruplesList.append((operation + 'Mat', right, -1, left))
                 else:
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
-                    logs.append(f'Se realizo {leftOperand} {operation} {rightOperand}\n')
             else:
                 if len(self.matDimStack):
                     rightMat = self.matDimStack.pop()
@@ -254,18 +251,14 @@ class QuadrupleManager(object):
                     # print('index: ', self.quadrupleCounter)
                     # print('Addres: ', resultAddress, ' ', leftOperand, ' ', operation, ' ', rightOperand)
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
-                    logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
                     self.operandStack.append(resultAddress)
-                    logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
                     self.typeStack.append(resultType)
-                    logs.append(f'Se agrego "{resultType}" al typeStack\n')
                     self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
     def applyUnary(self, operatorsList):
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
             if self.operationStack[-1] == '(':
-                logs.append('Se agrego un "(" al operationStack\n')
                 return 
 
             operation = self.operationStack.pop()
@@ -301,11 +294,8 @@ class QuadrupleManager(object):
             else:
                 resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                 self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(operand), -1, resultAddress))
-                # logs.append(f'Se realizo {leftOperand} {operation} {rightOperand} y se gurado el resultado en "{self.virutalDirectory.genericCounter}"\n')
                 self.operandStack.append(resultAddress)
-                # logs.append(f'Se agrego el valor temporal "{resultAddress}" al operandStack\n')
                 self.typeStack.append(resultType)
-                # logs.append(f'Se agrego "{resultType}" al typeStack\n')
             self.quadrupleCounter += 1
 
     # Agrega el parametro PARAM a la lista de cuadruplos
@@ -481,7 +471,6 @@ def p_clear_scope(p):
     '''
     temp = funcDir.currentScope
     funcDir.currentScope = None
-    logs.append(f'Se elimino {temp} como el scope actual\n')
     del(temp)
 
 # Regla de variables
@@ -496,7 +485,6 @@ def p_variables(p):
         # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales
         # temp = funcDir.currentScope
         # funcDir.currentScope = None
-        # logs.append(f'Se elimino "{temp}" como el scope actual\n')
         # del(temp)
         
     else:
@@ -509,9 +497,7 @@ def p_var_seen(p):
     '''
     if funcDir.currentScope is None:
         funcDir.createScope('global', 'void')
-        logs.append('Se creo la funcion global de retorno tipo void en el dirFunc\n')
         funcDir.currentScope = 'global'
-        logs.append('global se asigno como el scope actual\n')
 
 def p_variablesp(p):
     # this error raise doesn't stop the compilation
@@ -527,7 +513,6 @@ def p_tipo_seen(p):
     tipo_seen :
     '''
     funcDir.currentType = p[-1]
-    logs.append(f'Se asigno {p[-1]} como el tipo de variable actual\n')
 
 # regla intermedia para crear una variable del tipo actual en la tabla de variables del scope actual
 def p_variable_seen(p):
@@ -545,11 +530,10 @@ def p_variable_seen(p):
     # si no la hay se crea una de manera normal
     except:
         funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable(funcDir.currentScope, funcDir.currentType))
-        logs.append(f'Se agrego la variable "{p[-1]}" al scope de {funcDir.currentScope}\n')
 
     # de lo contrario se tira un error de variable duplicada
     else:
-        print(f'ERROR: Variable "{p[-1]}" already exists')
+        print(f'ERROR: Variable "{p[-1]}" ya existe en el scope {funcDir.currentScope}')
         exit()
 
     funcDir.currentId = p[-1]
@@ -561,7 +545,6 @@ def p_delete_type(p):
     '''
     temp = funcDir.currentType
     funcDir.currentType = None   
-    logs.append(f'Se elimino "{temp}" como el tipo actual\n')
     del(temp)
 
 def p_variablespp(p):
@@ -592,7 +575,6 @@ def p_variablesppp(p):
     if funcDir.isVariableArray():
         quadrupleManager.virutalDirectory.setSpaceForArray(funcDir.currentScope, funcDir.currentType, funcDir.getArrayDimensionsSize() - 1)
     funcDir.currentId = None
-    logs.append(f'Se elimino "{temp}" como la variable actual\n')
     del(temp)
     
 
@@ -623,7 +605,6 @@ def p_dimDeclare(p):
         funcDir.setVariableAsArray()
            
     funcDir.addArrayDimensionSize(p[2])
-    logs.append(f'Se le asigno a {funcDir.currentId} una dimension de tama;o {p[2]}\n')
 
 def p_tipo(p):
     '''
@@ -679,9 +660,7 @@ def p_create_func_scope(p):
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])
-        logs.append(f'Se creo la funcion {p[-1]} de retorno tipo {p[-2]} en el dirFunc\n')
         funcDir.currentScope = p[-1]
-        logs.append(f'{p[-1]} se asigno como el scope actual\n')
         funcDir.addFunctionStart(quadrupleManager)
     else:
         print(f'Error: {p[-1]} ya existe')
@@ -713,7 +692,6 @@ def p_save_param(p):
     save_param :
     '''
     funcDir.addParameterToList(p[-1], p[-2], quadrupleManager.virutalDirectory.generateAddressForVariable(p[-1], p[-2]))
-    logs.append(f'Se agrego el parametro "{p[-1]}" de tipo "{p[-2]}" al scope de func1\n')
 
 def p_parametrop(p):
     '''
@@ -774,10 +752,8 @@ def p_operand_seen(p):
     '''
     funcDir.currentId = p[-1]
     quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[-1]))
-    logs.append(f'Se agrego "{p[-1]}" al operandStack\n')
     try:
         quadrupleManager.typeStack.append(funcDir.getTypeOfVariable(p[-1]))
-        logs.append(f'Se agrego "{quadrupleManager.typeStack[-1]}" al typeStack\n')
     except:
         print(f'ERROR: la variable {p[-1]} no ha sido declarada')
         raise SyntaxError
@@ -1015,10 +991,8 @@ def p_operation_seen(p):
     '''
     if p[-1] == ')':
         quadrupleManager.operationStack.pop()
-        logs.append('Se termino un parentesis\n')
     else:
         quadrupleManager.operationStack.append(p[-1])
-        logs.append(f'Se agrego {p[-1]} al operantionStack\n')
 
 
 def p_matriz(p):
@@ -1067,7 +1041,6 @@ def p_cte(p):
         p[0] = (p[1], p[3])
 
         # quadrupleManager.operandStack.append(p[1])
-        # logs.append(f'Se agrego {p[1]} al operandStack')
         # try:
         #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
         # except:
@@ -1093,8 +1066,6 @@ def p_cte(p):
             quadrupleManager.typeStack.append('char')
         
         quadrupleManager.operandStack.append(funcDir.getVirtualAddressOfVariable(p[1]))
-        logs.append(f'Se agrego la constante "{p[1]}" al operandStack\n')
-        logs.append(f'Se agrego "{type(p[1])}" al typeStack\n')
 
         p[0] = p[1]
 
