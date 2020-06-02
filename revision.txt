@@ -29,18 +29,16 @@ funcion int FactorialRec(int n){
         regresa(n);
     }
     sino{
-        regresa(n + FactorialRec(n - 1));
+        regresa(n * FactorialRec(n - 1));
     }
 }
 
 funcion int FactorialIt(int n)
 var int: i, aux; {
-
     i = 1;
-    aux = 0;
-
+    aux = 1;
     mientras(i <= 5) haz{
-        aux = aux + i;
+        aux = aux * i;
         i = i + 1;
     }
     regresa(aux);
@@ -98,5 +96,5 @@ principal(){
     escribe(FactorialIt(5));
     escribe(FactorialRec(5));
     Sort();
-    Find("c");
+    Find('c');
 }
