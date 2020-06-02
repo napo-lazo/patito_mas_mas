@@ -32,7 +32,6 @@ class VirutalDirectory(object):
         self.pointersCounter = 31000
 
     # Regresa todos los contadores 
-    # help
     def exportCounters(self):
         return [
                 [self.globalIntsCounter - 1000, 
@@ -142,7 +141,8 @@ class VirutalDirectory(object):
 class QuadrupleManager(object):
     def __init__(self):
         self.virutalDirectory = VirutalDirectory()
-        #Falta ver que rollo con las matrices y operaciones unarias, por el momento solo operaciones binarias, revisar comparasiones entre enteros y flotantes
+        # cubo semantico con la estrucura:
+        # operador con operandos <tipo> y <tipo> resulta en <tipo>
         self.semanticCube = {'=':{('int', 'int'): 'int', ('float', 'float'): 'float', ('char', 'char'): 'char'},
                              '+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
                              '-':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
@@ -168,10 +168,15 @@ class QuadrupleManager(object):
         self.typeStack = []
         # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
         self.operandStack = []
+        # stack donde se guardan los valores de retornos
         self.returnValuesStack = []
+        # stack donde se guardan los tipos de valores de retorno
         self.returnTypeStack = []
+        # stack donde se guardan las dimensiones de las variables tipo arreglo
         self.dimStack = []
+        # stack donde se guardan las dimensiones de las variables tipo matriz
         self.matDimStack = []
+        # stack donde guarda el tipo de matriz
         self.matTypeStack = []
         # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
@@ -213,12 +218,12 @@ class QuadrupleManager(object):
                 if len(self.matDimStack):
                     rightMat = self.matDimStack.pop()
                     leftMat = self.matDimStack.pop()
-                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
-                        print('Operador derecho es una matriz')
-                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
-                        print('Operador izquierdo es una matriz')
+                    #if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
+                        # print('Operador derecho es una matriz')
+                    #if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
+                        # print('Operador izquierdo es una matriz')
                     if leftMat[2] == rightMat[2]:
-                        print('Matrices son compatibles')
+                        # print('Matrices son compatibles')
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
                         right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
                         self.quadruplesList.append((operation + 'Mat', right, -1, left))
@@ -229,10 +234,10 @@ class QuadrupleManager(object):
                 if len(self.matDimStack):
                     rightMat = self.matDimStack.pop()
                     leftMat = self.matDimStack.pop()
-                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
-                        print('Operador derecho es una matriz')
-                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
-                        print('Operador izquierdo es una matriz')
+                    #if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
+                        #print('Operador derecho es una matriz')
+                    #if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
+                        #print('Operador izquierdo es una matriz')
                     if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or operation == '*' and leftMat[2][1] == rightMat[2][0]:
                         print('Matrices son compatibles')
                         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
@@ -365,11 +370,6 @@ class QuadrupleManager(object):
         # print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
         self.quadrupleCounter += 1
-    
-    # Agrega un ENDPROG a la lista de cuadruplos
-    def generateEndProg(self):
-        if funcDir.areFunctionsFinished():
-            self.quadruplesList.append(('ENDPROG', -1, -1, -1))
 
     # Metodo publico que se encarga de generar un salto inicial
     #TODO: Refactorizar funcion
@@ -434,20 +434,20 @@ def p_start(p):
     '''
     start : programa
     '''
-    print(funcDir.eras)
-    print()
-    print(funcDir.variablesTable)
-    print()
-    print(funcDir.ctesTable)
-    print()
-    print(quadrupleManager.quadrupleCounter)
-    print(quadrupleManager.jumpStack)
-    print(quadrupleManager.operandStack)
-    print(quadrupleManager.typeStack)
-    print(quadrupleManager.quadruplesList)
-    print(quadrupleManager.dimStack)
+    # print(funcDir.eras)
+    # print()
+    # print(funcDir.variablesTable)
+    # print()
+    # print(funcDir.ctesTable)
+    # print()
+    # print(quadrupleManager.quadrupleCounter)
+    # print(quadrupleManager.jumpStack)
+    # print(quadrupleManager.operandStack)
+    # print(quadrupleManager.typeStack)
+    # print(quadrupleManager.quadruplesList)
+    # print(quadrupleManager.dimStack)
     myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList(), funcDir.eras)
-    print(myMachine.initialEra)
+    # print(myMachine.initialEra)
 
     myMachine.executeProgram()
     # print(myMachine.Globals)
@@ -851,7 +851,7 @@ def p_bracket_seen(p):
             quadrupleManager.typeStack.append('int')
             quadrupleManager.operationStack.append('*')
             quadrupleManager.applyOperation('*')
-            print(f'Primer valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+            # print(f'Primer valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
         else:
             if quadrupleManager.typeStack[-1] != 'int':
                 print('Error: solo se puede indexar un arreglo con valores enteros')
@@ -861,14 +861,14 @@ def p_bracket_seen(p):
                 #     funcDir.addConstant(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
                 quadrupleManager.operationStack.append('+')
                 quadrupleManager.applyOperation('+')
-                print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
+                # print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
 
             
             if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-2]):
                 funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
             print(funcDir.ctesTable)
             #TODO: revisar para bug AQUI
-            print('test')
+            #print('test')
             quadrupleManager.operationStack.append('+')
             quadrupleManager.applyOperation('+')
             pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
