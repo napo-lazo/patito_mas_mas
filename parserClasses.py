@@ -116,14 +116,14 @@ class FunctionDirectory(object):
     # dado un id de variable regresa su tipo de dato
     def getTypeOfVariable(self, variableName):
         if self.currentScope is None:
-            print(f'{variableName} del scope global') 
+            #print(f'{variableName} del scope global') 
             return self.variablesTable['global']['variables'][variableName]['type']
         else:
             try: 
-                print(f'Intento de {variableName} del scope {self.currentScope}')
+                #print(f'Intento de {variableName} del scope {self.currentScope}')
                 return self.variablesTable[self.currentScope]['variables'][variableName]['type']
             except:
-                print(f'{variableName} del scope global') 
+                #print(f'{variableName} del scope global') 
                 return self.variablesTable['global']['variables'][variableName]['type']
 
     # Marca la direccion en la que empieza una funcion
@@ -183,10 +183,6 @@ class FunctionDirectory(object):
     # Obtiene el tipo de variable de retorno de la funcion 
     def getReturnType(self, functionName):
         return self.variablesTable[functionName]['returnType']
-
-    # Borra el contenido de la tabla de variables
-    def releaseVars(self):
-        self.functionDirectory['varTable'].clear()
     
     # Calcula la cantidad de memoria que se necesita por las variables locales y temporales
     #TODO: count parameters and give parameters virutal addresses
