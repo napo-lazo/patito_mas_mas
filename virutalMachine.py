@@ -49,7 +49,7 @@ class VirtualMachine(object):
         self.Ctes = [x[0] for x in ctes] 
         self.Temps = [TempAux]
         self.Pointers = [None] * data[1][4][0]
-        print(ctes)
+        #print(ctes)
 
     # Esta funcion asigna los tamanos de memoria por cada tipo de variable que se va a necesitar al ejecutar una funcion
     # Se utiliza cada vez que se manda a llamar una funcion 
@@ -253,7 +253,7 @@ class VirtualMachine(object):
                 if current[0] == '!':
                     result = eval(f'not {operand}')
                 self.setAddressToValue(current[3], result)
-                print(self.Temps)
+                #print(self.Temps)
             elif(current[0] == '?'):
                 operand = self.convertToMatrix(current[1][0], current[1][1])
                 self.setMatrixValuesToAddresses(linalg.inv(array(operand)), current[3][0], current[3][1])
@@ -292,7 +292,7 @@ class VirtualMachine(object):
                 indexStack.append(i)
                 i = current[3] - 1
             elif(current[0] == 'ENDFUNC'):
-                print('Locals: ', self.Locals[-1])
+                #print('Locals: ', self.Locals[-1])
                 i = indexStack.pop()
                 self.Locals.pop()
                 self.Temps.pop()
@@ -320,4 +320,4 @@ class VirtualMachine(object):
                 parameterList.append(self.getValueFromAddress(current[1]))
             
             i += 1
-        print(self.Globals)
+        #print(self.Globals)
