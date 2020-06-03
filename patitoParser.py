@@ -146,7 +146,7 @@ def p_variablespppp(p):
     '''
     p[0] = p[1]
 
-
+# declaracion de arreglos
 def p_dimDeclare(p):
     '''
     dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
@@ -170,6 +170,7 @@ def p_tipo(p):
     '''
     p[0] = p[1]
 
+#declaracion de funciones
 def p_funcion(p):
     '''
     funcion : FUNCION funcionp
@@ -198,7 +199,7 @@ def p_create_func_scope(p):
     try:
         funcDir.scopeExists(p[-1])
     except:
-
+        # revisa si no existen variables con el nombre de la funcion
         try:
             funcDir.variableExists(p[-1])
         except:
@@ -249,6 +250,7 @@ def p_parametro(p):
     else: 
         p[0] = p[1]
 
+#guarda un parametro en la tabla de funciones para la funcion actual
 def p_save_param(p):
     '''
     save_param :
@@ -328,9 +330,12 @@ def p_dimId(p):
     '''
    
     if len(p) == 2 and funcDir.isVariableArray():
+        #revisa si se llama un arreglo sin indexacion
         if len(funcDir.getArrayDimensions(funcDir.currentId)) == 1:
             print(f'La variable "{funcDir.currentId}" necesita ser indexada')
             exit()
+        
+        # si no se guarda una variable tipo matriz en el stack de operandos
         quadrupleManager.matDimStack.append((funcDir.currentId, funcDir.getVirtualAddressOfVariable(funcDir.currentId), funcDir.getArrayDimensions(funcDir.currentId)))
     funcDir.currentId = None
 
@@ -338,6 +343,7 @@ def p_pop_array(p):
     '''
     pop_array :
     '''
+    #revisa si falto un indice para accesar el valor de una matriz
     if len(quadrupleManager.dimStack[-1][1]) != 0:
         print('Error: falto un indice para acceder al valor de la matriz')
         exit()
@@ -347,21 +353,25 @@ def p_is_array(p):
     '''
     is_array :  
     '''
+    # se guarda el valor original de la matriz en un stack aparte para poder tratar su indexacion como entera
     if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-1]):
         funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
     quadrupleManager.matTypeStack.append(quadrupleManager.typeStack[-1])
     quadrupleManager.typeStack[-1] = 'int'
 
+    # tira error si se intenta indexar una variable que no es un arreglo
     if not funcDir.isVariableArray():
         print(f'Error: variable "{funcDir.currentId}" no es un arreglo')
         exit()
 
+#indexacion de un arreglo
 def p_dim(p):
     '''
     dim : L_SQUARE_BRACKET bracket_seen expresion R_SQUARE_BRACKET bracket_seen
     '''
     p[0] = (p[1], p[2], p[3])
 
+#se crea y se guarda un cuadruplo con la direccion de un arreglo y sus dimensiones
 def p_create_dim(p):
     '''
     create_dim :
@@ -369,7 +379,7 @@ def p_create_dim(p):
     dim = funcDir.getArrayDimensions(funcDir.currentId)
     quadrupleManager.dimStack.append((funcDir.currentId, dim, len(dim)))
 
-# Genera todo los cuadruplos de arreglos
+# Genera todo los cuadruplos de arreglos desde la verificacion del indice hasta las operaciones para indexar
 def p_bracket_seen(p):
     '''
     bracket_seen :
@@ -599,6 +609,7 @@ def p_cte(p):
  
     elif not type(p[1]) is float and not type(p[1]) is int and not type(p[1]) is str:
         pass
+    # cuando recibe una constante
     else:
         if type(p[1]) is int:
             if not funcDir.constantExists(p[1]):
@@ -624,6 +635,7 @@ def p_llamadaFuncion(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5])
 
+    #verifica que la funcion no sea void
     if not funcDir.isVoid(funcDir.functionCalled):
         quadrupleManager.generateERA(funcDir)
         quadrupleManager.generateGoSub(funcDir.functionCalled, funcDir)
@@ -666,6 +678,7 @@ def p_funcionVacia(p):
     '''
     funcionVacia : ID set_func_scope L_PARENTHESIS llamadaFuncionp R_PARENTHESIS SEMICOLON
     '''
+    # verifica que la funcion es void
     p[0] = (p[1], p[3], p[4], p[5], p[6])
     if funcDir.isVoid(funcDir.functionCalled):
         quadrupleManager.generateERA(funcDir)
@@ -690,6 +703,7 @@ def p_set_func_scope(p):
 
 
 
+# manda a generar un cuadruplo de regresa
 def p_regresa(p):
     '''
     regresa : REGRESA L_PARENTHESIS expresion R_PARENTHESIS SEMICOLON
@@ -700,6 +714,7 @@ def p_regresa(p):
     quadrupleManager.generateReturn(funcDir.callFromReturn, funcDir)
     
 
+#reglas para la lectura de variables
 def p_lectura(p):
     '''
     lectura : LECTURA L_PARENTHESIS lecturap R_PARENTHESIS SEMICOLON
@@ -734,6 +749,7 @@ def p_lecturapp(p):
     else:
         p[0] = p[1]
 
+#reglas para la escritura de variables
 def p_escritura(p):
     '''
     escritura : ESCRIBE L_PARENTHESIS escriturap R_PARENTHESIS SEMICOLON
@@ -825,6 +841,7 @@ def p_cicloNoCondicional(p):
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9])
 
+# se encarga de agregar un cuadruplo que se va a encargar de revisar cuando el contador supera la variable deseada
 def p_add_gt(p):
     '''
     add_gt :
@@ -835,6 +852,7 @@ def p_add_gt(p):
     quadrupleManager.typeStack.append(funcDir.getTypeOfVariable(p[-10]))
     quadrupleManager.operationStack.append('>')
 
+# se encarga de sumar uno a la variable contador
 def p_add_one(p):
     '''
     add_one : 
