@@ -27,6 +27,6 @@ principal(){
     a[1][0] = 3;
     a[1][1] = 4;
 
-    escribe(test(1));
+    escribe(a$);
 
 }

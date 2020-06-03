@@ -544,6 +544,11 @@ class QuadrupleManager(object):
                 self.quadruplesList.append((operation, left, -1, result))
 
             else:
+
+                if operation in ['$', '?', '¡']:
+                    print(f'Error: se necesita tener una matriz para hacer esta operacion: {operation}')
+                    exit()
+
                 resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                 self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(operand), -1, resultAddress))
                 self.operandStack.append(resultAddress)
