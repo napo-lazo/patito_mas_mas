@@ -91,5 +91,5 @@ var char: C[6];
 }
 
 principal(){
-    escribe(FactorialRec(5));
+    escribe(FibonacciRec(9));
 }

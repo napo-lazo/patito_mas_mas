@@ -87,7 +87,10 @@ class FunctionDirectory(object):
             if self.currentScope == None:
                 return self.variablesTable['global']['variables'][self.currentId]['isArray']
             else:
-                return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+                try:
+                    return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+                except:
+                    return self.variablesTable['global']['variables'][self.currentId]['isArray']
         except:
             return False    
     # Ayuda a marcar una variable como arreglo y prepara el espacio para las dimensiones
@@ -104,7 +107,10 @@ class FunctionDirectory(object):
         if self.currentScope == None:
             return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
         else:
-            return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions'].copy()
+            try:
+                return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions'].copy()
+            except:
+                return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
 
     # Regresa los valores que se encuentran en la lista de dimensiones, para verificar
     def getArrayDimensionsSize(self):
@@ -116,14 +122,11 @@ class FunctionDirectory(object):
     # dado un id de variable regresa su tipo de dato
     def getTypeOfVariable(self, variableName):
         if self.currentScope is None:
-            print(f'{variableName} del scope global') 
             return self.variablesTable['global']['variables'][variableName]['type']
         else:
             try: 
-                print(f'Intento de {variableName} del scope {self.currentScope}')
                 return self.variablesTable[self.currentScope]['variables'][variableName]['type']
             except:
-                print(f'{variableName} del scope global') 
                 return self.variablesTable['global']['variables'][variableName]['type']
 
     # Marca la direccion en la que empieza una funcion
@@ -141,7 +144,6 @@ class FunctionDirectory(object):
 
     # Verifica si el parametro que se mando a la funcion hace match con la definicion de la funcion 
     def verifyParameter(self, quadrupleManager):
-        #TODO: Throw error if parameters are missing
         if self.parameterCounter < len(self.variablesTable[self.functionCalled]['parameters']):
             if quadrupleManager.typeStack.pop() != self.variablesTable[self.functionCalled]['parameters'][self.parameterCounter]:
                 print(f'Error: El tipo del parametro {self.parameterCounter} en la funcion {self.functionCalled} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
@@ -439,28 +441,43 @@ class QuadrupleManager(object):
             
             if operation in ['=']:
                 if len(self.matDimStack):
-                    rightMat = self.matDimStack.pop()
-                    leftMat = self.matDimStack.pop()
-                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
-                        print('Operador derecho es una matriz')
-                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
-                        print('Operador izquierdo es una matriz')
+                    try: 
+                        rightMat = self.matDimStack.pop()
+                        leftMat = self.matDimStack.pop()
+                    except:
+                        print('Se necesitan dos matrices para esta operacion "="')
+                        exit()
+                    if not (rightOperand == rightMat[0] or rightOperand == rightMat[1]):
+                        print('Operador derecho no es una matriz')
+                        exit()
+                    if not (leftOperand == leftMat[0] or leftOperand == leftMat[1]):
+                        print('Operador izquierdo no es una matriz')
+                        exit
                     if leftMat[2] == rightMat[2]:
                         print('Matrices son compatibles')
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
                         right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
                         self.quadruplesList.append((operation + 'Mat', right, -1, left))
+                    else:
+                        print('Error: matrices no son de tama;os compatibles')
+                        exit()
                 else:
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
             else:
                 if len(self.matDimStack):
-                    rightMat = self.matDimStack.pop()
-                    leftMat = self.matDimStack.pop()
-                    if rightOperand == rightMat[0] or rightOperand == rightMat[1]:
-                        print('Operador derecho es una matriz')
-                    if leftOperand == leftMat[0] or leftOperand == leftMat[1]:
-                        print('Operador izquierdo es una matriz')
-                    if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or operation == '*' and leftMat[2][1] == rightMat[2][0]:
+                    try :
+                        rightMat = self.matDimStack.pop()
+                        leftMat = self.matDimStack.pop()
+                    except:
+                        print('Se necesitan que estos operadores sean matrices')
+                        exit()
+                    if not (rightOperand == rightMat[0] or rightOperand == rightMat[1]):
+                        print('Operador derecho no es una matriz')
+                        exit()
+                    if not(leftOperand == leftMat[0] or leftOperand == leftMat[1]):
+                        print('Operador izquierdo no es una matriz')
+                        exit()
+                    if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or (operation == '*' and leftMat[2][1] == rightMat[2][0]):
                         print('Matrices son compatibles')
                         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
@@ -475,11 +492,15 @@ class QuadrupleManager(object):
                         self.operandStack.append(resultAddress)
                         self.typeStack.append(resultType)
                         self.quadruplesList.append((operation + 'Mat', left, right, result))
+                    elif not operation in ['+', '-', '*']:
+                        print('Error: esa no es una operacion valida para matrices')
+                        exit()
+                    else:
+                        print('Error: matrices no son de tama;os compatibles')
+                        exit()
 
                 else:
                     resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
-                    # print('index: ', self.quadrupleCounter)
-                    # print('Addres: ', resultAddress, ' ', leftOperand, ' ', operation, ' ', rightOperand)
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
                     self.operandStack.append(resultAddress)
                     self.typeStack.append(resultType)
@@ -535,7 +556,6 @@ class QuadrupleManager(object):
 
     # Agrega el GOSUB a la lista de cuadruplos
     def generateGoSub(self, funcName, funcDir):
-        #TODO: tirar error
         if funcDir.areParametersFinished():
             self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
             self.quadrupleCounter += 1
@@ -551,6 +571,9 @@ class QuadrupleManager(object):
 
     # Agrega un ESCRIBE a la lista de cuadruplos, puede recibir una string o un operando 
     def generatePrint(self, string):
+        if len(self.matDimStack) != 0:
+            print('Escribe no es compatible con matrices')
+            exit()
         if string:
             self.quadruplesList.append(('ESCRIBE', string , -1, -1))
         else:
@@ -560,11 +583,14 @@ class QuadrupleManager(object):
 
     # Agrega un LEE a la lista de cuadruplos
     def generateInput(self, variable, funcDir):
-        self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(variable)))
+
+        self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(self.operandStack.pop())))
+        self.typeStack.pop()
         self.quadrupleCounter += 1
 
     # Agrega un RETURN a la lista de cuadruplos 
     def generateReturn(self, returnCounter, funcDir):
+
         if returnCounter > 0:
             returnAddress = funcDir.getVirtualAddressOfVariable(funcDir.currentScope)
             self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, returnAddress))
@@ -575,6 +601,11 @@ class QuadrupleManager(object):
     # Agrega un RETURN a la lista de cuadruplos
     # Ademas almacena en el stack de operandos el valor de retorno de la funcion y agrega su dir como cuadruplo 
     def generateReturnAssignment(self, funcDir):
+
+        if len(self.matDimStack) != 0:
+            print('Regresa no es compatible con matrices')
+            exit()
+
         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', funcDir.getReturnType(funcDir.functionCalled))
         self.quadruplesList.append(('=', funcDir.getVirtualAddressOfVariable(funcDir.functionCalled), -1, resultAddress))
         self.operandStack.append(resultAddress)
@@ -604,7 +635,7 @@ class QuadrupleManager(object):
                 self.quadrupleCounter += 1
             else:
                 print(f'el valor de {valueToTest} no es un booleano')
-                raise SyntaxError
+                exit()
         elif jumpType == 'jump_cycle':
             self.jumpStack.append(self.quadrupleCounter)
         elif jumpType == 'jump_else':

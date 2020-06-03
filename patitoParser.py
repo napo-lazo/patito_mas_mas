@@ -352,14 +352,22 @@ def p_dimId(p):
     '''
    
     if len(p) == 2 and funcDir.isVariableArray():
+        if len(funcDir.getArrayDimensions(funcDir.currentId)) == 1:
+            print(f'La variable "{funcDir.currentId}" necesita ser indexada')
+            exit()
         #TODO: add validation for matrix
+        print(funcDir.currentId)
         quadrupleManager.matDimStack.append((funcDir.currentId, funcDir.getVirtualAddressOfVariable(funcDir.currentId), funcDir.getArrayDimensions(funcDir.currentId)))
+        print(quadrupleManager.matDimStack)
     funcDir.currentId = None
 
 def p_pop_array(p):
     '''
     pop_array :
     '''
+    if len(quadrupleManager.dimStack[-1][1]) != 0:
+        print('Error: falto un indice para acceder al valor de la matriz')
+        exit()
     quadrupleManager.dimStack.pop()
 
 def p_is_array(p):
@@ -419,13 +427,10 @@ def p_bracket_seen(p):
                 print('Error: solo se puede indexar un arreglo con valores enteros')
                 exit()
             if len(quadrupleManager.dimStack[-1][1]) != quadrupleManager.dimStack[-1][2]:
-                # if not funcDir.constantExists(quadrupleManager.operandStack[-2]):
-                #     funcDir.addConstant(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
                 quadrupleManager.operationStack.append('+')
                 quadrupleManager.applyOperation(['+'], funcDir)
                 print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
 
-            
             if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-2]):
                 funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
             print(funcDir.ctesTable)
@@ -439,6 +444,7 @@ def p_bracket_seen(p):
             quadrupleManager.operandStack.pop()
             quadrupleManager.operandStack.append(pointerAddress)
             quadrupleManager.typeStack[-1] = quadrupleManager.matTypeStack.pop()
+            quadrupleManager.dimStack[-1][1].pop()
 
         quadrupleManager.operationStack.pop()
     else:
@@ -481,7 +487,7 @@ def p_apply_operation_expresion(p):
     try:
         quadrupleManager.applyOperation(['||', '&&'], funcDir)
     except:
-        raise SyntaxError
+        exit()
 
 def p_relacional(p):
     '''
@@ -512,7 +518,7 @@ def p_apply_operation_relational(p):
     try:
         quadrupleManager.applyOperation(['>', '>=', '<', '<=', '==', '!='], funcDir)
     except:
-        raise SyntaxError
+        exit()
 
 def p_aritmetica(p):
     '''
@@ -539,7 +545,7 @@ def p_apply_operation_aritmetica(p):
     try:
         quadrupleManager.applyOperation(['+', '-'], funcDir)
     except:
-        raise SyntaxError
+        exit()
 
 def p_factor(p):
     '''
@@ -566,7 +572,7 @@ def p_apply_operation_factor(p):
     try:
         quadrupleManager.applyOperation(['*', '/'], funcDir)
     except:
-        raise SyntaxError
+        exit()
 
 # regla intermedia que se encarga de agregar el operador a la pila de operadores
 def p_operation_seen(p):
@@ -744,7 +750,7 @@ def p_lectura(p):
 
 def p_lecturap(p):
     '''
-    lecturap : ID dimId gen_input lecturapp
+    lecturap : ID operand_seen dimId gen_input lecturapp
     '''
     p[0] = (p[1], p[2], p[3])
 
@@ -752,8 +758,14 @@ def p_gen_input(p):
     '''
     gen_input :
     '''
-    #TODO: add array compatibility
+    funcDir.currentId = p[-2]
+    if funcDir.isVariableArray():
+        print('Lee no es compatible con matrices')
+        exit()
+
+    print(quadrupleManager.operationStack)
     quadrupleManager.generateInput(p[-2], funcDir)
+    funcDir.currentId = None
 
 def p_lecturapp(p):
     '''

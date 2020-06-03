@@ -104,6 +104,10 @@ class VirtualMachine(object):
 
 
     def verifyInputCompatibility(self, address, typeOfValue):
+
+        if address >= self.pointers:
+            address = self.Pointers[address - self.pointers]
+
         if address >= 1000 and address < 3500 and typeOfValue == 'int':
             return True
         elif address >= 3500 and address < 6000 and typeOfValue == 'float':

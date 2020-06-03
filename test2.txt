@@ -1,17 +1,24 @@
 programa test;
-var int: a;
+var int: a[2][2], d[2][2], e[3];
     float: b;
     char: c;
 
-funcion void test(int n1, float n2, char n3)
-var float: d;
+funcion void test(int n1)
+var int: temp;
 {
-    a = n1;
-    b = n2;
-    c = n3;
+    temp = 1;
+    mientras (temp <= n1) haz{
+        si (temp > 5) haz {
+            c = 'y';
+        }
+        sino {
+            c = 'n';
+        }
+        temp = temp + 1;
+        escribe(c);
+    }
 }
 
 principal(){
-    test(1, 2.0, '3', 4);
-    escribe(a, b, c);
+
 }
