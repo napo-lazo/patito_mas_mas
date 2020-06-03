@@ -1,4 +1,3 @@
-# variablesTable guarda las variables globales y de las funciones
 class FunctionDirectory(object):
 
     def __init__(self):
@@ -29,6 +28,7 @@ class FunctionDirectory(object):
                 except:
                     return variable
 
+    # Regresa la direccion en donde empieza la matriz 
     def getMatrixStart(self, variable):
         try:
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
@@ -94,7 +94,7 @@ class FunctionDirectory(object):
     def addArrayDimensionSize(self, size):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'].append(size)
 
-    # ?? Regresa las dimensiones de una variable arreglo como parametro
+    # Regresa las dimensiones de una variable arreglo como parametro
     def getArrayDimensions(self, variable):
         if self.currentScope == None:
             return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
@@ -210,16 +210,19 @@ class FunctionDirectory(object):
                 addresses.append(x[1]['virtualAddress'])
         return  sorted(list(zip(ctes, addresses)), key=lambda tup: tup[1])
 
+    # Agrega una direccion virtual a una constante
     def addCteVirtualAddress(self, constant, virtualAddress, typeOfConstant):
         self.ctesTable['virtualAddresses'][constant] = {'virtualAddress': virtualAddress, 'type' : typeOfConstant}
     
+    # Verifica si existe una constante
     def constantVirtualAddressExists(self, constant):
         try:
             self.ctesTable['virtualAddresses'][constant]
             return True
         except:
             return False
-
+            
+    # Regresa la direccion de una constante 
     def getCteVirtualAddress(self, constant):
         return self.ctesTable['virtualAddresses'][constant]['virtualAddress']
 
