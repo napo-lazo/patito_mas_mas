@@ -8,6 +8,7 @@ class VirtualMachine(object):
         self.initialEra = data[1]
         self.eras = eras
         
+        #direcciones iniciales de los contadores por tipo y scope
         self.globalInts = 1000
         self.globalFloats = 3500
         self.globalChars = 6000
@@ -22,6 +23,7 @@ class VirtualMachine(object):
         self.tempBools = 28500
         self.pointers = 31000
 
+        #los tama;os de cada tipo de valor en cada scope
         self.GlobalIntsSize = data[1][0][0]
         self.GlobalFloatsSize = data[1][0][1]
         self.GlobalCharsSize = data[1][0][2]
@@ -43,6 +45,7 @@ class VirtualMachine(object):
         LocalAux = [None] * LocalSize
         TempAux = [None] * TempSize
 
+        # la estructura de datos que guarda los valores
         self.Globals = [None] * GlobalSize
         self.Locals = [LocalAux]
         self.Ctes = [x[0] for x in ctes] 

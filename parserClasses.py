@@ -16,6 +16,7 @@ class FunctionDirectory(object):
         self.tempVariableCount = 0
 
     # Esta funcion recibe como parametro una variable que se encuentre en la tabla de variables y regresa su direccion virtual
+    # si ya es una direccion virtual se regresa a si misma
     def getVirtualAddressOfVariable(self, variable):
         try:
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
@@ -28,6 +29,7 @@ class FunctionDirectory(object):
                 except:
                     return variable
 
+    #lo mismo que la funcion anterior pero para la direccion inicial de una matriz
     # Regresa la direccion en donde empieza la matriz 
     def getMatrixStart(self, variable):
         try:
@@ -210,19 +212,19 @@ class FunctionDirectory(object):
                 addresses.append(x[1]['virtualAddress'])
         return  sorted(list(zip(ctes, addresses)), key=lambda tup: tup[1])
 
-    # Agrega una direccion virtual a una constante
+    #crea una direccion virutal en las constantes
     def addCteVirtualAddress(self, constant, virtualAddress, typeOfConstant):
         self.ctesTable['virtualAddresses'][constant] = {'virtualAddress': virtualAddress, 'type' : typeOfConstant}
     
-    # Verifica si existe una constante
+    #revisa si existe una direccion de memoria en la tabla de constantes
     def constantVirtualAddressExists(self, constant):
         try:
             self.ctesTable['virtualAddresses'][constant]
             return True
         except:
             return False
-            
-    # Regresa la direccion de una constante 
+
+    #consigue una direccion de memoria de la tabla de constantes
     def getCteVirtualAddress(self, constant):
         return self.ctesTable['virtualAddresses'][constant]['virtualAddress']
 
@@ -388,10 +390,15 @@ class QuadrupleManager(object):
         self.typeStack = []
         # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
         self.operandStack = []
+        #stack para guardar los valores de retorno
         self.returnValuesStack = []
+        #stack para guardar los tipos de los valores de retorno
         self.returnTypeStack = []
+        #guarda las dimensiones de matrices
         self.dimStack = []
+        #guarda las dimensiones de matrices que se usan en operaciones
         self.matDimStack = []
+        #guarda el tipo de matrices que se usan en operaciones
         self.matTypeStack = []
         # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
         self.quadruplesList = []
@@ -411,7 +418,6 @@ class QuadrupleManager(object):
             except:
                 return None
     
-    # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
     # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
     def applyOperation(self, operatorsList, funcDir):
 
@@ -429,6 +435,7 @@ class QuadrupleManager(object):
                 exit()
             
             if operation in ['=']:
+                #aplica la operacion con matrices
                 if len(self.matDimStack):
                     try: 
                         rightMat = self.matDimStack.pop()
@@ -452,6 +459,7 @@ class QuadrupleManager(object):
                 else:
                     self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
             else:
+                #aplica la operacion con matrices
                 if len(self.matDimStack):
                     try :
                         rightMat = self.matDimStack.pop()
@@ -494,6 +502,7 @@ class QuadrupleManager(object):
                     self.virutalDirectory.genericCounter += 1
             self.quadrupleCounter += 1
             
+    #aplica los operadores unarios
     def applyUnary(self, operatorsList, funcDir):
         if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
             if self.operationStack[-1] == '(':
@@ -507,6 +516,7 @@ class QuadrupleManager(object):
                 print(f'El tipo de {operand} no es compatible con esta operacion: {operation}')
                 exit()
             
+            #aplica la operacion con matrices
             if len(self.matDimStack) != 0:
                 mat = self.matDimStack.pop()
                 if not(operand == mat[0] or operand == mat[1]):
