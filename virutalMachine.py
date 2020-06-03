@@ -49,6 +49,8 @@ class VirtualMachine(object):
         self.Temps = [TempAux]
         self.Pointers = [None] * data[1][4][0]
 
+    # Esta funcion asigna los tamanos de memoria por cada tipo de variable que se va a necesitar al ejecutar una funcion
+    # Se utiliza cada vez que se manda a llamar una funcion 
     def allocateMemoryForFunction(self, era, parameterList):
         intParams = 0
         floatParams = 0
@@ -85,6 +87,7 @@ class VirtualMachine(object):
         self.Locals.append(LocalAux)
         self.Temps.append((TempAux))
 
+    # Identifica el valor que se recibe como parametro como float int o char a partir de su estructura con el uso de regex
     def getTypeOfInput(self, value):
         if value[0] == "'" and value[-1] == "'":
             if len(value) == 3:
@@ -101,6 +104,7 @@ class VirtualMachine(object):
             exit()
 
 
+    # Esta funcion verifica que la variable que se encuentra en la direccion address este en el rango correcto para su tipo de variable
     def verifyInputCompatibility(self, address, typeOfValue):
 
         if address >= self.pointers:
@@ -120,6 +124,7 @@ class VirtualMachine(object):
             return True
         return False
 
+    # Esta funcion obtiene el valor que esta guardado en la direccion address
     def getValueFromAddress(self, address):
         if address >= self.pointers:
             return self.getValueFromAddress(self.Pointers[int(address - self.pointers)])
@@ -162,7 +167,8 @@ class VirtualMachine(object):
                 aux = address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]
             return self.Temps[-1][int(aux)]
 
-
+    # Esta funcion guarda un valor que resulta de una operacion de cuadruplo en una direccion temporal
+    # Se utiliza cuando se crean temporales para usarlos en cuadruplos 
     def setAddressToValue(self, address, value):
         if address >= self.pointers:
             self.setAddressToValue(self.Pointers[int(address - self.pointers)], value)
@@ -188,6 +194,8 @@ class VirtualMachine(object):
             else:
                 self.Temps[-1][int(address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1])] = value
 
+    # Con esta funcion creamos una matriz para aplicarle operaciones con los valores que estan guardados en la lista de variables
+    # Se utiliza antes de ejecutar una operacion de matrices
     def convertToMatrix(self, initialAddress, dimensions):
 
         matrixValues = []
@@ -202,12 +210,16 @@ class VirtualMachine(object):
 
         return matrixValues
 
+    # Con esta funcion guardamos los valores de una matriz en la lista de variables
+    # Se utiliza despues de ejecutar una operacion de matrices 
     def setMatrixValuesToAddresses(self, matrixValues, initialAddress, dimensions):
         
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
                 self.setAddressToValue(initialAddress + i * dimensions[1] + j, matrixValues[i][j])
 
+    # Esta es la funcion principal que lee la lista de cuadruplos y a partir de que que encuentra en el primer elemento
+    # del cuadruplo ejecuta la funcion 
     def executeProgram(self):
         parameterList = []
         indexStack = []
