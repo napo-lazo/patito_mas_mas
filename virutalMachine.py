@@ -37,7 +37,6 @@ class VirtualMachine(object):
 
         GlobalSize = self.GlobalIntsSize + self.GlobalFloatsSize + self.GlobalCharsSize
         LocalSize = self.LocalIntsSize[-1] + self.LocalFloatsSize[-1] + self.LocalCharsSize[-1]
-        CteSize = self.CteIntsSize + self.CteFloatsSize + self.CteCharsSize
         TempSize = self.TempIntsSize[-1] + self.TempFloatsSize[-1] + self.TempBoolsSize[-1]
 
 
@@ -49,7 +48,6 @@ class VirtualMachine(object):
         self.Ctes = [x[0] for x in ctes] 
         self.Temps = [TempAux]
         self.Pointers = [None] * data[1][4][0]
-        print(ctes)
 
     # Esta funcion asigna los tamanos de memoria por cada tipo de variable que se va a necesitar al ejecutar una funcion
     # Se utiliza cada vez que se manda a llamar una funcion 
@@ -91,16 +89,27 @@ class VirtualMachine(object):
 
     # Identifica el valor que se recibe como parametro como float int o char a partir de su estructura con el uso de regex
     def getTypeOfInput(self, value):
-        if search(r'\-?[0-9]+\.[0-9]+', value):
+        if value[0] == "'" and value[-1] == "'":
+            if len(value) == 3:
+                return 'char'
+            else:
+                print('Error: valor de tipo char tiene que ir entre comillas sencillas y ser un solo caracter')
+                exit()
+        elif search(r'\-?[0-9]+\.[0-9]+', value):
             return 'float'
         elif search(r'\-?[0-9]+', value):
             return 'int'
         else:
-            #TODO: add size verification
-            return 'char'
+            print('Error: valor de tipo char tiene que ir entre comillas sencillas y ser un solo caracter')
+            exit()
+
 
     # Esta funcion verifica que la variable que se encuentra en la direccion address este en el rango correcto para su tipo de variable
     def verifyInputCompatibility(self, address, typeOfValue):
+
+        if address >= self.pointers:
+            address = self.Pointers[address - self.pointers]
+
         if address >= 1000 and address < 3500 and typeOfValue == 'int':
             return True
         elif address >= 3500 and address < 6000 and typeOfValue == 'float':
@@ -118,8 +127,7 @@ class VirtualMachine(object):
     # Esta funcion obtiene el valor que esta guardado en la direccion address
     def getValueFromAddress(self, address):
         if address >= self.pointers:
-            # print(f'dir: {self.Pointers[address - self.pointers]}')
-            return self.getValueFromAddress(self.Pointers[address - self.pointers])
+            return self.getValueFromAddress(self.Pointers[int(address - self.pointers)])
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
                 aux = address - self.globalInts
@@ -139,7 +147,7 @@ class VirtualMachine(object):
             else:
                 aux = address - self.localChars
                 aux += self.LocalIntsSize[-1] + self.LocalFloatsSize[-1]
-            return self.Locals[-1][aux]
+            return self.Locals[-1][int(aux)]
         elif address < self.tempInts and address >= self.cteInts:
             if address < self.cteFloats:
                 aux = address - self.cteInts
@@ -149,7 +157,7 @@ class VirtualMachine(object):
             else:
                 aux = address - self.cteChars
                 aux += self.CteIntsSize + self.CteFloatsSize
-            return self.Ctes[aux]
+            return self.Ctes[int(aux)]
         elif address < 31000 and address >= self.tempInts:
             if address < self.tempFloats:
                 aux = address - self.tempInts
@@ -157,34 +165,34 @@ class VirtualMachine(object):
                 aux = address - self.tempFloats + self.TempIntsSize[-1]
             else:
                 aux = address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]
-            return self.Temps[-1][aux]
+            return self.Temps[-1][int(aux)]
 
     # Esta funcion guarda un valor que resulta de una operacion de cuadruplo en una direccion temporal
     # Se utiliza cuando se crean temporales para usarlos en cuadruplos 
     def setAddressToValue(self, address, value):
         if address >= self.pointers:
-            self.setAddressToValue(self.Pointers[address - self.pointers], value)
+            self.setAddressToValue(self.Pointers[int(address - self.pointers)], value)
         if address < self.localInts and address >= self.globalInts:
             if address < self.globalFloats:
-                self.Globals[address - self.globalInts] = value
+                self.Globals[int(address - self.globalInts)] = value
             elif address < self.globalChars:
-                self.Globals[int(address - self.globalFloats + self.GlobalIntsSize) ] = value
+                self.Globals[int(address - self.globalFloats + self.GlobalIntsSize)] = value
             else:
                 self.Globals[int(address - self.globalChars + self.GlobalIntsSize + self.GlobalFloatsSize)] = value
         elif address < self.cteInts and address >= self.localInts:
             if address < self.localFloats:
-                self.Locals[-1][address - self.localInts] = value
+                self.Locals[-1][int(address - self.localInts)] = value
             elif address < self.localChars:
-                self.Locals[-1][address - self.localFloats + self.LocalIntsSize[-1]] = value
+                self.Locals[-1][int(address - self.localFloats + self.LocalIntsSize[-1])] = value
             else:
-                self.Locals[-1][address - self.localChars + self.LocalIntsSize[-1] + self.LocalFloatsSize[-1]] = value
+                self.Locals[-1][int(address - self.localChars + self.LocalIntsSize[-1] + self.LocalFloatsSize[-1])] = value
         elif address < 31000 and address >= self.tempInts:
             if address < self.tempFloats:
-                self.Temps[-1][address - self.tempInts] = value
+                self.Temps[-1][int(address - self.tempInts)] = value
             elif address < self.tempBools:
-                self.Temps[-1][address - self.tempFloats + self.TempIntsSize[-1]] = value
+                self.Temps[-1][int(address - self.tempFloats + self.TempIntsSize[-1])] = value
             else:
-                self.Temps[-1][address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1]] = value
+                self.Temps[-1][int(address - self.tempBools + self.TempIntsSize[-1] + self.TempFloatsSize[-1])] = value
 
     # Con esta funcion creamos una matriz para aplicarle operaciones con los valores que estan guardados en la lista de variables
     # Se utiliza antes de ejecutar una operacion de matrices
@@ -219,7 +227,7 @@ class VirtualMachine(object):
         n = len(self.quadruplesList)
         while i < n:
             current = self.quadruplesList[i]
-            # print(current[0])
+
             if(current[0] == 'GOTO'):
                 i = int(current[3]) - 1
             elif(current[0] == '='):
@@ -253,7 +261,6 @@ class VirtualMachine(object):
                 if current[0] == '!':
                     result = eval(f'not {operand}')
                 self.setAddressToValue(current[3], result)
-                print(self.Temps)
             elif(current[0] == '?'):
                 operand = self.convertToMatrix(current[1][0], current[1][1])
                 self.setMatrixValuesToAddresses(linalg.inv(array(operand)), current[3][0], current[3][1])
@@ -268,11 +275,13 @@ class VirtualMachine(object):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
             elif(current[0] == 'ESCRIBE'):
-                # print(self.Pointers)
                 if type(current[1]) is str:
                     print(current[1])
                 else:
                     aux = self.getValueFromAddress(current[1])
+                    if aux == None:
+                        print('Error: Escribir necesita tener un valor para poder imprimirlo')
+                        exit()
                     if type(aux) is str:
                         print(aux[1])
                     else:
@@ -282,8 +291,8 @@ class VirtualMachine(object):
                 if self.verifyInputCompatibility(current[3], self.getTypeOfInput(aux)):
                     self.setAddressToValue(current[3], aux)
                 else:
-                    #TODO: end program on error
-                    print('Types are not compatible')
+                    print('Error: Los tipos no son compatibles')
+                    exit()
             elif(current[0] == 'VERIFY'):
                 if self.getValueFromAddress(current[1]) >= self.getValueFromAddress(current[3]):
                     print('Error: indice es mayor que el tama;o del arreglo')
@@ -292,7 +301,6 @@ class VirtualMachine(object):
                 indexStack.append(i)
                 i = current[3] - 1
             elif(current[0] == 'ENDFUNC'):
-                print('Locals: ', self.Locals[-1])
                 i = indexStack.pop()
                 self.Locals.pop()
                 self.Temps.pop()
@@ -320,4 +328,3 @@ class VirtualMachine(object):
                 parameterList.append(self.getValueFromAddress(current[1]))
             
             i += 1
-        print(self.Globals)

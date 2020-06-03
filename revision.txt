@@ -2,26 +2,22 @@ programa revision;
 
 funcion int FibonacciRec(int n){
     si (n <= 1) haz {
-        escribe(n);
         regresa(n);
     }
 
     regresa(FibonacciRec(n - 1) + FibonacciRec(n - 2));
 }
 
-funcion void FibonacciIt(int n)
+funcion int FibonacciIt(int n)
 var int: antepenultimoValor, penultimoValor, valor, i; {
     penultimoValor = 0;
     valor = 1;
-    escribe(penultimoValor);
-    escribe(valor);
-    n = n - 1;
     desde i = 1 hasta n hacer{
         antepenultimoValor = penultimoValor;
         penultimoValor = valor;
         valor = antepenultimoValor + penultimoValor;
-        escribe(valor);
     }
+    regresa(valor);
 }
 
 funcion int FactorialRec(int n){
@@ -37,6 +33,11 @@ funcion int FactorialIt(int n)
 var int: i, aux; {
     i = 1;
     aux = 1;
+    
+    si(n == 0) haz {
+        regresa(0);
+    }
+
     mientras(i <= 5) haz{
         aux = aux * i;
         i = i + 1;
@@ -91,10 +92,10 @@ var char: C[6];
 }
 
 principal(){
-    FibonacciIt(9);
-    FibonacciRec(9);
-    escribe(FactorialIt(5));
-    escribe(FactorialRec(5));
+    escribe(FibonacciIt(9));
+    escribe(FibonacciRec(9));
+    escribe(FactorialIt(0));
+    escribe(FactorialRec(0));
     Sort();
     Find('c');
 }

@@ -19,30 +19,23 @@ class FunctionDirectory(object):
     # Esta funcion recibe como parametro una variable que se encuentre en la tabla de variables y regresa su direccion virtual
     def getVirtualAddressOfVariable(self, variable):
         try:
-            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
         except:
             try:
-                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
                 try: 
-                    # print(self.ctesTable[variable]['virtualAddress'])
                     return self.ctesTable[variable]['virtualAddress']
                 except:
-                    # TODO: add proper logic
                     return variable
 
     def getMatrixStart(self, variable):
         try:
-            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
         except:
             try:
-                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
-                # TODO: add proper logic
                 return variable
 
     # Esta funcion determina si una constante existe en la tabla de constantes
@@ -62,7 +55,6 @@ class FunctionDirectory(object):
         return self.variablesTable[scopeName]
 
     # Crea en la tabla de variables el scope
-    # . 
     def createScope(self, scopeName, returnType):
         if scopeName == 'global':
             self.variablesTable[scopeName] = {'returnType': returnType, 'variables' : {}}
@@ -87,7 +79,10 @@ class FunctionDirectory(object):
             if self.currentScope == None:
                 return self.variablesTable['global']['variables'][self.currentId]['isArray']
             else:
-                return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+                try:
+                    return self.variablesTable[self.currentScope]['variables'][self.currentId]['isArray']
+                except:
+                    return self.variablesTable['global']['variables'][self.currentId]['isArray']
         except:
             return False    
     # Ayuda a marcar una variable como arreglo y prepara el espacio para las dimensiones
@@ -104,7 +99,10 @@ class FunctionDirectory(object):
         if self.currentScope == None:
             return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
         else:
-            return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions'].copy()
+            try:
+                return self.variablesTable[self.currentScope]['variables'][variable]['arrayDimensions'].copy()
+            except:
+                return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()
 
     # Regresa los valores que se encuentran en la lista de dimensiones, para verificar
     def getArrayDimensionsSize(self):
@@ -116,14 +114,11 @@ class FunctionDirectory(object):
     # dado un id de variable regresa su tipo de dato
     def getTypeOfVariable(self, variableName):
         if self.currentScope is None:
-            print(f'{variableName} del scope global') 
             return self.variablesTable['global']['variables'][variableName]['type']
         else:
             try: 
-                print(f'Intento de {variableName} del scope {self.currentScope}')
                 return self.variablesTable[self.currentScope]['variables'][variableName]['type']
             except:
-                print(f'{variableName} del scope global') 
                 return self.variablesTable['global']['variables'][variableName]['type']
 
     # Marca la direccion en la que empieza una funcion
@@ -141,15 +136,16 @@ class FunctionDirectory(object):
 
     # Verifica si el parametro que se mando a la funcion hace match con la definicion de la funcion 
     def verifyParameter(self, quadrupleManager):
-        #TODO: Throw error if parameters are missing
         if self.parameterCounter < len(self.variablesTable[self.functionCalled]['parameters']):
             if quadrupleManager.typeStack.pop() != self.variablesTable[self.functionCalled]['parameters'][self.parameterCounter]:
-                print(f'Error: El tipo del parametro {self.parameterCounter} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+                print(f'Error: El tipo del parametro {self.parameterCounter} en la funcion {self.functionCalled} no es del tipo {self.variablesTable[self.functionCalled]["parameters"][self.parameterCounter]}')
+                exit()
             else:
                 quadrupleManager.generateParameter(quadrupleManager.operandStack.pop(), self.parameterCounter)
                 self.parameterCounter += 1
         elif self.parameterCounter >= len(self.variablesTable[self.functionCalled]['parameters']):
-            print('Error: Parametros de mas')
+            print(f'Error: Parametros de mas en la funcion {self.functionCalled}')
+            exit()
     
     # Determina si el contador de parametros es igual al numero de parametros de la funcion 
     def areParametersFinished(self):
@@ -158,12 +154,13 @@ class FunctionDirectory(object):
     # Verifica si la funcion regresa el mismo tipo de valor que su definicion, en caso de void, marca error si regresa un valor
     def verifyFunctionCompatibility(self, quadrupleManager):
 
-        if self.callFromReturn == 0 and self.variablesTable[self.currentScope]['returnType'] != 'void':
-            print('Falta que la funcion regrese un valor')
-            return
+        if self.currentScope == None:
+            print('Error: No se puede usar el estatuto de regresa afuera de una funcion')
+            exit()
 
         if self.callFromReturn >= 1 and self.variablesTable[self.currentScope]['returnType'] == 'void':
-            print('Funcion void no puede regresar valores')
+            print('Error: Funcion void no puede regresar valores')
+            exit()
             return
 
         if self.callFromReturn >= 1:
@@ -171,25 +168,19 @@ class FunctionDirectory(object):
         else:
             return
 
-        if aux == self.variablesTable[self.currentScope]['returnType']:
-            print('tipos son validos')
-        else:
-            print('Los tipos no son validos')
+        if aux != self.variablesTable[self.currentScope]['returnType']:
+            print(f'Error: La funcion {self.currentScope} no regresa un valor de tipo {self.getReturnType(self.currentScope)}')
+            exit()
     
     # Determina si la funcion es tipo void
-    def isVoid(self):
-        return self.variablesTable[self.functionCalled]['returnType'] == 'void'
+    def isVoid(self, scope):
+        return self.variablesTable[scope]['returnType'] == 'void'
 
     # Obtiene el tipo de variable de retorno de la funcion 
     def getReturnType(self, functionName):
         return self.variablesTable[functionName]['returnType']
-
-    # Borra el contenido de la tabla de variables
-    def releaseVars(self):
-        self.functionDirectory['varTable'].clear()
     
     # Calcula la cantidad de memoria que se necesita por las variables locales y temporales
-    #TODO: count parameters and give parameters virutal addresses
     def createEra(self, virtualDirectory):
         # [ints, floats, chars]
         locales = [virtualDirectory.localIntsCounter - virtualDirectory.CharRanges[0], virtualDirectory.localFloatsCounter - virtualDirectory.IntRanges[1], virtualDirectory.localCharsCounter - virtualDirectory.FloatRanges[1]]
@@ -233,19 +224,441 @@ class FunctionDirectory(object):
         return self.ctesTable['virtualAddresses'][constant]['virtualAddress']
 
 
-# class FunctionDirectory(object):
-#     # funcDir = {'nameid': {'returnType': <datatype> , 'parameters': [],'varTable': <table>}, 'size': <ERA>}
-#     def __init__(self):
-#         self.functionDirectory={}
-#         self.parameterCount = 0
-#         self.localVariableCount = 0
-#         self.tempVariableCount = 0
-#         # Con este defines en donde empieza la funcion
-#         self.quadrupleCounter = 0
+class VirutalDirectory(object):
+    def __init__(self):
 
-#     def createFunction(self, functionName, returnType, parameters):
-#         self.functionDirectory[functionName] = {'returnType': returnType, 'parameters': [], 'varTable': VariablesTable()}
+        self.genericCounter = 50000
+        # Lista de las direcciones de memoria de cada tipo de variable 
+        # [globales, locales, constantes, temporales]
+        self.IntRanges = [3500, 11000, 18500, 26000]
+        self.FloatRanges = [6000, 13500, 21000, 28500]
+        self.CharRanges = [8500, 16000, 23500, -1]
+        self.BoolRanges = [-1, -1, -1, 31000]
+        # Contadores que apuntan a cada inicio de los rangos 
+        self.globalIntsCounter = 1000
+        self.globalFloatsCounter = 3500
+        self.globalCharsCounter = 6000
+        self.localIntsCounter = 8500
+        self.localFloatsCounter = 11000
+        self.localCharsCounter = 13500
+        self.cteIntsCounter = 16000
+        self.cteFloatsCounter = 18500
+        self.cteCharsCounter = 21000
+        self.tempIntsCounter = 23500
+        self.tempFloatsCounter = 26000
+        self.tempBoolsCounter = 28500
+        self.pointersCounter = 31000
+
+    # Regresa todos los contadores 
+    def exportCounters(self):
+        return [
+                [self.globalIntsCounter - 1000, 
+                self.globalFloatsCounter - self.IntRanges[0], 
+                self.globalCharsCounter - self.FloatRanges[0]],
+                [self.localIntsCounter - self.CharRanges[0], 
+                self.localFloatsCounter - self.IntRanges[1], 
+                self.localCharsCounter - self.FloatRanges[1]],
+                [self.cteIntsCounter - self.CharRanges[1],
+                self.cteFloatsCounter - self.IntRanges[2],
+                self.cteCharsCounter - self.FloatRanges[2]],
+                [self.tempIntsCounter - self.CharRanges[2], 
+                self.tempFloatsCounter - self.IntRanges[3], 
+                self.tempBoolsCounter - self.FloatRanges[3]],
+                [self.pointersCounter - 31000]
+               ]
+
+    # Cuando se llama a crear una variable se utiliza esta funcion para crear su direccion virtual
+    # Recibe su scope y tipo, mueve el contador de variables en el scope y regresa su direccion virtual 
+    def generateAddressForVariable(self, scope, type):
+        if scope == 'global':
+            if type == 'int':
+                self.globalIntsCounter += 1
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.globalFloatsCounter += 1
+                return self.globalFloatsCounter - 1
+            else:
+                self.globalCharsCounter += 1
+                return self.globalCharsCounter - 1
+        elif scope == 'cte':
+            if type == 'int':
+                self.cteIntsCounter += 1
+                return self.cteIntsCounter - 1
+            elif type == 'float':
+                self.cteFloatsCounter += 1
+                return self.cteFloatsCounter - 1
+            else:
+                self.cteCharsCounter += 1
+                return self.cteCharsCounter - 1
+        elif scope == 'temp':
+            if type == 'int':
+                self.tempIntsCounter += 1
+                return self.tempIntsCounter - 1
+            elif type == 'float':
+                self.tempFloatsCounter += 1
+                return self.tempFloatsCounter - 1
+            else:
+                self.tempBoolsCounter += 1
+                return self.tempBoolsCounter - 1
+        elif scope == 'pointer':
+            self.pointersCounter += 1
+            return self.pointersCounter - 1
+        else:
+            if type == 'int':
+                self.localIntsCounter += 1
+                return self.localIntsCounter - 1
+            elif type == 'float':
+                self.localFloatsCounter += 1
+                return self.localFloatsCounter - 1
+            else:
+                self.localCharsCounter += 1
+                return self.localCharsCounter - 1
     
-#     def releaseVars(self):
-#         # release vartable, end function, update temporal var count
-#         self.functionDirectory['varTable'].clear()
+    # Genera el espacio necesario para un arreglo 
+    # Regresa el contador en la direccion del ultimo elemento del arreglo
+    def setSpaceForArray(self, scope, type, size):
+        if scope == 'global':
+            if type == 'int':
+                self.globalIntsCounter += size
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.globalFloatsCounter += size
+                return self.globalFloatsCounter - 1
+            else:
+                self.globalCharsCounter += size
+                return self.globalCharsCounter - 1
+        elif scope == 'temp':
+            if type == 'int':
+                self.tempIntsCounter += size
+                return self.globalIntsCounter - 1
+            elif type == 'float':
+                self.tempFloatsCounter += size
+                return self.globalFloatsCounter - 1
+        else:
+            if type == 'int':
+                self.localIntsCounter += size
+                return self.localIntsCounter - 1
+            elif type == 'float':
+                self.localFloatsCounter += size
+                return self.localFloatsCounter - 1
+            else:
+                self.localCharsCounter += size
+                return self.localCharsCounter - 1
+
+    # Regresa los contadores locales a su posicion original
+    # Se llama cada vez que se acabe una funcion 
+    def resetLocalAddresses(self):
+        self.localIntsCounter = 8500
+        self.localFloatsCounter = 11000
+        self.localCharsCounter = 13500
+        self.tempIntsCounter = 23500
+        self.tempFloatsCounter = 26000
+        self.tempBoolsCounter = 28500
+
+
+class QuadrupleManager(object):
+    def __init__(self):
+        self.virutalDirectory = VirutalDirectory()
+        #Falta ver que rollo con las matrices y operaciones unarias, por el momento solo operaciones binarias, revisar comparasiones entre enteros y flotantes
+        self.semanticCube = {'=':{('int', 'int'): 'int', ('float', 'float'): 'float', ('char', 'char'): 'char'},
+                             '+':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
+                             '-':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
+                             '*':{('int', 'int'): 'int', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'}, 
+                             '/':{('int', 'int'): 'float', ('int', 'float'): 'float', ('float', 'int'): 'float', ('float', 'float'): 'float'},
+                             '>':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
+                             '>=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
+                             '<':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
+                             '<=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool'},
+                             '==':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'bool', ('bool', 'bool'): 'bool'},
+                             '!=':{('int', 'int'): 'bool', ('int', 'float'): 'bool', ('float', 'int'): 'bool', ('float', 'float'): 'bool', ('char', 'char'): 'char', ('bool', 'bool'): 'bool'},
+                             '&&':{('bool', 'bool'): 'bool'},
+                             '||':{('bool', 'bool'): 'bool'},
+                             '!':{('bool'):'bool'},
+                             '?':{('int'): 'float', ('float'): 'float'},
+                             '$':{('int'): 'int', ('float'): 'float'},
+                             '¡':{('int'): 'int', ('float'): 'float'}}
+        # stack para guardar y manejar la logica de los saltos
+        self.jumpStack = []
+        # stack donde se guardan las operaciones que se quieren realizar (+, *, -, escribe, &&, etc)
+        self.operationStack = []
+        # stack donde se guardan los tipos de los operandos para realizar validanciones de tipo
+        self.typeStack = []
+        # stack donde se guardan los operandos que se van a usar para los saltos y las operaciones
+        self.operandStack = []
+        self.returnValuesStack = []
+        self.returnTypeStack = []
+        self.dimStack = []
+        self.matDimStack = []
+        self.matTypeStack = []
+        # stack que guarda los quadruplos generados que despues se pasaran a la maquina virtual
+        self.quadruplesList = []
+        # un contador para llevar el total de los quadruplos generados, funciona como el tama;o de un arreglo 
+        self.quadrupleCounter = 0
+
+    # metodo privado que se encarga de ver si dos tipos son compatibles con una operacion, si lo son se regresa el tipo resultante de lo contrario se regresa un None
+    def __verifyTypeCompatibility(self, operation):
+        if operation in ['!', '?', '¡', '$']:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop())]
+            except:
+                return None
+        else:
+            try:
+                return self.semanticCube[operation][(self.typeStack.pop(), self.typeStack.pop())]
+            except:
+                return None
+    
+    # Cuando se llame esta funcion se debe de llamar adentro de un try/except con un 'raise SyntaxError' dentro del except para poder propagar el error al parser
+    # metodo publico que se encarga de aplicar la operacion que esta hasta arriba del stack, se le tiene que pasar una lista con los posibles operadores para que se respete la precedencia
+    def applyOperation(self, operatorsList, funcDir):
+
+        if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
+            if self.operationStack[-1] == '(':
+                return 
+
+            operation = self.operationStack.pop()
+            rightOperand = self.operandStack.pop()
+            leftOperand = self.operandStack.pop()
+            
+            resultType = self.__verifyTypeCompatibility(operation)
+            if not resultType:
+                print(f'Los tipos de {leftOperand} y {rightOperand} no son compatibles con esta operacion: {operation}')
+                exit()
+            
+            if operation in ['=']:
+                if len(self.matDimStack):
+                    try: 
+                        rightMat = self.matDimStack.pop()
+                        leftMat = self.matDimStack.pop()
+                    except:
+                        print('Se necesitan dos matrices para esta operacion "="')
+                        exit()
+                    if not (rightOperand == rightMat[0] or rightOperand == rightMat[1]):
+                        print('Operador derecho no es una matriz')
+                        exit()
+                    if not (leftOperand == leftMat[0] or leftOperand == leftMat[1]):
+                        print('Operador izquierdo no es una matriz')
+                        exit
+                    if leftMat[2] == rightMat[2]:
+                        left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
+                        right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
+                        self.quadruplesList.append((operation + 'Mat', right, -1, left))
+                    else:
+                        print('Error: matrices no son de tama;os compatibles')
+                        exit()
+                else:
+                    self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(rightOperand), -1, funcDir.getVirtualAddressOfVariable(leftOperand)))
+            else:
+                if len(self.matDimStack):
+                    try :
+                        rightMat = self.matDimStack.pop()
+                        leftMat = self.matDimStack.pop()
+                    except:
+                        print('Se necesitan que estos operadores sean matrices')
+                        exit()
+                    if not (rightOperand == rightMat[0] or rightOperand == rightMat[1]):
+                        print('Operador derecho no es una matriz')
+                        exit()
+                    if not(leftOperand == leftMat[0] or leftOperand == leftMat[1]):
+                        print('Operador izquierdo no es una matriz')
+                        exit()
+                    if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or (operation == '*' and leftMat[2][1] == rightMat[2][0]):
+                        resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                        left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
+                        right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
+                        if operation == '*':
+                            result = (resultAddress, [leftMat[2][0], rightMat[2][1]])
+                            self.matDimStack.append((resultAddress, resultAddress, [leftMat[2][0], rightMat[2][1]]))
+                        else:
+                            result = (resultAddress, leftMat[2])
+                            self.matDimStack.append((resultAddress, resultAddress, leftMat[2]))
+                        self.virutalDirectory.setSpaceForArray('temp', resultType, leftMat[2][0] * leftMat[2][1] - 1)
+                        self.operandStack.append(resultAddress)
+                        self.typeStack.append(resultType)
+                        self.quadruplesList.append((operation + 'Mat', left, right, result))
+                    elif not operation in ['+', '-', '*']:
+                        print('Error: esa no es una operacion valida para matrices')
+                        exit()
+                    else:
+                        print('Error: matrices no son de tama;os compatibles')
+                        exit()
+
+                else:
+                    resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                    self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(leftOperand), funcDir.getVirtualAddressOfVariable(rightOperand), resultAddress))
+                    self.operandStack.append(resultAddress)
+                    self.typeStack.append(resultType)
+                    self.virutalDirectory.genericCounter += 1
+            self.quadrupleCounter += 1
+            
+    def applyUnary(self, operatorsList, funcDir):
+        if len(self.operationStack) != 0 and self.operationStack[-1] in operatorsList:
+            if self.operationStack[-1] == '(':
+                return 
+
+            operation = self.operationStack.pop()
+            operand = self.operandStack.pop()
+            
+            resultType = self.__verifyTypeCompatibility(operation)
+            if not resultType:
+                print(f'El tipo de {operand} no es compatible con esta operacion: {operation}')
+                exit()
+            
+            if len(self.matDimStack) != 0:
+                mat = self.matDimStack.pop()
+                if not(operand == mat[0] or operand == mat[1]):
+                    print('Operando no es una matriz')
+                    exit()
+                
+                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                left = (funcDir.getMatrixStart(operand), mat[2])
+                if operation == '$':
+                    if mat[2][0] != mat[2][1]:
+                        print("Error: se necesita una matriz cuadrada para calcular la determinante")
+                        exit()
+                    result = resultAddress
+                else:
+                    if operation == '¡':
+                        result = (resultAddress, [mat[2][1], mat[2][0]])
+                        self.matDimStack.append((resultAddress, resultAddress, [mat[2][1], mat[2][0]]))
+                    else:
+                        result = (resultAddress, mat[2])
+                        self.matDimStack.append((resultAddress, resultAddress, mat[2]))
+                    self.virutalDirectory.setSpaceForArray('temp', resultType, mat[2][0] * mat[2][1] - 1)
+                
+                self.operandStack.append(resultAddress)
+                self.typeStack.append(resultType)
+                self.quadruplesList.append((operation, left, -1, result))
+
+            else:
+                resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
+                self.quadruplesList.append((operation, funcDir.getVirtualAddressOfVariable(operand), -1, resultAddress))
+                self.operandStack.append(resultAddress)
+                self.typeStack.append(resultType)
+            self.quadrupleCounter += 1
+
+    # Agrega el parametro PARAM a la lista de cuadruplos
+    def generateParameter(self, parameter, parameterPosition):
+        self.quadruplesList.append(('PARAMETER', parameter, -1, parameterPosition))
+        self.quadrupleCounter += 1
+
+    # Agrega el GOSUB a la lista de cuadruplos
+    def generateGoSub(self, funcName, funcDir):
+        if funcDir.areParametersFinished():
+            self.quadruplesList.append(('GOSUB', funcName, -1, funcDir.getFunctionStart()))
+            self.quadrupleCounter += 1
+
+        else:
+            print(f'Error: faltan parametros en la funcion {funcDir.functionCalled}')
+            exit()
+    
+    # Agrega el ENDFUNC a la lista de cuadruplos
+    def generateEndFunc(self):
+        self.quadruplesList.append(('ENDFUNC', -1, -1, -1))
+        self.quadrupleCounter += 1
+
+    # Agrega un ESCRIBE a la lista de cuadruplos, puede recibir una string o un operando 
+    def generatePrint(self, string):
+        if len(self.matDimStack) != 0:
+            print('Escribe no es compatible con matrices')
+            exit()
+        if string:
+            self.quadruplesList.append(('ESCRIBE', string , -1, -1))
+        else:
+            self.quadruplesList.append(('ESCRIBE', self.operandStack.pop(), -1, -1))
+            self.typeStack.pop()
+        self.quadrupleCounter += 1
+
+    # Agrega un LEE a la lista de cuadruplos
+    def generateInput(self, variable, funcDir):
+
+        self.quadruplesList.append(('LEE', -1, -1, funcDir.getVirtualAddressOfVariable(self.operandStack.pop())))
+        self.typeStack.pop()
+        self.quadrupleCounter += 1
+
+    # Agrega un RETURN a la lista de cuadruplos 
+    def generateReturn(self, returnCounter, funcDir):
+
+        if returnCounter > 0:
+            returnAddress = funcDir.getVirtualAddressOfVariable(funcDir.currentScope)
+            self.quadruplesList.append(('RETURN', self.operandStack.pop(), -1, returnAddress))
+            self.returnValuesStack.append(returnAddress)
+            self.returnTypeStack.append(self.typeStack.pop())
+            self.quadrupleCounter += 1
+    
+    # Agrega un RETURN a la lista de cuadruplos
+    # Ademas almacena en el stack de operandos el valor de retorno de la funcion y agrega su dir como cuadruplo 
+    def generateReturnAssignment(self, funcDir):
+
+        if len(self.matDimStack) != 0:
+            print('Regresa no es compatible con matrices')
+            exit()
+
+        resultAddress = self.virutalDirectory.generateAddressForVariable('temp', funcDir.getReturnType(funcDir.functionCalled))
+        self.quadruplesList.append(('=', funcDir.getVirtualAddressOfVariable(funcDir.functionCalled), -1, resultAddress))
+        self.operandStack.append(resultAddress)
+        self.typeStack.append(funcDir.getReturnType(funcDir.functionCalled))
+        self.quadrupleCounter += 1
+
+    # Agrega un ERA  a la lista de cuadruplos
+    def generateERA(self, funcDir):
+        self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
+        self.quadrupleCounter += 1
+    
+    # Agrega un ENDPROG a la lista de cuadruplos
+    def generateEndProg(self, funcDir):
+        if funcDir.areFunctionsFinished():
+            self.quadruplesList.append(('ENDPROG', -1, -1, -1))
+
+    # Metodo publico que se encarga de generar un salto inicial
+    def generateJump(self, jumpType):
+        if jumpType == 'false':
+            self.jumpStack.append(self.quadrupleCounter)
+            valueToTest = self.operandStack.pop()
+            #TODO: consider adding to semantic cube
+            if self.typeStack.pop() == 'bool':
+                self.quadruplesList.append(('GOTOF', valueToTest, -1, '-'))
+                self.quadrupleCounter += 1
+            else:
+                print(f'el valor de {valueToTest} no es un booleano')
+                exit()
+        elif jumpType == 'jump_cycle':
+            self.jumpStack.append(self.quadrupleCounter)
+        elif jumpType == 'jump_else':
+            aux = self.jumpStack.pop()
+            self.jumpStack.append(self.quadrupleCounter)
+            self.jumpStack.append(aux)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter +=1
+            self.updateJump('normal')
+        elif jumpType == 'jump':
+            self.jumpStack.append(self.quadrupleCounter)
+            self.quadruplesList.append(('GOTO', -1, -1, '-'))
+            self.quadrupleCounter += 1
+
+    
+    # Metodo publico que se encarga de actualizar un salto para llenar la ubicacion a la que saltara
+    def updateJump(self, jumpType):
+        if jumpType == 'normal':
+            i = self.jumpStack.pop()
+            jumpToUpdate = self.quadruplesList[i]
+            self.quadruplesList[i] = (jumpToUpdate[0], jumpToUpdate[1], jumpToUpdate[2], self.quadrupleCounter)
+        elif jumpType == 'cycle':
+            aux = self.jumpStack.pop()
+            self.quadruplesList.append(('GOTO', -1, -1, self.jumpStack.pop()))
+            self.jumpStack.append(aux)
+            self.quadrupleCounter += 1
+            self.updateJump('normal')
+
+    def exportData(self):
+        return [self.quadruplesList, self.virutalDirectory.exportCounters()]
+
+    # metodo publico para limpiar los stacks y reiniciar los contadores
+    def clearData(self):
+        self.virutalDirectory.genericCounter = 1000
+        self.jumpStack.clear()
+        self.operandStack.clear()
+        self.typeStack.clear()
+        self.operandStack.clear()
+        self.quadruplesList.clear()
+        self.quadrupleCounter = 0

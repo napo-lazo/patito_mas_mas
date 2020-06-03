@@ -1,12 +1,32 @@
 programa test;
-var float : A[2];
+var int: a[2][2], d[2][2], e[3];
+    float: b;
+    char: c;
+
+funcion int test(int n1)
+var int: temp;
+{
+    temp = 1;
+    mientras (temp <= n1) haz{
+        si (temp > 5) haz {
+            c = 'y';
+        }
+        sino {
+            c = 'n';
+        }
+        temp = temp + 1;
+        escribe(c);
+    }
+    regresa(1);
+}
 
 principal(){
 
-    A[0] = 1.0;
-    A[1] = 3.113;
+    a[0][0] = 1;
+    a[0][1] = 2;
+    a[1][0] = 3;
+    a[1][1] = 4;
 
-    escribe(A[0]);
-    escribe(A[1]);
+    escribe(test(1));
 
 }
