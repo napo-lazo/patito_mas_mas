@@ -14,26 +14,10 @@ def p_start(p):
     '''
     start : programa
     '''
-    print(funcDir.eras)
-    print()
-    print(funcDir.variablesTable)
-    print()
-    print(funcDir.ctesTable)
-    print()
-    print(quadrupleManager.quadrupleCounter)
-    print(quadrupleManager.jumpStack)
-    print(quadrupleManager.operandStack)
-    print(quadrupleManager.typeStack)
-    print(quadrupleManager.quadruplesList)
-    print(quadrupleManager.dimStack)
+    #inicializa una maquina virtual con los valores obtenidos del compilador
     myMachine = VirtualMachine(quadrupleManager.exportData(), funcDir.turnCtesIntoList(), funcDir.eras)
-    print(myMachine.initialEra)
 
     myMachine.executeProgram()
-    # print(myMachine.Globals)
-    # print(myMachine.Locals)
-    # print(myMachine.Ctes)
-    # print(myMachine.Temps)
 
 
     #limpia toda la informacion para poder volver a compilar sin problemas
@@ -72,11 +56,6 @@ def p_variables(p):
     if len(p) != 2: 
         p[0] = (p[1], p[3])
         
-        # borra el scope actual porque aqui ya se termina el procesamiento de las variables globales
-        # temp = funcDir.currentScope
-        # funcDir.currentScope = None
-        # del(temp)
-        
     else:
         p[0] = p[1]
 
@@ -90,7 +69,6 @@ def p_var_seen(p):
         funcDir.currentScope = 'global'
 
 def p_variablesp(p):
-    # this error raise doesn't stop the compilation
     '''
     varp : tipo tipo_seen COLON ID variable_seen varppp varpp delete_type SEMICOLON varpppp
     '''
@@ -155,7 +133,6 @@ def p_variablesppp(p):
 
     # despues de declarar las dimensiones y actualizar el contador de memoria virtual se elimina el id actual
     temp = funcDir.currentId
-    # print(p[1], ' - p1')
     if funcDir.isVariableArray():
         quadrupleManager.virutalDirectory.setSpaceForArray(funcDir.currentScope, funcDir.currentType, funcDir.getArrayDimensionsSize() - 1)
     funcDir.currentId = None
@@ -174,14 +151,9 @@ def p_dimDeclare(p):
     '''
     dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
     '''
-    # '''
-    # dimDeclare : L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET
-    #            | L_SQUARE_BRACKET CTE_INT R_SQUARE_BRACKET error error  
-    # '''
-    # revisa que el tama;o de las dimensiones sea mayor o igual a 1 de lo contrario tira un error
     if(p[2] <= 0):
         print('ERROR: Array size cant be less than 1')
-        raise SyntaxError
+        exit()
     else:
         p[0] = (p[1], p[2], p[3])
     
@@ -209,13 +181,10 @@ def p_funcion(p):
         p[0] = p[1]
 
 def p_funcionp(p):
-    # poner una regla de error aqui permite que el codigo termine de compilar y marca el error
     '''
     funcionp : tipoRetorno ID create_func_scope L_PARENTHESIS parametro R_PARENTHESIS var bloque end_func funcion
     '''
     p[0] = (p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8])
-    #functionDirectory[p[2]] = {'returnType':p[1], 'varTable':{}}
-    #functionDirectory[p[2]].localVariableCount = p[5].length()
 
 
 # Agrega una funcion al directorio de funciones
@@ -229,8 +198,16 @@ def p_create_func_scope(p):
     try:
         funcDir.scopeExists(p[-1])
     except:
+
+        try:
+            funcDir.variableExists(p[-1])
+        except:
+            pass
+        else:
+            print(f'Ya existe una variable que se llama {p[-1]}')
+            exit()
+
         if p[-2] != 'void':
-            #TODO: verificar que el usuario no declare variables con el nombre de alguna funcion
             funcDir.currentType = p[-2]
             try:
                 funcDir.scopeExists('global')
@@ -239,7 +216,6 @@ def p_create_func_scope(p):
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
             else:
                 funcDir.createVariable(p[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('global', p[-2]))
-                # print(f'scope: {funcDir.currentScope}')
             funcDir.currentType = None
         
         funcDir.createScope(p[-1], p[-2])
@@ -355,10 +331,7 @@ def p_dimId(p):
         if len(funcDir.getArrayDimensions(funcDir.currentId)) == 1:
             print(f'La variable "{funcDir.currentId}" necesita ser indexada')
             exit()
-        #TODO: add validation for matrix
-        print(funcDir.currentId)
         quadrupleManager.matDimStack.append((funcDir.currentId, funcDir.getVirtualAddressOfVariable(funcDir.currentId), funcDir.getArrayDimensions(funcDir.currentId)))
-        print(quadrupleManager.matDimStack)
     funcDir.currentId = None
 
 def p_pop_array(p):
@@ -376,10 +349,9 @@ def p_is_array(p):
     '''
     if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-1]):
         funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
-    # quadrupleManager.operandStack.append(quadrupleManager.operandStack[-1])
     quadrupleManager.matTypeStack.append(quadrupleManager.typeStack[-1])
     quadrupleManager.typeStack[-1] = 'int'
-    # quadrupleManager.typeStack.append('int')
+
     if not funcDir.isVariableArray():
         print(f'Error: variable "{funcDir.currentId}" no es un arreglo')
         exit()
@@ -404,7 +376,7 @@ def p_bracket_seen(p):
     '''
     if p[-1] == ']':
         dim = quadrupleManager.dimStack[-1][1][0]
-        #TODO: convert to constant
+
         if not funcDir.constantExists(dim):
             funcDir.addConstant(dim, quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
         
@@ -421,7 +393,6 @@ def p_bracket_seen(p):
             quadrupleManager.typeStack.append('int')
             quadrupleManager.operationStack.append('*')
             quadrupleManager.applyOperation(['*'], funcDir)
-            print(f'Primer valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
         else:
             if quadrupleManager.typeStack[-1] != 'int':
                 print('Error: solo se puede indexar un arreglo con valores enteros')
@@ -429,13 +400,10 @@ def p_bracket_seen(p):
             if len(quadrupleManager.dimStack[-1][1]) != quadrupleManager.dimStack[-1][2]:
                 quadrupleManager.operationStack.append('+')
                 quadrupleManager.applyOperation(['+'], funcDir)
-                print(f'Segundo valor de matriz indexing: {quadrupleManager.quadruplesList[-1]}')
 
             if not funcDir.constantVirtualAddressExists(quadrupleManager.operandStack[-2]):
                 funcDir.addCteVirtualAddress(quadrupleManager.operandStack[-2], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
-            print(funcDir.ctesTable)
-            #TODO: revisar para bug AQUI
-            print('test')
+
             quadrupleManager.operationStack.append('+')
             quadrupleManager.applyOperation(['+'], funcDir)
             pointerAddress = quadrupleManager.virutalDirectory.generateAddressForVariable('pointer', 'int')
@@ -626,22 +594,12 @@ def p_cte(p):
         p[0] = (p[1], p[3], p[4])
 
     # Para cuando se recibe una variable
-    # TODO: Falta para cuando el valor viene de un arreglo/matriz y despues convertirlo y ver si se puede reusar en regla gramatical
     elif len(p) == 4:
         p[0] = (p[1], p[3])
-
-        # quadrupleManager.operandStack.append(p[1])
-        # try:
-        #     quadrupleManager.typeStack.append(variablesTable.getTypeOfVariable(p[1]))
-        # except:
-        #     print(f'ERROR: la variable {p[1]} no ha sido declarada')
-        #     raise SyntaxError
-
-    #TODO: por el momento solo esta pensado para ctes y no funciones 
+ 
     elif not type(p[1]) is float and not type(p[1]) is int and not type(p[1]) is str:
         pass
     else:
-        #TODO: add verification of char constants
         if type(p[1]) is int:
             if not funcDir.constantExists(p[1]):
                 funcDir.addConstant(p[1], quadrupleManager.virutalDirectory.generateAddressForVariable('cte', 'int') ,'int')
@@ -763,7 +721,6 @@ def p_gen_input(p):
         print('Lee no es compatible con matrices')
         exit()
 
-    print(quadrupleManager.operationStack)
     quadrupleManager.generateInput(p[-2], funcDir)
     funcDir.currentId = None
 

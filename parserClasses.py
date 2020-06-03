@@ -19,30 +19,23 @@ class FunctionDirectory(object):
     # Esta funcion recibe como parametro una variable que se encuentre en la tabla de variables y regresa su direccion virtual
     def getVirtualAddressOfVariable(self, variable):
         try:
-            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
         except:
             try:
-                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
                 try: 
-                    # print(self.ctesTable[variable]['virtualAddress'])
                     return self.ctesTable[variable]['virtualAddress']
                 except:
-                    # TODO: add proper logic
                     return variable
 
     def getMatrixStart(self, variable):
         try:
-            # print(self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress'])
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
         except:
             try:
-                # print(self.variablesTable['global']['variables'][variable]['virtualAddress'])
                 return self.variablesTable['global']['variables'][variable]['virtualAddress']
             except:
-                # TODO: add proper logic
                 return variable
 
     # Esta funcion determina si una constante existe en la tabla de constantes
@@ -62,7 +55,6 @@ class FunctionDirectory(object):
         return self.variablesTable[scopeName]
 
     # Crea en la tabla de variables el scope
-    # . 
     def createScope(self, scopeName, returnType):
         if scopeName == 'global':
             self.variablesTable[scopeName] = {'returnType': returnType, 'variables' : {}}
@@ -187,13 +179,8 @@ class FunctionDirectory(object):
     # Obtiene el tipo de variable de retorno de la funcion 
     def getReturnType(self, functionName):
         return self.variablesTable[functionName]['returnType']
-
-    # Borra el contenido de la tabla de variables
-    def releaseVars(self):
-        self.functionDirectory['varTable'].clear()
     
     # Calcula la cantidad de memoria que se necesita por las variables locales y temporales
-    #TODO: count parameters and give parameters virutal addresses
     def createEra(self, virtualDirectory):
         # [ints, floats, chars]
         locales = [virtualDirectory.localIntsCounter - virtualDirectory.CharRanges[0], virtualDirectory.localFloatsCounter - virtualDirectory.IntRanges[1], virtualDirectory.localCharsCounter - virtualDirectory.FloatRanges[1]]
@@ -263,7 +250,6 @@ class VirutalDirectory(object):
         self.pointersCounter = 31000
 
     # Regresa todos los contadores 
-    # help
     def exportCounters(self):
         return [
                 [self.globalIntsCounter - 1000, 
@@ -454,7 +440,6 @@ class QuadrupleManager(object):
                         print('Operador izquierdo no es una matriz')
                         exit
                     if leftMat[2] == rightMat[2]:
-                        print('Matrices son compatibles')
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
                         right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
                         self.quadruplesList.append((operation + 'Mat', right, -1, left))
@@ -478,7 +463,6 @@ class QuadrupleManager(object):
                         print('Operador izquierdo no es una matriz')
                         exit()
                     if (operation in ['+', '-'] and leftMat[2] == rightMat[2]) or (operation == '*' and leftMat[2][1] == rightMat[2][0]):
-                        print('Matrices son compatibles')
                         resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                         left = (funcDir.getMatrixStart(leftOperand), leftMat[2])
                         right = (funcDir.getMatrixStart(rightOperand), rightMat[2])
@@ -522,12 +506,16 @@ class QuadrupleManager(object):
             
             if len(self.matDimStack) != 0:
                 mat = self.matDimStack.pop()
-                if operand == mat[0] or operand == mat[1]:
-                    print('Operador es una matriz')
+                if not(operand == mat[0] or operand == mat[1]):
+                    print('Operando no es una matriz')
+                    exit()
                 
                 resultAddress = self.virutalDirectory.generateAddressForVariable('temp', resultType)
                 left = (funcDir.getMatrixStart(operand), mat[2])
                 if operation == '$':
+                    if mat[2][0] != mat[2][1]:
+                        print("Error: se necesita una matriz cuadrada para calcular la determinante")
+                        exit()
                     result = resultAddress
                 else:
                     if operation == '¡':
@@ -614,7 +602,6 @@ class QuadrupleManager(object):
 
     # Agrega un ERA  a la lista de cuadruplos
     def generateERA(self, funcDir):
-        # print(self.quadruplesList)
         self.quadruplesList.append(('ERA', -1, -1, funcDir.getEra()))
         self.quadrupleCounter += 1
     
@@ -624,7 +611,6 @@ class QuadrupleManager(object):
             self.quadruplesList.append(('ENDPROG', -1, -1, -1))
 
     # Metodo publico que se encarga de generar un salto inicial
-    #TODO: Refactorizar funcion
     def generateJump(self, jumpType):
         if jumpType == 'false':
             self.jumpStack.append(self.quadrupleCounter)

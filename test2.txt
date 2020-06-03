@@ -3,7 +3,7 @@ var int: a[2][2], d[2][2], e[3];
     float: b;
     char: c;
 
-funcion void test(int n1)
+funcion int test(int n1)
 var int: temp;
 {
     temp = 1;
@@ -17,8 +17,16 @@ var int: temp;
         temp = temp + 1;
         escribe(c);
     }
+    regresa(1);
 }
 
 principal(){
+
+    a[0][0] = 1;
+    a[0][1] = 2;
+    a[1][0] = 3;
+    a[1][1] = 4;
+
+    escribe(test(1));
 
 }
