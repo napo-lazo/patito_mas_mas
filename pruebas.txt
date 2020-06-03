@@ -1,0 +1,121 @@
+programa revision;
+
+funcion int FibonacciRec(int n){
+    si (n <= 1) haz {
+        escribe(n);
+        regresa(n);
+    }
+
+    regresa(FibonacciRec(n - 1) + FibonacciRec(n - 2));
+}
+
+funcion void FibonacciIt(int n)
+var int: antepenultimoValor, penultimoValor, valor, i; {
+    penultimoValor = 0;
+    valor = 1;
+    escribe(penultimoValor);
+    escribe(valor);
+    n = n - 1;
+    desde i = 1 hasta n hacer{
+        antepenultimoValor = penultimoValor;
+        penultimoValor = valor;
+        valor = antepenultimoValor + penultimoValor;
+        escribe(valor);
+    }
+}
+
+funcion int FactorialRec(int n){
+    si(n <= 1) haz{
+        regresa(n);
+    }
+    sino{
+        regresa(n * FactorialRec(n - 1));
+    }
+}
+
+funcion int FactorialIt(int n)
+var int: i, aux; {
+    i = 1;
+    aux = 1;
+    mientras(i <= 5) haz{
+        aux = aux * i;
+        i = i + 1;
+    }
+    regresa(aux);
+}
+
+funcion void Sort()
+var int: A[5], size, i, j, k, min, temp;{
+    A[0] = 5; A[1] = 4; A[2] = 1; A[3] = 2; A[4] = 3;
+	size = 5; i = 0;
+    desde k = 0 hasta size hacer{
+        escribe(A[k], " ");
+    }
+	mientras (i < (size - 1)) haz {
+		min = i;
+        j = i + 1;
+        mientras (j < size) haz {
+            si (A[j] < A[min]) haz {
+                min = j;
+            }
+            j = j + 1;
+        }
+        temp = A[i];
+        A[i] = A[min];
+        A[min] = temp;
+        i = i + 1;
+	}
+     desde k = 0 hasta size hacer{
+        escribe(A[k], " ");
+    }
+}
+
+funcion void Find(char c)
+var char: C[6];
+    int: size, i, flag;
+{
+	C[0] = 'a'; C[1] = 'l'; C[2] = 'c'; C[3] = 'o';
+	C[4] = 'h'; C[5] = 'o';
+    flag = 0;
+    size = 6;
+	desde i = 0 hasta size hacer{
+		si(C[i] == c) haz {
+			escribe("Caracter encontrado");
+            escribe(i);
+            flag = 1;
+		}
+	}
+    si (flag == 0) haz {
+        escribe("Caracter no encontrado");
+    }
+}
+
+funcion vois matrices()
+var int : A[3][2], B[3][3], C[3][2];{
+    B[0][0] =  1; B[0][1] = 2; B[0][2] = 3;
+    B[1][0] =  0; B[1][1] = 1; B[1][2] = 0;
+    B[2][0] =  3; B[2][1] = 2; B[2][2] = 1;
+
+    C[0][0] = 1; C[0][1] = -1; 
+    C[1][0] = 0; C[1][1] = 1;
+    C[2][0] = 1; C[2][1] = 2;  
+
+    A = B * C;
+
+    escribe(A[0][0]);
+    escribe(A[0][1]);
+    escribe(A[1][0]);
+    escribe(A[1][1]);
+    escribe(A[2][0]);
+    escribe(A[2][1]);
+}
+
+principal(){
+    FibonacciIt(9);
+    FibonacciRec(9);
+    escribe(FactorialIt(5));
+    escribe(FactorialRec(5));
+    Sort();
+    Find('c');
+    matrices();
+}

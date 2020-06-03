@@ -33,6 +33,13 @@ Ademas utilizamos los operadores:
 '$' determinante de una matriz
 '¡' traspuesta de una matriz
 
+# Sintaxis para operaciones basicas
+- Decalaracion variables: Var int: a, b, c; float: d;
+- Condicionales: si (<expresion>) haz { estatutos }
+- Ciclo condicional: mientras (<expresion>) haz { estatutos }
+- Ciclo no condicional: desde n = 0 hasta <expresion> hacer { estatutos } // esta operacion siempre es incremental entonces si el limite superior es inicialmente menor se ciclara
+- Declaracion funcion: funcion void nombreFunc() <declaracion variables> { estatutos } 
+
 # Como utilizar este compilador:
 
 El compilador puede compilar código patito++ por archivo o consola. Para compilar un archivo asegúrese que se encuentre en el mismo directorio que los archivos del compilador.

@@ -1,4 +1,3 @@
-# variablesTable guarda las variables globales y de las funciones
 class FunctionDirectory(object):
 
     def __init__(self):
@@ -31,6 +30,7 @@ class FunctionDirectory(object):
                     return variable
 
     #lo mismo que la funcion anterior pero para la direccion inicial de una matriz
+    # Regresa la direccion en donde empieza la matriz 
     def getMatrixStart(self, variable):
         try:
             return self.variablesTable[self.currentScope]['variables'][variable]['virtualAddress']
@@ -96,7 +96,7 @@ class FunctionDirectory(object):
     def addArrayDimensionSize(self, size):
         self.variablesTable[self.currentScope]['variables'][self.currentId]['arrayDimensions'].append(size)
 
-    # ?? Regresa las dimensiones de una variable arreglo como parametro
+    # Regresa las dimensiones de una variable arreglo como parametro
     def getArrayDimensions(self, variable):
         if self.currentScope == None:
             return self.variablesTable['global']['variables'][variable]['arrayDimensions'].copy()

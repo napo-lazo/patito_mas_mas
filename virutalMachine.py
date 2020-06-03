@@ -128,6 +128,7 @@ class VirtualMachine(object):
         return False
 
     # Esta funcion obtiene el valor que esta guardado en la direccion address
+    # Busca el bloque de memoria en el que se encuentra
     def getValueFromAddress(self, address):
         if address >= self.pointers:
             return self.getValueFromAddress(self.Pointers[int(address - self.pointers)])
@@ -248,6 +249,7 @@ class VirtualMachine(object):
                     else:
                         result = eval(f'{leftOperand} {current[0]} {rightOperand}')
                     self.setAddressToValue(current[3], result)
+            # Operaciones con matrices 
             elif(current[0] in ['+Mat', '-Mat', '*Mat']):
                 leftOperand = self.convertToMatrix(current[1][0], current[1][1])
                 rightOperand = self.convertToMatrix(current[2][0], current[2][1])
@@ -274,6 +276,7 @@ class VirtualMachine(object):
                 operand = self.convertToMatrix(current[1][0], current[1][1])
                 result = linalg.det(array(operand))
                 self.setAddressToValue(current[3], result)
+            # Codigos de operacion 
             elif(current[0] == 'GOTOF'):
                 if not self.getValueFromAddress(current[1]):
                     i = int(current[3]) - 1
